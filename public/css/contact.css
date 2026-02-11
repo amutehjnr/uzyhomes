@@ -1,0 +1,189 @@
+/* Contact Page Specific Styles */
+
+.contact-hero {
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), 
+                url('/images/contact-hero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+}
+
+.contact-form-wrapper {
+    background: white;
+    padding: 3rem;
+    border: 1px solid var(--color-sand);
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--color-sand);
+    border-radius: 0;
+    padding: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-charcoal);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-charcoal);
+    box-shadow: none;
+}
+
+.form-label {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    color: var(--color-charcoal);
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--color-charcoal);
+    border-color: var(--color-charcoal);
+}
+
+.contact-info-wrapper {
+    padding-left: 2rem;
+}
+
+.info-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-stone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-clay);
+    flex-shrink: 0;
+}
+
+.info-content h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-content p {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.info-content small {
+    color: var(--color-grey);
+    font-size: 0.85rem;
+}
+
+.info-content a {
+    color: var(--color-charcoal);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.info-content a:hover {
+    color: var(--color-clay);
+}
+
+/* Social Links */
+.social-contact .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-charcoal);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.social-link:hover {
+    color: var(--color-clay);
+    padding-left: 5px;
+}
+
+.social-link i {
+    width: 20px;
+}
+
+/* FAQ */
+.accordion-button {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    color: var(--color-charcoal);
+    background-color: white;
+    border: 1px solid var(--color-sand);
+    border-radius: 0;
+    padding: 1rem;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: white;
+    color: var(--color-charcoal);
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: var(--color-charcoal);
+}
+
+.accordion-body {
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    border: 1px solid var(--color-sand);
+    border-top: none;
+}
+
+/* Consultation Cards */
+.consultation-card {
+    background: white;
+    padding: 2rem;
+    border: 1px solid var(--color-sand);
+    height: 100%;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.consultation-card:hover {
+    border-color: var(--color-charcoal);
+    transform: translateY(-5px);
+}
+
+.consultation-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.consultation-price {
+    font-family: var(--font-sans);
+    font-size: 1.5rem;
+    color: var(--color-charcoal);
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+.consultation-card p {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Newsletter Form */
+.newsletter-form .form-control {
+    border-right: none;
+}
+
+.newsletter-form .btn {
+    border-radius: 0;
+}
+
+.newsletter-form small {
+    display: block;
+    margin-top: 0.5rem;
+}

@@ -1,0 +1,110 @@
+    <!-- Footer (removed social links from here) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <a class="navbar-brand mb-3" href="/">
+                        <span class="brand-name">UZYHOMES</span>
+                    </a>
+                    <p class="footer-text">
+                        Quiet luxury bedding, interiors, and décor designed with intention. 
+                        Crafted for discerning eyes, calm souls, and homes that deserve more.
+                    </p>
+                    <!-- REMOVED: social-links div from here -->
+                </div>
+                <!-- ... rest of footer remains the same ... -->
+            </div>
+            
+            <hr class="footer-divider">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="copyright">
+                        &copy; 2024 UZYHOMES — Quiet Luxury Living. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <ul class="footer-links inline">
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/shipping">Shipping Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Social Widget -->
+    <div class="floating-social-widget">
+        <div class="social-widget-toggle">
+            <i class="fas fa-comment-alt"></i>
+        </div>
+        <div class="social-widget-content">
+            <div class="social-widget-header">
+                <h6>Connect With Us</h6>
+                <p>Follow for inspiration & updates</p>
+            </div>
+            <div class="social-widget-links">
+                <a href="#" class="social-icon instagram" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+                <a href="#" class="social-icon pinterest" title="Pinterest">
+                    <i class="fab fa-pinterest"></i>
+                    <span>Pinterest</span>
+                </a>
+                <a href="#" class="social-icon facebook" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
+                </a>
+                <a href="#" class="social-icon youtube" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const widget = document.querySelector('.floating-social-widget');
+    const toggle = document.querySelector('.social-widget-toggle');
+    
+    // Toggle widget on click
+    toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        widget.classList.toggle('active');
+    });
+    
+    // Close widget when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!widget.contains(e.target)) {
+            widget.classList.remove('active');
+        }
+    });
+    
+    // Close widget on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            widget.classList.remove('active');
+        }
+    });
+    
+    // Optional: Add hover functionality for desktop only
+    if (window.innerWidth > 768) {
+        let hoverTimer;
+        
+        widget.addEventListener('mouseenter', function() {
+            clearTimeout(hoverTimer);
+            widget.classList.add('active');
+        });
+        
+        widget.addEventListener('mouseleave', function() {
+            hoverTimer = setTimeout(() => {
+                widget.classList.remove('active');
+            }, 300);
+        });
+    }
+});
+</script>

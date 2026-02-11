@@ -1,0 +1,187 @@
+/* About Page Specific Styles */
+
+.about-hero {
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), 
+                url('/images/about-hero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+}
+
+.founder-image {
+    position: relative;
+}
+
+.founder-image img {
+    width: 100%;
+    height: auto;
+}
+
+.founder-caption {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    background-color: white;
+    padding: 1rem 1.5rem;
+}
+
+.founder-caption strong {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+}
+
+.founder-caption span {
+    font-size: 0.9rem;
+    color: var(--color-grey);
+}
+
+/* Philosophy Cards */
+.philosophy-card {
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid var(--color-sand);
+    height: 100%;
+    transition: var(--transition);
+}
+
+.philosophy-card:hover {
+    border-color: var(--color-charcoal);
+    transform: translateY(-5px);
+}
+
+.philosophy-icon {
+    font-size: 2rem;
+    color: var(--color-clay);
+    margin-bottom: 1.5rem;
+    height: 60px;
+}
+
+.philosophy-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+/* Service Highlights */
+.service-highlight {
+    height: 100%;
+}
+
+.service-image {
+    height: 250px;
+    overflow: hidden;
+}
+
+.service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.service-highlight:hover .service-image img {
+    transform: scale(1.05);
+}
+
+.service-link {
+    display: inline-block;
+    font-family: var(--font-sans);
+    color: var(--color-charcoal);
+    text-decoration: none;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+    transition: var(--transition);
+}
+
+.service-link:hover {
+    color: var(--color-clay);
+    padding-left: 5px;
+}
+
+/* Mission Cards */
+.mission-card {
+    padding: 3rem;
+    border: 1px solid var(--color-sand);
+    height: 100%;
+}
+
+.mission-card .lead {
+    font-size: 1.5rem;
+    font-family: var(--font-serif);
+    color: var(--color-charcoal);
+}
+
+/* Values */
+.value-item {
+    padding: 2rem 1rem;
+}
+
+.value-icon {
+    font-size: 2rem;
+    color: var(--color-clay);
+    margin-bottom: 1rem;
+}
+
+.value-item h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.value-item p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Office */
+.office-info h4 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-info a {
+    color: var(--color-charcoal);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.contact-info a:hover {
+    color: var(--color-clay);
+}
+
+.hours h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.hours p {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.office-map {
+    height: 400px;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-stone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-sand);
+}
+
+.map-content {
+    text-align: center;
+    color: var(--color-grey);
+}
+
+.map-content i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-clay);
+}

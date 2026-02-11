@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UZYHOMES Interior Design - Serene spaces shaped by harmony, balance, and intentional detail. Transform your home with quiet luxury.">
+    <title>Interior Design — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Interiors Hero -->
+    <section class="interiors-hero section-py">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="display-4 mb-4">Transforming spaces with calm, beauty, and intention.</h1>
+                    <p class="lead">
+                        No clutter. No noise. Just warmth, balance, and quiet luxury. 
+                        We design interiors that feel like home — spaces that nurture and inspire.
+                    </p>
+                    <a href="#process" class="btn btn-outline-dark btn-lg mt-4">Our Design Process</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Design Philosophy -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <span class="section-label">Our Approach</span>
+                    <h2 class="section-title mb-4">The UZYHOMES Design Philosophy</h2>
+                    <p class="lead mb-4">
+                        We believe interiors should be sanctuaries — places where you can breathe deeply, 
+                        think clearly, and feel completely at peace.
+                    </p>
+                    
+                    <div class="philosophy-grid mt-5">
+                        <div class="row">
+                            <div class="col-6 mb-4">
+                                <div class="philosophy-item">
+                                    <i class="fas fa-leaf mb-2"></i>
+                                    <h5>Natural Harmony</h5>
+                                    <p>Bringing nature indoors for balance and calm.</p>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="philosophy-item">
+                                    <i class="fas fa-hand-sparkles mb-2"></i>
+                                    <h5>Intentional Detail</h5>
+                                    <p>Every element serves a purpose and adds beauty.</p>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="philosophy-item">
+                                    <i class="fas fa-palette mb-2"></i>
+                                    <h5>Soft Color Palettes</h5>
+                                    <p>Muted tones that soothe rather than stimulate.</p>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-4">
+                                <div class="philosophy-item">
+                                    <i class="fas fa-couch mb-2"></i>
+                                    <h5>Comfort First</h5>
+                                    <p>Spaces that feel as good as they look.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="philosophy-image">
+                        <img src="/images/interior-philosophy.jpg" alt="Interior Design Philosophy" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Design Process -->
+    <section class="section-py" id="process">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">How We Work</span>
+                    <h2 class="section-title">Our Design Process</h2>
+                    <p class="lead">A thoughtful, collaborative journey to create your perfect space.</p>
+                </div>
+            </div>
+            
+            <div class="process-timeline">
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Discover</h3>
+                        <h4>Initial Consultation</h4>
+                        <p>We begin by understanding your lifestyle, needs, and aesthetic preferences. 
+                           This deep dive helps us capture the essence of what you want your space to feel like.</p>
+                        <ul>
+                            <li>Site visit and assessment</li>
+                            <li>Lifestyle questionnaire</li>
+                            <li>Mood board development</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Design</h3>
+                        <h4>Concept Development</h4>
+                        <p>We create a comprehensive design concept including layout, color palette, 
+                           furniture selection, and material specifications that align with your vision.</p>
+                        <ul>
+                            <li>Space planning and layouts</li>
+                            <li>Material and finish selection</li>
+                            <li>3D visualizations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Deliver</h3>
+                        <h4>Implementation</h4>
+                        <p>We manage every detail of the installation process, ensuring seamless execution 
+                           and bringing your vision to life with precision and care.</p>
+                        <ul>
+                            <li>Procurement and logistics</li>
+                            <li>Installation supervision</li>
+                            <li>Final styling and photography</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">What We Offer</span>
+                    <h2 class="section-title">Design Services</h2>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card-full">
+                        <h3>Full-Service Design</h3>
+                        <p class="service-price">Starting from ₦1,500,000</p>
+                        <p>Complete interior transformation from concept to completion. Perfect for new homes or full renovations.</p>
+                        <ul>
+                            <li>Comprehensive design concept</li>
+                            <li>Furniture procurement</li>
+                            <li>Project management</li>
+                            <li>Installation and styling</li>
+                        </ul>
+                        <a href="/contact" class="btn btn-outline-dark mt-3">Inquire</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="service-card-full">
+                        <h3>Room Design</h3>
+                        <p class="service-price">Starting from ₦750,000</p>
+                        <p>Focused design for individual rooms like living rooms, bedrooms, or home offices.</p>
+                        <ul>
+                            <li>Single room design</li>
+                            <li>Furniture selection</li>
+                            <li>Layout optimization</li>
+                            <li>Shopping list provided</li>
+                        </ul>
+                        <a href="/contact" class="btn btn-outline-dark mt-3">Inquire</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="service-card-full">
+                        <h3>Design Consultation</h3>
+                        <p class="service-price">₦250,000 per session</p>
+                        <p>Expert advice and direction for your DIY projects or to refine existing spaces.</p>
+                        <ul>
+                            <li>2-hour consultation</li>
+                            <li>Personalized recommendations</li>
+                            <li>Color scheme guidance</li>
+                            <li>Follow-up summary</li>
+                        </ul>
+                        <a href="/contact" class="btn btn-outline-dark mt-3">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Preview -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <span class="section-label">Recent Work</span>
+                    <h2 class="section-title">Selected Projects</h2>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="/portfolio" class="btn btn-outline-dark">View All Projects →</a>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <a href="/portfolio/the-aurelia-residence" class="project-card">
+                        <div class="project-image">
+                            <img src="/images/projects/aurelia.jpg" alt="The Aurelia Residence" class="img-fluid">
+                        </div>
+                        <div class="project-info">
+                            <h3>The Aurelia Residence</h3>
+                            <p>Modern minimalist home in Maitama, Abuja</p>
+                            <span class="project-category">Residential</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6">
+                    <a href="/portfolio/dlm-headquarters" class="project-card">
+                        <div class="project-image">
+                            <img src="/images/projects/dlm.jpg" alt="DLM Capital Headquarters" class="img-fluid">
+                        </div>
+                        <div class="project-info">
+                            <h3>DLM Capital Headquarters</h3>
+                            <p>Corporate office design with quiet luxury aesthetic</p>
+                            <span class="project-category">Commercial</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6">
+                    <a href="/portfolio/magnolia-penthouse" class="project-card">
+                        <div class="project-image">
+                            <img src="/images/projects/magnolia.jpg" alt="The Magnolia Penthouse" class="img-fluid">
+                        </div>
+                        <div class="project-info">
+                            <h3>The Magnolia Penthouse</h3>
+                            <p>Luxury apartment with panoramic city views</p>
+                            <span class="project-category">Residential</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6">
+                    <a href="/portfolio/blush-amber-home" class="project-card">
+                        <div class="project-image">
+                            <img src="/images/projects/blush.jpg" alt="The Blush and Amber Home" class="img-fluid">
+                        </div>
+                        <div class="project-info">
+                            <h3>The Blush and Amber Home</h3>
+                            <p>Family home with warm, inviting palette</p>
+                            <span class="project-category">Residential</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">Client Stories</span>
+                    <h2 class="section-title">What Our Clients Say</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="testimonial-slider">
+                        <div class="testimonial-item text-center">
+                            <blockquote class="testimonial">
+                                "UZYHOMES transformed our home into a sanctuary. Their attention to detail 
+                                and commitment to creating peaceful spaces is extraordinary. We couldn't be happier."
+                            </blockquote>
+                            <p class="testimonial-author">— Adeola & Tunde, The Aurelia Residence</p>
+                        </div>
+                        
+                        <div class="testimonial-item text-center">
+                            <blockquote class="testimonial">
+                                "Working with UZYHOMES was a dream. They understood our vision perfectly and 
+                                executed it with such elegance and precision. Our home finally feels complete."
+                            </blockquote>
+                            <p class="testimonial-author">— Chinedu, The Magnolia Penthouse</p>
+                        </div>
+                        
+                        <div class="testimonial-item text-center">
+                            <blockquote class="testimonial">
+                                "The calm, sophisticated aesthetic UZYHOMES brought to our office space has 
+                                completely changed the work environment. Productivity and mood have improved noticeably."
+                            </blockquote>
+                            <p class="testimonial-author">— DLM Capital Group Management</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-py cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4">Ready to Transform Your Space?</h2>
+                    <p class="lead mb-5">
+                        Let's create a home that reflects your essence and nurtures your wellbeing. 
+                        Schedule a consultation to begin your design journey.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/contact" class="btn btn-dark btn-lg me-3">Book Consultation</a>
+                        <a href="/portfolio" class="btn btn-outline-dark btn-lg">View Portfolio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/interiors.js"></script>
+</body>
+</html>

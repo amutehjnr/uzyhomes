@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UZYHOMES Luxury Bedding - Premium bedding curated for calm, comfort, and refined living. Designed for deep rest and quiet luxury.">
+    <title>Luxury Bedding — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Bedding Hero -->
+    <section class="bedding-hero section-py">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="display-4 mb-4">Where comfort meets quiet elegance.</h1>
+                    <p class="lead">
+                        Discover premium bedding curated to elevate rest and transform your room's mood. 
+                        Each piece is crafted with intention for deep, peaceful sleep.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collections -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">Our Collections</span>
+                    <h2 class="section-title">Designed for Deep Rest</h2>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="collection-card">
+                        <div class="collection-image">
+                            <img src="/images/collections/nature.jpg" alt="The Nature Collection" class="img-fluid">
+                        </div>
+                        <div class="collection-info">
+                            <h3>The Nature Collection</h3>
+                            <p>Inspired by stillness and earth tones. Designed for complete relaxation.</p>
+                            <a href="#nature-collection" class="collection-link">View Collection →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="collection-card">
+                        <div class="collection-image">
+                            <img src="/images/collections/linen.jpg" alt="The Linen Collection" class="img-fluid">
+                        </div>
+                        <div class="collection-info">
+                            <h3>The Linen Collection</h3>
+                            <p>Breathable, soft, and timeless. Perfect for warm climates and cool comfort.</p>
+                            <a href="#linen-collection" class="collection-link">View Collection →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="collection-card">
+                        <div class="collection-image">
+                            <img src="/images/collections/silk.jpg" alt="The Silk Collection" class="img-fluid">
+                        </div>
+                        <div class="collection-info">
+                            <h3>The Silk Collection</h3>
+                            <p>Luxurious, smooth, and gentle on skin. The ultimate in sleep luxury.</p>
+                            <a href="#silk-collection" class="collection-link">View Collection →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="section-py" id="nature-collection">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <span class="section-label">Featured Collection</span>
+                    <h2 class="section-title">The Nature Collection</h2>
+                    <p class="lead">
+                        Bedding inspired by earth's calmest moments. Made with organic cotton and natural dyes.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Sort by: Featured
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Featured</a></li>
+                            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+                            <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+                            <li><a class="dropdown-item" href="#">Newest</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/serenity-bed.jpg" alt="Serenity Bed Set" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Serenity Bed Set</h3>
+                            <p class="product-description">Complete bedding set in earthy taupe with subtle texture.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦85,000</span>
+                                <button class="btn-add-cart" data-id="1">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/cloud-duvet.jpg" alt="Cloud Duvet Cover" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cloud Duvet Cover</h3>
+                            <p class="product-description">300-thread count, stone-washed for ultimate softness.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦62,000</span>
+                                <button class="btn-add-cart" data-id="2">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/stillness-pillows.jpg" alt="Stillness Pillows" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Stillness Pillows (Set of 2)</h3>
+                            <p class="product-description">Memory foam with organic cotton casing.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦28,000</span>
+                                <button class="btn-add-cart" data-id="3">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/earth-sheet-set.jpg" alt="Earth Sheet Set" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Earth Sheet Set</h3>
+                            <p class="product-description">Organic cotton, deep pocket sheets in olive green.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦45,000</span>
+                                <button class="btn-add-cart" data-id="4">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/moss-throw.jpg" alt="Moss Throw Blanket" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Moss Throw Blanket</h3>
+                            <p class="product-description">Chunky knit, 100% organic wool in forest green.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦38,000</span>
+                                <button class="btn-add-cart" data-id="5">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 6 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/stone-bedskirt.jpg" alt="Stone Bedskirt" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Stone Bedskirt</h3>
+                            <p class="product-description">Linen blend with subtle pleating for elegant finish.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price">₦32,000</span>
+                                <button class="btn-add-cart" data-id="6">
+                                    <i class="fas fa-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-dark" id="loadMore">Load More Products</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bedding Philosophy -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title mb-4">Our Bedding Philosophy</h2>
+                    <div class="philosophy-point mb-4">
+                        <h4>Intentional Materials</h4>
+                        <p>We use only organic cotton, linen, and sustainable materials that feel luxurious and last.</p>
+                    </div>
+                    <div class="philosophy-point mb-4">
+                        <h4>Artisanal Craftsmanship</h4>
+                        <p>Each piece is carefully crafted by skilled artisans who value quality over quantity.</p>
+                    </div>
+                    <div class="philosophy-point mb-4">
+                        <h4>Calm Aesthetics</h4>
+                        <p>Our colors and textures are chosen to create peaceful, serene bedroom environments.</p>
+                    </div>
+                    <div class="philosophy-point">
+                        <h4>Ethical Production</h4>
+                        <p>We ensure fair wages and safe working conditions for everyone in our supply chain.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="/images/bedding-detail.jpg" alt="Bedding Details" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Care Guide -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">Care Guide</span>
+                    <h2 class="section-title">Caring for Your Investment</h2>
+                    <p class="lead">Proper care ensures your bedding lasts for years while maintaining its luxurious feel.</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="care-card text-center">
+                        <div class="care-icon mb-3">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h4>Washing</h4>
+                        <p>Machine wash cold on gentle cycle with mild detergent. Avoid bleach.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="care-card text-center">
+                        <div class="care-icon mb-3">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <h4>Drying</h4>
+                        <p>Line dry in shade or tumble dry low. Avoid direct sunlight to prevent fading.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="care-card text-center">
+                        <div class="care-icon mb-3">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4>Ironing</h4>
+                        <p>Iron on medium heat while slightly damp for best results. Steam works wonderfully.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-py cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4">Ready to Transform Your Sleep?</h2>
+                    <p class="lead mb-5">
+                        Experience the difference intentional bedding makes. Your perfect night's sleep awaits.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="#nature-collection" class="btn btn-dark btn-lg me-3">Shop Collection</a>
+                        <a href="/contact" class="btn btn-outline-dark btn-lg">Book Consultation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/bedding.js"></script>
+</body>
+</html>

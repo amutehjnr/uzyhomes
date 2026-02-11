@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UZYHOMES Checkout - Complete your purchase of quiet luxury bedding, interiors, and décor.">
+    <title>Checkout — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/checkout.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Checkout Header -->
+    <section class="checkout-header section-py">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="display-5 mb-3">Checkout</h1>
+                    <p class="lead">Complete your purchase</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Progress -->
+    <section class="checkout-progress">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="progress-steps">
+                        <div class="step active">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Shipping</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Payment</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Review</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Confirmation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Content -->
+    <section class="section-py">
+        <div class="container">
+            <form id="checkoutForm">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Shipping Information -->
+                        <div class="checkout-section">
+                            <h3 class="section-title mb-4">Shipping Information</h3>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Street Address *</label>
+                                <input type="text" class="form-control" id="address" required>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City *</label>
+                                    <input type="text" class="form-control" id="city" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="state" class="form-label">State *</label>
+                                    <select class="form-select" id="state" required>
+                                        <option value="">Select State</option>
+                                        <option value="Abuja">Abuja FCT</option>
+                                        <option value="Lagos">Lagos</option>
+                                        <option value="Rivers">Rivers</option>
+                                        <option value="Oyo">Oyo</option>
+                                        <option value="Kano">Kano</option>
+                                        <option value="Edo">Edo</option>
+                                        <option value="Delta">Delta</option>
+                                        <option value="Imo">Imo</option>
+                                        <option value="Kaduna">Kaduna</option>
+                                        <option value="Plateau">Plateau</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="zipCode" class="form-label">ZIP / Postal Code</label>
+                                <input type="text" class="form-control" id="zipCode">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country *</label>
+                                <select class="form-select" id="country" required>
+                                    <option value="Nigeria" selected>Nigeria</option>
+                                    <option value="Ghana">Ghana</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="United States">United States</option>
+                                    <option value="Canada">Canada</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="saveAddress">
+                                <label class="form-check-label" for="saveAddress">
+                                    Save this address for future orders
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Shipping Method -->
+                        <div class="checkout-section mt-5">
+                            <h3 class="section-title mb-4">Shipping Method</h3>
+                            
+                            <div class="shipping-methods">
+                                <div class="shipping-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="shipping" id="standard" checked>
+                                        <label class="form-check-label" for="standard">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h5>Standard Shipping</h5>
+                                                    <p>5-7 business days</p>
+                                                </div>
+                                                <span class="shipping-price">₦5,000</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="shipping-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="shipping" id="express">
+                                        <label class="form-check-label" for="express">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h5>Express Shipping</h5>
+                                                    <p>2-3 business days</p>
+                                                </div>
+                                                <span class="shipping-price">₦12,000</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="shipping-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="shipping" id="pickup">
+                                        <label class="form-check-label" for="pickup">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h5>Store Pickup</h5>
+                                                    <p>Pick up from our Abuja showroom</p>
+                                                </div>
+                                                <span class="shipping-price">Free</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method -->
+                        <div class="checkout-section mt-5">
+                            <h3 class="section-title mb-4">Payment Method</h3>
+                            
+                            <div class="payment-methods">
+                                <div class="payment-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="card" checked>
+                                        <label class="form-check-label" for="card">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-credit-card me-3"></i>
+                                                <span>Credit/Debit Card</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="card-details mt-3" id="cardDetails">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <label for="cardNumber" class="form-label">Card Number *</label>
+                                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="cardExpiry" class="form-label">Expiry Date *</label>
+                                                <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="cardCVC" class="form-label">CVC *</label>
+                                                <input type="text" class="form-control" id="cardCVC" placeholder="123">
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label for="cardName" class="form-label">Name on Card *</label>
+                                                <input type="text" class="form-control" id="cardName">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card-icons">
+                                            <i class="fab fa-cc-visa"></i>
+                                            <i class="fab fa-cc-mastercard"></i>
+                                            <i class="fab fa-cc-amex"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="transfer">
+                                        <label class="form-check-label" for="transfer">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-university me-3"></i>
+                                                <span>Bank Transfer</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="transfer-details mt-3 d-none" id="transferDetails">
+                                        <p>Make payment to:</p>
+                                        <div class="bank-details">
+                                            <p><strong>Bank:</strong> Zenith Bank</p>
+                                            <p><strong>Account Name:</strong> UZYHOMES LTD</p>
+                                            <p><strong>Account Number:</strong> 1234567890</p>
+                                        </div>
+                                        <p class="small text-muted">Please use your order number as reference</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-method">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment" id="paypal">
+                                        <label class="form-check-label" for="paypal">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fab fa-paypal me-3"></i>
+                                                <span>PayPal</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Review & Place Order Button -->
+                        <div class="checkout-actions mt-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a href="/cart" class="btn btn-outline-dark">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                                    </a>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <button type="submit" class="btn btn-dark btn-lg">
+                                        Review Order
+                                        <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="col-lg-4">
+                        <div class="order-summary-sticky">
+                            <h3 class="summary-title">Order Summary</h3>
+                            
+                            <div class="order-items">
+                                <div class="order-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="item-name">Serenity Bed Set × 1</p>
+                                            <small>King / Earth Taupe</small>
+                                        </div>
+                                        <span>₦85,000</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="item-name">Stone Vase × 2</p>
+                                            <small>25cm / Ceramic</small>
+                                        </div>
+                                        <span>₦37,000</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="item-name">Sandalwood Candle × 1</p>
+                                            <small>60 hours / Warm</small>
+                                        </div>
+                                        <span>₦15,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-details">
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span>₦137,000</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Shipping</span>
+                                    <span>₦5,000</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Promo Code</span>
+                                    <span class="text-success">-₦10,000</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total</span>
+                                    <span class="total-amount">₦132,000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="secure-checkout">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <span>Secure SSL Encryption</span>
+                            </div>
+                            
+                            <div class="return-policy mt-4">
+                                <h5>Return Policy</h5>
+                                <p class="small">We offer a 30-day return policy for unused items in original packaging. Shipping costs for returns are the customer's responsibility.</p>
+                            </div>
+                            
+                            <div class="need-help mt-4">
+                                <h5>Need Help?</h5>
+                                <p class="small mb-1">
+                                    <a href="tel:+2347047511911">
+                                        <i class="fas fa-phone me-2"></i>+234 704 751 1911
+                                    </a>
+                                </p>
+                                <p class="small">
+                                    <a href="mailto:support@uzyhomes.com">
+                                        <i class="fas fa-envelope me-2"></i>support@uzyhomes.com
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/checkout.js"></script>
+</body>
+</html>

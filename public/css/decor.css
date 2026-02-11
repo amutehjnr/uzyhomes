@@ -1,0 +1,211 @@
+/* Decor Page Specific Styles */
+
+.decor-hero {
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), 
+                url('/images/decor-hero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+}
+
+.category-card {
+    display: block;
+    text-align: center;
+    padding: 2rem 1rem;
+    border: 1px solid var(--color-sand);
+    text-decoration: none;
+    color: var(--color-charcoal);
+    transition: var(--transition);
+}
+
+.category-card:hover {
+    background-color: white;
+    border-color: var(--color-charcoal);
+    transform: translateY(-5px);
+}
+
+.category-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--color-clay);
+}
+
+.decor-card {
+    background: white;
+    border: 1px solid var(--color-sand);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.decor-card:hover {
+    border-color: var(--color-charcoal);
+    box-shadow: var(--shadow-soft);
+}
+
+.decor-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.decor-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.decor-card:hover .decor-image img {
+    transform: scale(1.05);
+}
+
+.decor-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--color-clay);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.decor-info {
+    padding: 1.5rem;
+}
+
+.decor-description {
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    margin-bottom: 1rem;
+}
+
+.decor-price {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    color: var(--color-charcoal);
+    font-weight: 400;
+}
+
+.btn-add-decor {
+    background: transparent;
+    border: 1px solid var(--color-charcoal);
+    color: var(--color-charcoal);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-add-decor:hover {
+    background-color: var(--color-charcoal);
+    color: white;
+}
+
+/* Candle Cards */
+.candle-card {
+    text-align: center;
+}
+
+.candle-image {
+    height: 200px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.candle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.candle-info h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.candle-scent {
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    margin-bottom: 0.5rem;
+}
+
+.candle-price {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    color: var(--color-charcoal);
+}
+
+/* Art Cards */
+.art-card {
+    border: 1px solid var(--color-sand);
+    transition: var(--transition);
+}
+
+.art-card:hover {
+    border-color: var(--color-charcoal);
+}
+
+.art-image {
+    height: 400px;
+    overflow: hidden;
+}
+
+.art-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.art-info {
+    padding: 1.5rem;
+}
+
+.art-artist {
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    margin-bottom: 0.5rem;
+}
+
+.art-description {
+    font-size: 0.85rem;
+    color: var(--color-grey);
+    margin-bottom: 1rem;
+}
+
+.art-price {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--color-charcoal);
+}
+
+/* Tip Cards */
+.tip-card {
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-sand);
+    height: 100%;
+    transition: var(--transition);
+}
+
+.tip-card:hover {
+    border-color: var(--color-charcoal);
+    transform: translateY(-5px);
+}
+
+.tip-number {
+    font-family: var(--font-serif);
+    font-size: 3rem;
+    color: var(--color-linen);
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.tip-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}

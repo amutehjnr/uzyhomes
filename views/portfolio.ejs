@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UZYHOMES Portfolio - A gallery of our creative story featuring bedding campaigns, interior designs, and décor styling projects.">
+    <title>Portfolio — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/portfolio.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Portfolio Hero -->
+    <section class="portfolio-hero section-py">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="display-4 mb-4">A gallery of our creative story.</h1>
+                    <p class="lead">
+                        Explore our bedding campaigns, interiors, décor styling, and editorial projects — 
+                        each crafted with the signature UZYHOMES feeling.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Filter -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <div class="portfolio-filter">
+                        <button class="filter-btn active" data-filter="all">All Projects</button>
+                        <button class="filter-btn" data-filter="interiors">Interiors</button>
+                        <button class="filter-btn" data-filter="bedding">Bedding</button>
+                        <button class="filter-btn" data-filter="decor">Décor Styling</button>
+                        <button class="filter-btn" data-filter="editorial">Editorial</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 portfolio-grid">
+                <!-- Project 1 - Interiors -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="interiors">
+                    <a href="/portfolio/the-aurelia-residence" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/aurelia-1.jpg" alt="The Aurelia Residence" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>The Aurelia Residence</h3>
+                                    <p>Modern minimalist home in Maitama</p>
+                                    <span class="project-category">Interiors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 2 - Bedding -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="bedding">
+                    <a href="/portfolio/nature-collection-campaign" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/nature-campaign.jpg" alt="Nature Collection Campaign" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>Nature Collection Campaign</h3>
+                                    <p>Editorial bedding photography</p>
+                                    <span class="project-category">Bedding</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 3 - Interiors -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="interiors">
+                    <a href="/portfolio/dlm-headquarters" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/dlm-office.jpg" alt="DLM Capital Headquarters" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>DLM Capital Headquarters</h3>
+                                    <p>Corporate office design</p>
+                                    <span class="project-category">Interiors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 4 - Décor -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="decor">
+                    <a href="/portfolio/ceramics-editorial" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/ceramics.jpg" alt="Ceramics Editorial" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>Ceramics Editorial</h3>
+                                    <p>Product styling for decor collection</p>
+                                    <span class="project-category">Décor Styling</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 5 - Interiors -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="interiors">
+                    <a href="/portfolio/magnolia-penthouse" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/magnolia-1.jpg" alt="The Magnolia Penthouse" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>The Magnolia Penthouse</h3>
+                                    <p>Luxury apartment with city views</p>
+                                    <span class="project-category">Interiors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 6 - Editorial -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="editorial">
+                    <a href="/portfolio/affluence-feature" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/affluence.jpg" alt="Affluence Magazine Feature" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>Affluence Magazine Feature</h3>
+                                    <p>Brand story and portfolio showcase</p>
+                                    <span class="project-category">Editorial</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 7 - Interiors -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="interiors">
+                    <a href="/portfolio/solara-residence" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/solara.jpg" alt="The Solara Residence" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>The Solara Residence</h3>
+                                    <p>Family home with warm minimalism</p>
+                                    <span class="project-category">Interiors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 8 - Bedding -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="bedding">
+                    <a href="/portfolio/linen-collection-shoot" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/linen-shoot.jpg" alt="Linen Collection Shoot" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>Linen Collection Shoot</h3>
+                                    <p>Product photography campaign</p>
+                                    <span class="project-category">Bedding</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Project 9 - Interiors -->
+                <div class="col-md-6 col-lg-4 portfolio-item" data-category="interiors">
+                    <a href="/portfolio/crane-sanctuary" class="project-card-large">
+                        <div class="project-image">
+                            <img src="/images/portfolio/crane.jpg" alt="The Crane Sanctuary" class="img-fluid">
+                            <div class="project-overlay">
+                                <div class="project-info">
+                                    <h3>The Crane Sanctuary</h3>
+                                    <p>Lakeside retreat design</p>
+                                    <span class="project-category">Interiors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-dark" id="loadMoreProjects">Load More Projects</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Showcase -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">Featured Project</span>
+                    <h2 class="section-title">The Aurelia Residence</h2>
+                </div>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6">
+                    <div class="project-showcase-image">
+                        <img src="/images/portfolio/aurelia-showcase.jpg" alt="The Aurelia Residence Living Room" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6 ps-lg-5">
+                    <h3 class="mb-4">Modern Minimalism Meets Warmth</h3>
+                    <p class="mb-4">
+                        Located in the quiet streets of Maitama, Abuja, The Aurelia Residence was designed 
+                        as a sanctuary from the bustling city. The challenge was to create a space that felt 
+                        both modern and warm, minimalist yet inviting.
+                    </p>
+                    
+                    <div class="project-details">
+                        <div class="detail-item">
+                            <h5>Location</h5>
+                            <p>Maitama, Abuja</p>
+                        </div>
+                        <div class="detail-item">
+                            <h5>Type</h5>
+                            <p>Residential Interior Design</p>
+                        </div>
+                        <div class="detail-item">
+                            <h5>Scope</h5>
+                            <p>Full interior transformation</p>
+                        </div>
+                        <div class="detail-item">
+                            <h5>Duration</h5>
+                            <p>4 months</p>
+                        </div>
+                    </div>
+                    
+                    <a href="/portfolio/the-aurelia-residence" class="btn btn-outline-dark mt-4">View Full Case Study →</a>
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <img src="/images/portfolio/aurelia-2.jpg" alt="Aurelia Residence Bedroom" class="img-fluid">
+                </div>
+                <div class="col-md-4">
+                    <img src="/images/portfolio/aurelia-3.jpg" alt="Aurelia Residence Kitchen" class="img-fluid">
+                </div>
+                <div class="col-md-4">
+                    <img src="/images/portfolio/aurelia-4.jpg" alt="Aurelia Residence Bathroom" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Testimonials -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">Client Testimonials</span>
+                    <h2 class="section-title">What Our Clients Say</h2>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"UZYHOMES transformed our vision into reality with such elegance. 
+                                Our home feels like a sanctuary every single day."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>Adeola & Tunde</strong>
+                            <span>The Aurelia Residence</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"The attention to detail and commitment to quality is unmatched. 
+                                Working with UZYHOMES was a seamless, enjoyable experience."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>Chinedu</strong>
+                            <span>The Magnolia Penthouse</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"Our office has never looked better. The design has positively 
+                                impacted our team's productivity and mood."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>DLM Capital Group</strong>
+                            <span>Corporate Headquarters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-py cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4">Inspired by Our Work?</h2>
+                    <p class="lead mb-5">
+                        Let's create something beautiful together. Share your vision with us, and 
+                        we'll bring it to life with the same care and attention to detail.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/contact" class="btn btn-dark btn-lg me-3">Start Your Project</a>
+                        <a href="/interiors" class="btn btn-outline-dark btn-lg">Our Design Process</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Lightbox Modal -->
+    <div class="modal fade" id="portfolioModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="" alt="" class="img-fluid" id="modalImage">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/portfolio.js"></script>
+</body>
+</html>

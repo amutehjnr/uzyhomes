@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UZYHOMES - Quiet luxury bedding, interiors, and décor designed with intention. Crafted for discerning eyes, calm souls, and homes that deserve more.">
+    <meta name="keywords" content="luxury bedding, interior design, quiet luxury, premium décor, Abuja, Nigeria">
+    
+    <title>UZYHOMES — Quiet Luxury Living</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+  <%- include('partials/header') %>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-video">
+            <video autoplay muted loop playsinline>
+                <source src="/videos/hero-bg.mp4" type="video/mp4">
+                <source src="/videos/hero-bg.webm" type="video/webm">
+            </video>
+        </div>
+        
+        <div class="hero-content">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h1 class="hero-title">
+                            Crafted for discerning eyes, calm souls, and homes that deserve more.
+                        </h1>
+                        <p class="hero-subtitle">
+                            Quiet luxury bedding, interiors, and décor designed with intention.
+                        </p>
+                        <div class="hero-buttons mt-5">
+                            <a href="/bedding" class="btn btn-outline-light btn-lg me-3">Shop Bedding</a>
+                            <a href="/interiors" class="btn btn-outline-light btn-lg">Explore Interiors</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Essence -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title mb-4">UZYHOMES is a creative house rooted in quiet luxury and intentional living.</h2>
+                    <p class="lead">
+                        We design serene interiors, refined bedding, and décor that feels personal, calm, and timeless. 
+                        Every creation carries our signature feeling: warmth, calm, clarity, and quiet excellence.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="essence-image">
+                        <img src="/images/essence.jpg" alt="UZYHOMES Brand Essence" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Collection -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">New Collection</span>
+                    <h2 class="section-title">THE NATURE COLLECTION</h2>
+                    <p class="collection-subtitle">
+                        Inspired by stillness. Designed for deep rest. Crafted with quiet sophistication.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/nature-1.jpg" alt="Nature Collection Bedding" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="/bedding/nature-collection" class="btn btn-outline-light">View Details</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Serenity Bed Set</h3>
+                            <p class="product-price">₦85,000</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/nature-2.jpg" alt="Nature Collection Duvet" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="/bedding/nature-collection" class="btn btn-outline-light">View Details</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Cloud Duvet Cover</h3>
+                            <p class="product-price">₦62,000</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/images/products/nature-3.jpg" alt="Nature Collection Pillows" class="img-fluid">
+                            <div class="product-overlay">
+                                <a href="/bedding/nature-collection" class="btn btn-outline-light">View Details</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>Stillness Pillows</h3>
+                            <p class="product-price">₦28,000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="/bedding" class="btn btn-outline-dark">Shop Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Offer -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title">What We Offer</h2>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <h3>Luxury Bedding</h3>
+                        <p>
+                            Soft, premium bedding curated for calm, comfort, and refined living. 
+                            Each piece is designed with intention and crafted for deep rest.
+                        </p>
+                        <a href="/bedding" class="service-link">Explore Bedding →</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Interior Design</h3>
+                        <p>
+                            Serene spaces shaped by harmony, balance, and intentional detail. 
+                            We transform rooms into peaceful sanctuaries.
+                        </p>
+                        <a href="/interiors" class="service-link">Our Process →</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <div class="service-icon mb-4">
+                            <i class="fas fa-couch"></i>
+                        </div>
+                        <h3>Décor Collections</h3>
+                        <p>
+                            Thoughtfully selected pieces that elevate your home subtly. 
+                            Each item is chosen for its beauty, quality, and quiet presence.
+                        </p>
+                        <a href="/decor" class="service-link">View Décor →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interiors Feature -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="before-after-slider">
+                        <div class="slider-container">
+                            <div class="before-image">
+                                <img src="/images/before.jpg" alt="Before interior">
+                            </div>
+                            <div class="after-image">
+                                <img src="/images/after.jpg" alt="After interior">
+                            </div>
+                            <div class="slider-handle"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 ps-lg-5">
+                    <h2 class="section-title mb-4">
+                        Transforming spaces with calm, beauty, and intention.
+                    </h2>
+                    <p class="lead mb-4">
+                        No clutter. No noise. Just warmth, balance, and quiet luxury. 
+                        We design interiors that feel like home — spaces that nurture and inspire.
+                    </p>
+                    <div class="mt-4">
+                        <a href="/portfolio" class="btn btn-outline-dark me-3">View Portfolio</a>
+                        <a href="/contact" class="btn btn-dark">Book Consultation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Preview -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title">Portfolio Preview</h2>
+                    <p class="lead">A gallery of our creative story and completed projects.</p>
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <a href="/portfolio" class="portfolio-item">
+                        <img src="/images/portfolio/1.jpg" alt="Bedding Campaign" class="img-fluid">
+                        <div class="portfolio-overlay">
+                            <span>Bedding Campaign</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <a href="/portfolio" class="portfolio-item">
+                        <img src="/images/portfolio/2.jpg" alt="Living Room Design" class="img-fluid">
+                        <div class="portfolio-overlay">
+                            <span>Living Room</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <a href="/portfolio" class="portfolio-item">
+                        <img src="/images/portfolio/3.jpg" alt="Bedroom Styling" class="img-fluid">
+                        <div class="portfolio-overlay">
+                            <span>Bedroom Styling</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <a href="/portfolio" class="portfolio-item">
+                        <img src="/images/portfolio/4.jpg" alt="Décor Details" class="img-fluid">
+                        <div class="portfolio-overlay">
+                            <span>Décor Details</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="/portfolio" class="btn btn-outline-dark">View Full Portfolio</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Press Section -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <span class="section-label">As featured in</span>
+                    <h2 class="section-title mb-4">Affluence Magazine</h2>
+                    <blockquote class="testimonial">
+                        "UZYHOMES brings a new standard of quiet luxury to Nigerian interiors. 
+                        Their attention to detail and commitment to intentional design is truly remarkable."
+                    </blockquote>
+                    <p class="testimonial-author">— Affluence Magazine, October 2024</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section-py cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4">Design a space that feels like a deep breath.</h2>
+                    <p class="lead mb-5">
+                        Your home should be your sanctuary. Let us help you create a space that 
+                        reflects your essence and nurtures your wellbeing.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/bedding" class="btn btn-dark btn-lg me-3">Shop Bedding</a>
+                        <a href="/contact" class="btn btn-outline-dark btn-lg">Work With Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <%- include('partials/footer') %>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

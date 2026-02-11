@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact UZYHOMES - Get in touch for interior design consultations, bedding inquiries, décor styling, or collaboration opportunities.">
+    <title>Contact — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/contact.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Contact Hero -->
+    <section class="contact-hero section-py">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="display-4 mb-4">We'd love to work with you.</h1>
+                    <p class="lead">
+                        For bookings, collaborations, inquiries, or just to say hello. 
+                        We're here to listen and help create something beautiful together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form & Info -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="contact-form-wrapper">
+                        <h2 class="section-title mb-4">Send Us a Message</h2>
+                        <p class="mb-4">We typically respond within 24 hours.</p>
+                        
+                        <form id="contactForm" class="contact-form">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="service" class="form-label">Service Interest *</label>
+                                <select class="form-select" id="service" required>
+                                    <option value="">Select a service</option>
+                                    <option value="interior-design">Interior Design</option>
+                                    <option value="bedding">Bedding Collection</option>
+                                    <option value="decor">Décor Consultation</option>
+                                    <option value="styling">Home Styling</option>
+                                    <option value="collaboration">Collaboration</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Your Message *</label>
+                                <textarea class="form-control" id="message" rows="5" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="newsletter">
+                                <label class="form-check-label" for="newsletter">
+                                    Subscribe to our newsletter for updates and inspiration
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-dark btn-lg w-100">
+                                Send Message
+                            </button>
+                        </form>
+                        
+                        <div id="formSuccess" class="alert alert-success mt-3 d-none">
+                            Thank you for your message. We'll respond within 24 hours.
+                        </div>
+                        
+                        <div id="formError" class="alert alert-danger mt-3 d-none">
+                            There was an error sending your message. Please try again.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 offset-lg-1">
+                    <div class="contact-info-wrapper">
+                        <h2 class="section-title mb-4">Get in Touch</h2>
+                        
+                        <div class="contact-info mb-5">
+                            <div class="info-item mb-4">
+                                <div class="info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h5>Email</h5>
+                                    <p><a href="mailto:hello@uzyhomes.com">hello@uzyhomes.com</a></p>
+                                    <small>For general inquiries</small>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item mb-4">
+                                <div class="info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h5>Phone</h5>
+                                    <p><a href="tel:+2347047511911">+234 704 751 1911</a></p>
+                                    <small>Monday - Friday, 9am - 6pm</small>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item mb-4">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h5>Office</h5>
+                                    <p>UZYHOMES</p>
+                                    <p>Praf Mall, Aminu Kano Crescent</p>
+                                    <p>Wuse 2, Abuja, Nigeria</p>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="info-content">
+                                    <h5>Office Hours</h5>
+                                    <p>Monday - Friday: 9am - 6pm</p>
+                                    <p>Saturday: 10am - 4pm</p>
+                                    <p>Sunday: Closed</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-contact mb-5">
+                            <h5 class="mb-3">Follow Along</h5>
+                            <div class="social-links">
+                                <a href="#" class="social-link">
+                                    <i class="fab fa-instagram"></i>
+                                    <span>Instagram</span>
+                                </a>
+                                <a href="#" class="social-link">
+                                    <i class="fab fa-pinterest"></i>
+                                    <span>Pinterest</span>
+                                </a>
+                                <a href="#" class="social-link">
+                                    <i class="fab fa-facebook-f"></i>
+                                    <span>Facebook</span>
+                                </a>
+                                <a href="#" class="social-link">
+                                    <i class="fab fa-youtube"></i>
+                                    <span>YouTube</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-preview">
+                            <h5 class="mb-3">Common Questions</h5>
+                            <div class="accordion" id="contactFAQ">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                            How soon can we start a project?
+                                        </button>
+                                    </h2>
+                                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#contactFAQ">
+                                        <div class="accordion-body">
+                                            We typically book projects 4-6 weeks in advance. For smaller consultations, we can often schedule within 1-2 weeks.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                            Do you work outside Abuja?
+                                        </button>
+                                    </h2>
+                                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#contactFAQ">
+                                        <div class="accordion-body">
+                                            Yes, we work with clients across Nigeria and internationally. We offer virtual consultations and travel for larger projects.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                            What's your design process?
+                                        </button>
+                                    </h2>
+                                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#contactFAQ">
+                                        <div class="accordion-body">
+                                            Our process involves Discovery (understanding your needs), Design (creating concepts), and Delivery (bringing it to life). Learn more on our <a href="/interiors">Interiors page</a>.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Consultation CTA -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-4">Ready to Transform Your Space?</h2>
+                    <p class="lead mb-5">
+                        Book a consultation to discuss your project, explore possibilities, 
+                        and begin your journey to a more beautiful, peaceful home.
+                    </p>
+                    <div class="consultation-options">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="consultation-card">
+                                    <h4>Virtual Consultation</h4>
+                                    <p class="consultation-price">₦150,000</p>
+                                    <p>60-minute video call to discuss your project and get expert advice.</p>
+                                    <a href="#" class="btn btn-outline-dark">Book Now</a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="consultation-card">
+                                    <h4>In-Person Consultation</h4>
+                                    <p class="consultation-price">₦250,000</p>
+                                    <p>90-minute site visit with detailed assessment and recommendations.</p>
+                                    <a href="#" class="btn btn-outline-dark">Book Now</a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="consultation-card">
+                                    <h4>Full Project Briefing</h4>
+                                    <p class="consultation-price">₦500,000</p>
+                                    <p>Comprehensive initial phase including concept development and proposal.</p>
+                                    <a href="#" class="btn btn-outline-dark">Book Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mx-auto text-center">
+                    <h2 class="section-title mb-4">Stay Inspired</h2>
+                    <p class="lead mb-4">
+                        Subscribe to our newsletter for design insights, new collections, 
+                        and quiet luxury living tips.
+                    </p>
+                    
+                    <form id="newsletterForm" class="newsletter-form">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your email address" required>
+                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                        </div>
+                        <small class="text-muted">We respect your privacy. Unsubscribe at any time.</small>
+                    </form>
+                    
+                    <div id="newsletterSuccess" class="alert alert-success mt-3 d-none">
+                        Thank you for subscribing!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/contact.js"></script>
+</body>
+</html>
