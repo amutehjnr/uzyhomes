@@ -8,24 +8,28 @@ exports.authenticateToken = async (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+      req.user = null;  // No user logged in
+      return next();    // Continue to the route
     }
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
-        return res.status(403).json({ message: 'Invalid or expired token' });
+        req.user = null;  // Invalid token
+        return next();    // Continue to the route
       }
 
       const user = await User.findById(decoded.id);
       if (!user || user.accountStatus === 'suspended') {
-        return res.status(403).json({ message: 'User account is not active' });
+        req.user = null;
+        return next();
       }
 
-      req.user = user;
+      req.user = user;  // User is logged in
       next();
     });
   } catch (error) {
-    res.status(500).json({ message: 'Authentication error', error: error.message });
+    req.user = null;
+    next();
   }
 };
 

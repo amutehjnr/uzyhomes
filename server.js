@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
+const { authenticateToken } = require('./middleware/auth');
 
 // Import database connection
 const connectDB = require('./config/database');
@@ -109,12 +110,6 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Add this middleware BEFORE your routes
-app.use((req, res, next) => {
-  res.locals.user = req.user || null;
-  next();
-});
-
 // Webhook routes MUST be before JSON parsing
 app.use('/webhook', webhookRoutes);
 
@@ -127,6 +122,14 @@ app.use(mongoSanitize());
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;  // This is the key!
+  next();
+});
+
+app.use('/api', authenticateToken); // Protect all other API routes
+app.use('*', authenticateToken);
 
 // Home page
 app.get('/', (req, res) => {
