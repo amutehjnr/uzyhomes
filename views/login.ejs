@@ -44,23 +44,28 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-5">
+                    <!-- Alert Container for Messages -->
+                    <div id="alertContainer" style="display: none;"></div>
+                    
                     <div class="auth-card">
                         <h2 class="auth-title mb-4">Sign In to Your Account</h2>
                         
                         <form id="loginForm">
                             <div class="mb-4">
-                                <label for="loginEmail" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="loginEmail" required>
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
+                                <div class="invalid-feedback" id="emailError"></div>
                             </div>
                             
                             <div class="mb-4">
-                                <label for="loginPassword" class="form-label">Password *</label>
+                                <label for="password" class="form-label">Password *</label>
                                 <div class="password-input">
-                                    <input type="password" class="form-control" id="loginPassword" required>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                                     <button type="button" class="password-toggle">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                <div class="invalid-feedback" id="passwordError"></div>
                             </div>
                             
                             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -73,8 +78,12 @@
                                 <a href="/forgot-password" class="forgot-link">Forgot password?</a>
                             </div>
                             
-                            <button type="submit" class="btn btn-dark btn-lg w-100 mb-4">
-                                Sign In
+                            <button type="submit" class="btn btn-dark btn-lg w-100 mb-4" id="submitBtn">
+                                <span id="submitText">Sign In</span>
+                                <span id="submitSpinner" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Signing in...
+                                </span>
                             </button>
                             
                             <div class="auth-divider">
@@ -82,10 +91,10 @@
                             </div>
                             
                             <div class="social-login mb-4">
-                                <button type="button" class="btn btn-outline-dark w-100 mb-3">
+                                <button type="button" class="btn btn-outline-dark w-100 mb-3" id="googleLoginBtn">
                                     <i class="fab fa-google me-3"></i>Continue with Google
                                 </button>
-                                <button type="button" class="btn btn-outline-dark w-100">
+                                <button type="button" class="btn btn-outline-dark w-100" id="facebookLoginBtn">
                                     <i class="fab fa-facebook-f me-3"></i>Continue with Facebook
                                 </button>
                             </div>
@@ -141,10 +150,16 @@
                         and quiet luxury living tips.
                     </p>
                     
-                    <form class="newsletter-form">
+                    <form class="newsletter-form" id="newsletterForm">
                         <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Your email address" required>
-                            <button class="btn btn-dark" type="submit">Subscribe</button>
+                            <input type="email" class="form-control" id="newsletterEmail" placeholder="Your email address" required>
+                            <button class="btn btn-dark" type="submit" id="newsletterBtn">
+                                <span id="newsletterText">Subscribe</span>
+                                <span id="newsletterSpinner" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    Subscribing...
+                                </span>
+                            </button>
                         </div>
                         <small class="text-muted">We respect your privacy. Unsubscribe at any time.</small>
                     </form>
@@ -159,6 +174,249 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
-    <script src="/js/auth.js"></script>
+    <script>
+        // Full Login Page JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // ============ LOGIN FORM HANDLING ============
+            const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+            
+            // Password visibility toggle
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const passwordInput = this.previousElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Clear errors on input
+            document.getElementById('email').addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                document.getElementById('emailError').textContent = '';
+            });
+            
+            document.getElementById('password').addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                document.getElementById('passwordError').textContent = '';
+            });
+
+            // Login form submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value;
+                    const rememberMe = document.getElementById('rememberMe').checked;
+                    
+                    // Validation
+                    let isValid = true;
+                    
+                    if (!email) {
+                        document.getElementById('email').classList.add('is-invalid');
+                        document.getElementById('emailError').textContent = 'Email is required';
+                        isValid = false;
+                    } else if (!isValidEmail(email)) {
+                        document.getElementById('email').classList.add('is-invalid');
+                        document.getElementById('emailError').textContent = 'Please enter a valid email';
+                        isValid = false;
+                    }
+                    
+                    if (!password) {
+                        document.getElementById('password').classList.add('is-invalid');
+                        document.getElementById('passwordError').textContent = 'Password is required';
+                        isValid = false;
+                    }
+                    
+                    if (!isValid) return;
+                    
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitText.style.display = 'none';
+                    submitSpinner.style.display = 'inline-block';
+                    
+                    try {
+                        const response = await fetch('/api/auth/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                email, 
+                                password 
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            // Store tokens
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('refreshToken', data.refreshToken);
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            
+                            // Set cookie for server-side auth if remember me
+                            if (rememberMe) {
+                                document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+                            }
+                            
+                            showAlert('success', 'Login successful! Redirecting to your account...');
+                            
+                            // Redirect to account page
+                            setTimeout(() => {
+                                window.location.href = '/account';
+                            }, 1500);
+                        } else {
+                            showAlert('danger', data.message || 'Invalid email or password');
+                            if (data.message && data.message.includes('suspended')) {
+                                document.getElementById('email').classList.add('is-invalid');
+                                document.getElementById('emailError').textContent = 'Account suspended. Contact support.';
+                            }
+                        }
+                    } catch (error) {
+                        showAlert('danger', 'Network error. Please check your connection and try again.');
+                        console.error('Login error:', error);
+                    } finally {
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        submitText.style.display = 'inline';
+                        submitSpinner.style.display = 'none';
+                    }
+                });
+            }
+
+            // ============ SOCIAL LOGIN HANDLING ============
+            
+            // Google Login
+            document.getElementById('googleLoginBtn').addEventListener('click', function() {
+                // Show loading on button
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connecting...';
+                btn.disabled = true;
+                
+                // Redirect to Google OAuth
+                window.location.href = '/api/auth/google';
+                
+                // Note: The button state won't actually revert due to redirect
+                // This is fine as the page is leaving
+            });
+            
+            // Facebook Login
+            document.getElementById('facebookLoginBtn').addEventListener('click', function() {
+                // Show loading on button
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connecting...';
+                btn.disabled = true;
+                
+                // Redirect to Facebook OAuth
+                window.location.href = '/api/auth/facebook';
+            });
+
+            // ============ NEWSLETTER SUBSCRIPTION ============
+            const newsletterForm = document.getElementById('newsletterForm');
+            const newsletterBtn = document.getElementById('newsletterBtn');
+            const newsletterText = document.getElementById('newsletterText');
+            const newsletterSpinner = document.getElementById('newsletterSpinner');
+            
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('newsletterEmail').value.trim();
+                    
+                    if (!email || !isValidEmail(email)) {
+                        showAlert('warning', 'Please enter a valid email address');
+                        return;
+                    }
+                    
+                    // Show loading
+                    newsletterBtn.disabled = true;
+                    newsletterText.style.display = 'none';
+                    newsletterSpinner.style.display = 'inline-block';
+                    
+                    try {
+                        const response = await fetch('/api/newsletter/subscribe', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ email })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            showAlert('success', 'Thank you for subscribing!');
+                            newsletterForm.reset();
+                        } else {
+                            showAlert('danger', data.message || 'Subscription failed. Please try again.');
+                        }
+                    } catch (error) {
+                        showAlert('danger', 'Network error. Please try again.');
+                    } finally {
+                        // Reset button
+                        newsletterBtn.disabled = false;
+                        newsletterText.style.display = 'inline';
+                        newsletterSpinner.style.display = 'none';
+                    }
+                });
+            }
+
+            // ============ HELPER FUNCTIONS ============
+            
+            // Email validation
+            function isValidEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Show alert message
+            function showAlert(type, message) {
+                const alertContainer = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                alertContainer.innerHTML = '';
+                alertContainer.appendChild(alert);
+                alertContainer.style.display = 'block';
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        alertContainer.style.display = 'none';
+                        alertContainer.innerHTML = '';
+                    }, 150);
+                }, 5000);
+            }
+            
+            // Check if user is already logged in
+            if (localStorage.getItem('token') && localStorage.getItem('user')) {
+                // Optional: Show message and redirect
+                // window.location.href = '/account';
+            }
+        });
+    </script>
+    
+    <!-- Fallback for when external script fails -->
+    <script src="/js/login.js"></script>
 </body>
 </html>

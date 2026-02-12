@@ -3,10 +3,39 @@ const path = require('path');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
+const morgan = require('morgan');
 require('dotenv').config();
 
+// Import database connection
+const connectDB = require('./config/database');
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+
+// Import middleware
+const { globalErrorHandler } = require('./middleware/errorHandler');
+const logger = require('./config/logger');
+
+// Initialize app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
+
+// View engine (EJS)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+
+// Connect to database
+connectDB();
+
+// Trust proxy
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(
@@ -23,127 +52,183 @@ app.use(
           "https://cdnjs.cloudflare.com"
         ],
 
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://cdn.jsdelivr.net"
-        ],
-
         fontSrc: [
           "'self'",
           "https://fonts.gstatic.com",
           "https://cdnjs.cloudflare.com"
         ],
 
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdn.jsdelivr.net",
+          "https://checkout.paystack.com"
+        ],
+
         imgSrc: [
           "'self'",
-          "data:",
-          "https:"
+          "data:"
         ],
 
         mediaSrc: [
-          "'self'",
-          "https:"
+          "'self'"
         ],
 
-        connectSrc: ["'self'"]
+        connectSrc: [
+          "'self'",
+          "https://api.paystack.co"
+        ]
       }
     }
   })
 );
 
 
+// CORS
+app.use(cors({
+  origin: true, // reflect request origin
+  credentials: true
+}));
+
+
 // Compression
 app.use(compression());
 
+// Logging
+app.use(morgan('combined', { 
+  stream: { 
+    write: (message) => logger.info(message.trim()) 
+  } 
+}));
+
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again later'
 });
 app.use('/api/', limiter);
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
-
-// Set view engine
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-app.engine('ejs', require('ejs').renderFile);
-
-// Routes
-app.get('/', (req, res) => {
-    res.render('index');
+// Add this middleware BEFORE your routes
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
 });
 
-app.get('/bedding', (req, res) => {
-    res.render('bedding');
+// Webhook routes MUST be before JSON parsing
+app.use('/webhook', webhookRoutes);
+
+// Body parser
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Data sanitization
+app.use(mongoSanitize());
+
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Home page
+app.get('/', (req, res) => {
+  res.render('index');
 });
 
 app.get('/interiors', (req, res) => {
-    res.render('interiors');
+  res.render('interiors');
+});
+
+app.get('/bedding', (req, res) => {
+  res.render('bedding');
 });
 
 app.get('/decor', (req, res) => {
-    res.render('decor');
+  res.render('decor');
 });
 
-app.get('/portfolio', (req, res) => {
-    res.render('portfolio');
+app.get('/port', (req, res) => {
+  res.render('portfolio');
 });
 
 app.get('/about', (req, res) => {
-    res.render('about');
+  res.render('about');
 });
 
 app.get('/contact', (req, res) => {
-    res.render('contact');
+  res.render('contact');
 });
 
 app.get('/cart', (req, res) => {
-    res.render('cart');
+  res.render('cart');
 });
 
-// Contact form API
-app.post('/api/contact', (req, res) => {
-    const { name, email, message, service } = req.body;
-    
-    // Here you would integrate with nodemailer
-    console.log('Contact form submission:', { name, email, message, service });
-    
-    // Simulate email sending
-    res.json({ 
-        success: true, 
-        message: 'Thank you for your message. We will respond within 24 hours.' 
-    });
+app.get('/login', (req, res) => {
+  res.render('login');
 });
 
-// Newsletter subscription
-app.post('/api/newsletter', (req, res) => {
-    const { email } = req.body;
-    
-    // Here you would integrate with Mailchimp or similar
-    console.log('Newsletter subscription:', email);
-    
-    res.json({ 
-        success: true, 
-        message: 'Thank you for subscribing to UZYHOMES.' 
-    });
+app.get('/register', (req, res) => {
+  res.render('register');
 });
+
+app.get('/checkout', (req, res) => {
+  res.render('checkout');
+});
+
+app.get('/portfolio', (req, res) => {
+  res.render('portfolio');
+});
+
+app.get('/account', (req, res) => {
+  res.render('account');
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date(),
+    service: 'UZYHOMES Backend'
+  });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).render('404');
+  res.status(404).json({ 
+    success: false,
+    message: 'Route not found',
+    path: req.path
+  });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
+// Global error handler
+app.use(globalErrorHandler);
+
+// Start server
+const server = app.listen(PORT, () => {
+  logger.info(`🚀 UZYHOMES Backend Server`);
+  logger.info(`✅ Running on http://localhost:${PORT}`);
+  logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`💳 Payment Gateway: Paystack`);
+  logger.info(`📦 Database: MongoDB`);
 });
 
-app.listen(PORT, () => {
-    console.log(`UZYHOMES server running on http://localhost:${PORT}`);
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  logger.error(`❌ Unhandled Rejection: ${err.message}`);
+  logger.error(err.stack);
+  server.close(() => process.exit(1));
 });
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  logger.error(`❌ Uncaught Exception: ${err.message}`);
+  logger.error(err.stack);
+  process.exit(1);
+});
+
+module.exports = app;

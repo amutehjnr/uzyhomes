@@ -6,8 +6,7 @@
             <div class="desktop-dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="desktopDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="navbar-toggler-icon me-2"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="desktopDropdown">
+                </button>                <ul class="dropdown-menu" aria-labelledby="desktopDropdown">
                     <li><a class="dropdown-item" href="/">Home</a></li>                    
                     <li><a class="dropdown-item" href="/interiors">Interiors</a></li>
                     <li><a class="dropdown-item" href="/decor">Décor</a></li>
@@ -36,11 +35,25 @@
             </a>
             <a href="/cart" class="nav-icon me-4 position-relative">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count">0</span>
+                <span class="cart-count" id="cartCount">0</span>
             </a>
-            <a href="/login" class="nav-icon me-3" aria-label="Login">
-                <i class="fas fa-user"></i>
-            </a>
+            <% if (!user) { %>
+                <a href="/login" class="nav-icon me-3" aria-label="Login">
+                    <i class="fas fa-user"></i>
+                </a>
+            <% } else { %>
+                <div class="dropdown">
+                    <a href="#" class="nav-icon me-3" data-bs-toggle="dropdown" aria-label="Account">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/account">My Account</a></li>
+                        <li><a class="dropdown-item" href="/orders">Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
+                    </ul>
+                </div>
+            <% } %>
             <a href="/contact" class="btn-book ms-2">Book Consultation</a>
         </div>
 
@@ -51,7 +64,7 @@
             </a>
             <a href="/cart" class="nav-icon me-3 position-relative">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count">0</span>
+                <span class="cart-count" id="mobileCartCount">0</span>
             </a>
             <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -73,9 +86,18 @@
             </ul>
             
             <div class="d-flex flex-column mt-3 pt-3 border-top">
-                <a href="/login" class="nav-link mb-2">
-                    <i class="fas fa-user me-2"></i>Login
-                </a>
+                <% if (!user) { %>
+                    <a href="/login" class="nav-link mb-2">
+                        <i class="fas fa-user me-2"></i>Login
+                    </a>
+                <% } else { %>
+                    <a href="/account" class="nav-link mb-2">
+                        <i class="fas fa-user me-2"></i>My Account
+                    </a>
+                    <a href="#" class="nav-link mb-2" id="mobileLogoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                <% } %>
                 <a href="/contact" class="btn-book text-center mt-2">Book Consultation</a>
             </div>
         </div>
