@@ -1,0 +1,67 @@
+/* public/css/product.css */
+.product-gallery .thumbnail {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.product-gallery .thumbnail:hover,
+.product-gallery .thumbnail.active {
+    border-color: #1a1a1a;
+}
+
+.product-title {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.current-price {
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: #1a1a1a;
+}
+
+.original-price {
+    font-size: 1.1rem;
+    color: #6c757d;
+    text-decoration: line-through;
+}
+
+.discount-badge {
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.option-value {
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.quantity-selector .input-group {
+    width: 140px;
+}
+
+.nav-tabs .nav-link {
+    color: #495057;
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+    color: #1a1a1a;
+    font-weight: 500;
+    border-bottom: 2px solid #1a1a1a;
+    background: transparent;
+}
+
+.review-item:last-child {
+    border-bottom: none !important;
+}

@@ -1,0 +1,41 @@
+<!-- views/partials/product-grid.ejs -->
+<% products.forEach(product => { %>
+    <div class="col-md-6 col-lg-4 product-item">
+        <div class="product-card">
+            <div class="product-image">
+                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
+                     alt="<%= product.name %>" 
+                     class="img-fluid">
+                <% if (product.discountPrice) { %>
+                    <span class="product-badge">Sale</span>
+                <% } %>
+                <div class="product-overlay">
+                    <a href="/products/<%= product._id %>" class="btn btn-outline-light">Quick View</a>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3>
+                    <a href="/products/<%= product._id %>" class="text-decoration-none text-dark">
+                        <%= product.name %>
+                    </a>
+                </h3>
+                <p class="product-description"><%= product.description.substring(0, 80) %>...</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <% if (product.discountPrice) { %>
+                            <span class="product-price">₦<%= product.discountPrice.toLocaleString() %></span>
+                            <span class="product-original-price text-muted text-decoration-line-through ms-2">
+                                ₦<%= product.price.toLocaleString() %>
+                            </span>
+                        <% } else { %>
+                            <span class="product-price">₦<%= product.price.toLocaleString() %></span>
+                        <% } %>
+                    </div>
+                    <button class="btn-add-cart" data-id="<%= product._id %>">
+                        <i class="fas fa-plus me-2"></i>Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<% }) %>

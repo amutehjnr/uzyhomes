@@ -1,3 +1,4 @@
+<!-- views/checkout.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +27,7 @@
     <%- include('partials/header') %>
 
     <!-- Checkout Header -->
-    <section class="checkout-header section-py">
+    <section class="checkout-header section-py" style="padding-top: 120px;">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -65,324 +66,326 @@
         </div>
     </section>
 
-    <!-- Checkout Content -->
-    <section class="section-py">
-        <div class="container">
-            <form id="checkoutForm">
+    <!-- Check if cart is empty - using locals for safety -->
+    <% if (!locals.cart || !cart || !cart.items || cart.items.length === 0) { %>
+        <section class="section-py">
+            <div class="container">
                 <div class="row">
-                    <div class="col-lg-8">
-                        <!-- Shipping Information -->
-                        <div class="checkout-section">
-                            <h3 class="section-title mb-4">Shipping Information</h3>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="firstName" class="form-label">First Name *</label>
-                                    <input type="text" class="form-control" id="firstName" required>
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                        <h3>Your cart is empty</h3>
+                        <p class="text-muted mb-4">Add some items to your cart before checking out</p>
+                        <a href="/bedding" class="btn btn-dark">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <% } else { %>
+        <!-- Checkout Content -->
+        <section class="section-py">
+            <div class="container">
+                <form id="checkoutForm" action="/cart/checkout/process" method="POST">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <!-- Shipping Information -->
+                            <div class="checkout-section" style="background: white; border: 1px solid #e9ecef; border-radius: 12px; padding: 2rem;">
+                                <h3 class="section-title mb-4">Shipping Information</h3>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" required 
+                                               value="<%= user && user.firstName ? user.firstName : '' %>">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required
+                                               value="<%= user && user.lastName ? user.lastName : '' %>">
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lastName" class="form-label">Last Name *</label>
-                                    <input type="text" class="form-control" id="lastName" required>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required
+                                           value="<%= user && user.email ? user.email : '' %>">
                                 </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="email" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-control" id="phone" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Street Address *</label>
-                                <input type="text" class="form-control" id="address" required>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="city" class="form-label">City *</label>
-                                    <input type="text" class="form-control" id="city" required>
+                                
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required
+                                           value="<%= user && user.phone ? user.phone : '' %>">
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="state" class="form-label">State *</label>
-                                    <select class="form-select" id="state" required>
-                                        <option value="">Select State</option>
-                                        <option value="Abuja">Abuja FCT</option>
-                                        <option value="Lagos">Lagos</option>
-                                        <option value="Rivers">Rivers</option>
-                                        <option value="Oyo">Oyo</option>
-                                        <option value="Kano">Kano</option>
-                                        <option value="Edo">Edo</option>
-                                        <option value="Delta">Delta</option>
-                                        <option value="Imo">Imo</option>
-                                        <option value="Kaduna">Kaduna</option>
-                                        <option value="Plateau">Plateau</option>
+                                
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Street Address *</label>
+                                    <input type="text" class="form-control" id="address" name="address" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="city" class="form-label">City *</label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="state" class="form-label">State *</label>
+                                        <select class="form-select" id="state" name="state" required>
+                                            <option value="">Select State</option>
+                                            <option value="Abuja">Abuja FCT</option>
+                                            <option value="Lagos">Lagos</option>
+                                            <option value="Rivers">Rivers</option>
+                                            <option value="Oyo">Oyo</option>
+                                            <option value="Kano">Kano</option>
+                                            <option value="Edo">Edo</option>
+                                            <option value="Delta">Delta</option>
+                                            <option value="Imo">Imo</option>
+                                            <option value="Kaduna">Kaduna</option>
+                                            <option value="Plateau">Plateau</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="zipCode" class="form-label">ZIP / Postal Code</label>
+                                    <input type="text" class="form-control" id="zipCode" name="zipCode">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="country" class="form-label">Country *</label>
+                                    <select class="form-select" id="country" name="country" required>
+                                        <option value="Nigeria" selected>Nigeria</option>
+                                        <option value="Ghana">Ghana</option>
+                                        <option value="United Kingdom">United Kingdom</option>
+                                        <option value="United States">United States</option>
+                                        <option value="Canada">Canada</option>
                                     </select>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="zipCode" class="form-label">ZIP / Postal Code</label>
-                                <input type="text" class="form-control" id="zipCode">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="country" class="form-label">Country *</label>
-                                <select class="form-select" id="country" required>
-                                    <option value="Nigeria" selected>Nigeria</option>
-                                    <option value="Ghana">Ghana</option>
-                                    <option value="United Kingdom">United Kingdom</option>
-                                    <option value="United States">United States</option>
-                                    <option value="Canada">Canada</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="saveAddress">
-                                <label class="form-check-label" for="saveAddress">
-                                    Save this address for future orders
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Shipping Method -->
-                        <div class="checkout-section mt-5">
-                            <h3 class="section-title mb-4">Shipping Method</h3>
-                            
-                            <div class="shipping-methods">
-                                <div class="shipping-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="shipping" id="standard" checked>
-                                        <label class="form-check-label" for="standard">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <h5>Standard Shipping</h5>
-                                                    <p>5-7 business days</p>
-                                                </div>
-                                                <span class="shipping-price">₦5,000</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
                                 
-                                <div class="shipping-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="shipping" id="express">
-                                        <label class="form-check-label" for="express">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <h5>Express Shipping</h5>
-                                                    <p>2-3 business days</p>
-                                                </div>
-                                                <span class="shipping-price">₦12,000</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="shipping-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="shipping" id="pickup">
-                                        <label class="form-check-label" for="pickup">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <h5>Store Pickup</h5>
-                                                    <p>Pick up from our Abuja showroom</p>
-                                                </div>
-                                                <span class="shipping-price">Free</span>
-                                            </div>
-                                        </label>
-                                    </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="saveAddress" name="saveAddress">
+                                    <label class="form-check-label" for="saveAddress">
+                                        Save this address for future orders
+                                    </label>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Payment Method -->
-                        <div class="checkout-section mt-5">
-                            <h3 class="section-title mb-4">Payment Method</h3>
                             
-                            <div class="payment-methods">
-                                <div class="payment-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="card" checked>
-                                        <label class="form-check-label" for="card">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-credit-card me-3"></i>
-                                                <span>Credit/Debit Card</span>
-                                            </div>
-                                        </label>
+                            <!-- Shipping Method -->
+                            <div class="checkout-section mt-5" style="background: white; border: 1px solid #e9ecef; border-radius: 12px; padding: 2rem;">
+                                <h3 class="section-title mb-4">Shipping Method</h3>
+                                
+                                <div class="shipping-methods">
+                                    <div class="shipping-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="shippingMethod" id="standard" value="standard" checked>
+                                            <label class="form-check-label" for="standard">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <h5>Standard Shipping</h5>
+                                                        <p class="mb-0">5-7 business days</p>
+                                                    </div>
+                                                    <span class="shipping-price">₦5,000</span>
+                                                </div>
+                                            </label>
+                                        </div>
                                     </div>
                                     
-                                    <div class="card-details mt-3" id="cardDetails">
-                                        <div class="row">
-                                            <div class="col-12 mb-3">
-                                                <label for="cardNumber" class="form-label">Card Number *</label>
-                                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label for="cardExpiry" class="form-label">Expiry Date *</label>
-                                                <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY">
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label for="cardCVC" class="form-label">CVC *</label>
-                                                <input type="text" class="form-control" id="cardCVC" placeholder="123">
-                                            </div>
-                                            <div class="col-12 mb-3">
-                                                <label for="cardName" class="form-label">Name on Card *</label>
-                                                <input type="text" class="form-control" id="cardName">
-                                            </div>
+                                    <div class="shipping-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="shippingMethod" id="express" value="express">
+                                            <label class="form-check-label" for="express">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <h5>Express Shipping</h5>
+                                                        <p class="mb-0">2-3 business days</p>
+                                                    </div>
+                                                    <span class="shipping-price">₦12,000</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="shipping-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="shippingMethod" id="pickup" value="pickup">
+                                            <label class="form-check-label" for="pickup">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <h5>Store Pickup</h5>
+                                                        <p class="mb-0">Pick up from our Abuja showroom</p>
+                                                    </div>
+                                                    <span class="shipping-price">Free</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Method -->
+                            <div class="checkout-section mt-5" style="background: white; border: 1px solid #e9ecef; border-radius: 12px; padding: 2rem;">
+                                <h3 class="section-title mb-4">Payment Method</h3>
+                                
+                                <div class="payment-methods">
+                                    <div class="payment-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="card" checked>
+                                            <label class="form-check-label" for="card">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-credit-card me-3"></i>
+                                                    <span>Credit/Debit Card</span>
+                                                </div>
+                                            </label>
                                         </div>
                                         
-                                        <div class="card-icons">
-                                            <i class="fab fa-cc-visa"></i>
-                                            <i class="fab fa-cc-mastercard"></i>
-                                            <i class="fab fa-cc-amex"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="payment-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="transfer">
-                                        <label class="form-check-label" for="transfer">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-university me-3"></i>
-                                                <span>Bank Transfer</span>
+                                        <div class="card-details mt-3" id="cardDetails">
+                                            <div class="row">
+                                                <div class="col-12 mb-3">
+                                                    <label for="cardNumber" class="form-label">Card Number</label>
+                                                    <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="cardExpiry" class="form-label">Expiry Date</label>
+                                                    <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" placeholder="MM/YY">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="cardCVC" class="form-label">CVC</label>
+                                                    <input type="text" class="form-control" id="cardCVC" name="cardCVC" placeholder="123">
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <label for="cardName" class="form-label">Name on Card</label>
+                                                    <input type="text" class="form-control" id="cardName" name="cardName">
+                                                </div>
                                             </div>
-                                        </label>
+                                        </div>
                                     </div>
                                     
-                                    <div class="transfer-details mt-3 d-none" id="transferDetails">
-                                        <p>Make payment to:</p>
-                                        <div class="bank-details">
-                                            <p><strong>Bank:</strong> Zenith Bank</p>
-                                            <p><strong>Account Name:</strong> UZYHOMES LTD</p>
-                                            <p><strong>Account Number:</strong> 1234567890</p>
+                                    <div class="payment-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="transfer" value="transfer">
+                                            <label class="form-check-label" for="transfer">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-university me-3"></i>
+                                                    <span>Bank Transfer</span>
+                                                </div>
+                                            </label>
                                         </div>
-                                        <p class="small text-muted">Please use your order number as reference</p>
+                                        
+                                        <div class="transfer-details mt-3 d-none" id="transferDetails">
+                                            <p>Make payment to:</p>
+                                            <div class="bank-details" style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                                                <p><strong>Bank:</strong> Zenith Bank</p>
+                                                <p><strong>Account Name:</strong> UZYHOMES LTD</p>
+                                                <p><strong>Account Number:</strong> 1234567890</p>
+                                            </div>
+                                            <p class="small text-muted">Please use your order number as reference</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="payment-method" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 0.75rem;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                                            <label class="form-check-label" for="paypal">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fab fa-paypal me-3"></i>
+                                                    <span>PayPal</span>
+                                                </div>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <div class="payment-method">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="paypal">
-                                        <label class="form-check-label" for="paypal">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fab fa-paypal me-3"></i>
-                                                <span>PayPal</span>
-                                            </div>
-                                        </label>
+                            </div>
+                            
+                            <!-- Review & Place Order Button -->
+                            <div class="checkout-actions mt-5">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <a href="/cart" class="btn btn-outline-dark">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <button type="submit" class="btn btn-dark btn-lg" id="placeOrderBtn">
+                                            Place Order
+                                            <i class="fas fa-lock ms-2"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Review & Place Order Button -->
-                        <div class="checkout-actions mt-5">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <a href="/cart" class="btn btn-outline-dark">
-                                        <i class="fas fa-arrow-left me-2"></i>Back to Cart
-                                    </a>
+                        <!-- Order Summary -->
+                        <div class="col-lg-4">
+                            <div class="order-summary-sticky" style="position: sticky; top: 100px; background: #f8f9fa; border-radius: 12px; padding: 1.5rem;">
+                                <h3 class="summary-title" style="font-size: 1.25rem; font-weight: 500; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #dee2e6;">Order Summary</h3>
+                                
+                                <div class="order-items" id="orderItems" style="margin-bottom: 1.5rem; max-height: 300px; overflow-y: auto;">
+                                    <% if (cart && cart.items && cart.items.length > 0) { %>
+                                        <% cart.items.forEach(item => { %>
+                                            <% 
+                                                const product = item.product || {}; 
+                                                const price = (product.discountPrice || product.price || 0);
+                                                const itemTotal = price * (item.quantity || 1);
+                                                const productName = product.name || 'Product';
+                                            %>
+                                            <div class="order-item" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #dee2e6;">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <p class="item-name" style="font-weight: 500; margin-bottom: 0.25rem;"><%= productName %> × <%= item.quantity || 1 %></p>
+                                                        <% if (product.specifications) { %>
+                                                            <small class="text-muted">
+                                                                <% if (product.specifications.size) { %>Size: <%= product.specifications.size %><% } %>
+                                                                <% if (product.specifications.color) { %><%= product.specifications.size ? ', ' : '' %>Color: <%= product.specifications.color %><% } %>
+                                                            </small>
+                                                        <% } %>
+                                                    </div>
+                                                    <span class="fw-bold">₦<%= Number(itemTotal).toLocaleString() %></span>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    <% } %>
                                 </div>
-                                <div class="col-md-6 text-md-end">
-                                    <button type="submit" class="btn btn-dark btn-lg">
-                                        Review Order
-                                        <i class="fas fa-arrow-right ms-2"></i>
-                                    </button>
+                                
+                                <div class="summary-details">
+                                    <% 
+                                        const subtotal = cart && cart.subtotal ? cart.subtotal : 0;
+                                        const shipping = cart && cart.shippingCost ? cart.shippingCost : 2500;
+                                        const discount = cart && cart.couponDiscount ? cart.couponDiscount : 0;
+                                        const total = cart && cart.total ? cart.total : (subtotal + shipping - discount);
+                                        const itemCount = cart && cart.items ? cart.items.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
+                                    %>
+                                    <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                        <span>Subtotal (<span id="itemCount"><%= itemCount %></span> items)</span>
+                                        <span id="subtotal">₦<%= Number(subtotal).toLocaleString() %></span>
+                                    </div>
+                                    <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                        <span>Shipping</span>
+                                        <span id="shippingCost">₦<%= Number(shipping).toLocaleString() %></span>
+                                    </div>
+                                    <% if (discount > 0) { %>
+                                        <div class="summary-row" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                            <span>Discount (<%= cart.couponCode || 'Coupon' %>)</span>
+                                            <span class="text-success">-₦<%= Number(discount).toLocaleString() %></span>
+                                        </div>
+                                    <% } %>
+                                    <div class="summary-row total" style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 600; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #dee2e6;">
+                                        <span>Total</span>
+                                        <span class="total-amount" id="total">₦<%= Number(total).toLocaleString() %></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Order Summary -->
-                    <div class="col-lg-4">
-                        <div class="order-summary-sticky">
-                            <h3 class="summary-title">Order Summary</h3>
-                            
-                            <div class="order-items">
-                                <div class="order-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <p class="item-name">Serenity Bed Set × 1</p>
-                                            <small>King / Earth Taupe</small>
-                                        </div>
-                                        <span>₦85,000</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="order-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <p class="item-name">Stone Vase × 2</p>
-                                            <small>25cm / Ceramic</small>
-                                        </div>
-                                        <span>₦37,000</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="order-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <p class="item-name">Sandalwood Candle × 1</p>
-                                            <small>60 hours / Warm</small>
-                                        </div>
-                                        <span>₦15,000</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="summary-details">
-                                <div class="summary-row">
-                                    <span>Subtotal</span>
-                                    <span>₦137,000</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span>Shipping</span>
-                                    <span>₦5,000</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span>Promo Code</span>
-                                    <span class="text-success">-₦10,000</span>
-                                </div>
-                                <div class="summary-row total">
-                                    <span>Total</span>
-                                    <span class="total-amount">₦132,000</span>
-                                </div>
-                            </div>
-                            
-                            <div class="secure-checkout">
-                                <i class="fas fa-shield-alt me-2"></i>
-                                <span>Secure SSL Encryption</span>
-                            </div>
-                            
-                            <div class="return-policy mt-4">
-                                <h5>Return Policy</h5>
-                                <p class="small">We offer a 30-day return policy for unused items in original packaging. Shipping costs for returns are the customer's responsibility.</p>
-                            </div>
-                            
-                            <div class="need-help mt-4">
-                                <h5>Need Help?</h5>
-                                <p class="small mb-1">
-                                    <a href="tel:+2347047511911">
-                                        <i class="fas fa-phone me-2"></i>+234 704 751 1911
-                                    </a>
-                                </p>
-                                <p class="small">
-                                    <a href="mailto:support@uzyhomes.com">
-                                        <i class="fas fa-envelope me-2"></i>support@uzyhomes.com
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </section>
+                    <!-- Hidden inputs for cart data -->
+                    <input type="hidden" name="cartSubtotal" value="<%= cart && cart.subtotal ? cart.subtotal : 0 %>">
+                    <input type="hidden" name="cartTotal" value="<%= cart && cart.total ? cart.total : 0 %>">
+                    <input type="hidden" name="couponCode" value="<%= cart && cart.couponCode ? cart.couponCode : '' %>">
+                    <input type="hidden" name="couponDiscount" value="<%= cart && cart.couponDiscount ? cart.couponDiscount : 0 %>">
+                </form>
+            </div>
+        </section>
+    <% } %>
 
     <%- include('partials/footer') %>
 
@@ -390,7 +393,61 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
-     <script src="/js/auth.js"></script>
-    <script src="/js/checkout.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/cart.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle payment method details
+            const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+            const cardDetails = document.getElementById('cardDetails');
+            const transferDetails = document.getElementById('transferDetails');
+            
+            if (paymentRadios.length > 0) {
+                paymentRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'card') {
+                            if (cardDetails) cardDetails.classList.remove('d-none');
+                            if (transferDetails) transferDetails.classList.add('d-none');
+                        } else if (this.value === 'transfer') {
+                            if (cardDetails) cardDetails.classList.add('d-none');
+                            if (transferDetails) transferDetails.classList.remove('d-none');
+                        } else {
+                            if (cardDetails) cardDetails.classList.add('d-none');
+                            if (transferDetails) transferDetails.classList.add('d-none');
+                        }
+                    });
+                });
+            }
+            
+            // Update shipping cost when method changes
+            const shippingRadios = document.querySelectorAll('input[name="shippingMethod"]');
+            const subtotal = <%= cart && cart.subtotal ? cart.subtotal : 0 %>;
+            const discount = <%= cart && cart.couponDiscount ? cart.couponDiscount : 0 %>;
+            
+            if (shippingRadios.length > 0) {
+                shippingRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        let shippingCost = 0;
+                        if (this.value === 'standard') shippingCost = 5000;
+                        else if (this.value === 'express') shippingCost = 12000;
+                        else if (this.value === 'pickup') shippingCost = 0;
+                        
+                        const shippingElement = document.getElementById('shippingCost');
+                        if (shippingElement) {
+                            shippingElement.textContent = `₦${shippingCost.toLocaleString()}`;
+                        }
+                        
+                        // Update total
+                        const total = subtotal + shippingCost - discount;
+                        const totalElement = document.getElementById('total');
+                        if (totalElement) {
+                            totalElement.textContent = `₦${total.toLocaleString()}`;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

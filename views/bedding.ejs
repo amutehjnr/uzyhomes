@@ -1,10 +1,11 @@
+<!-- views/bedding.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="UZYHOMES Luxury Bedding - Premium bedding curated for calm, comfort, and refined living. Designed for deep rest and quiet luxury.">
-    <title>Luxury Bedding — UZYHOMES</title>
+    <title><%= title %></title>
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,12 +22,273 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <style>
+        /* Additional styles for bedding page */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            background: #f8f9fa;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 20px;
+            z-index: 1;
+        }
+        
+        .product-badge.featured {
+            background: #1a1a1a;
+            left: auto;
+            right: 10px;
+        }
+        
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        
+        .product-info {
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-info h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .product-info h3 a {
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .product-info h3 a:hover {
+            text-decoration: underline;
+        }
+        
+        .product-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .product-original-price {
+            font-size: 0.9rem;
+        }
+        
+        .btn-add-cart {
+            background: transparent;
+            border: 1px solid #1a1a1a;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-add-cart:hover:not(:disabled) {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .btn-add-cart:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .product-rating {
+            margin-top: 0.5rem;
+        }
+        
+        .product-rating i {
+            font-size: 0.85rem;
+        }
+        
+        .collection-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            height: 300px;
+        }
+        
+        .collection-image {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .collection-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .collection-card:hover .collection-image img {
+            transform: scale(1.05);
+        }
+        
+        .collection-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 1.5rem 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+        
+        .collection-info h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+        
+        .collection-info p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .collection-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 0.25rem;
+        }
+        
+        .collection-link:hover {
+            border-bottom-color: white;
+        }
+        
+        .care-card {
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            height: 100%;
+        }
+        
+        .care-icon {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+        }
+        
+        .pagination {
+            gap: 0.25rem;
+        }
+        
+        .page-link {
+            color: #1a1a1a;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+        }
+        
+        .page-item.active .page-link {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+        }
+        
+        .section-label {
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 767px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .collection-info {
+                padding: 1.5rem 1rem;
+            }
+            
+            .collection-info h3 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
 </head>
 <body class="quiet-luxury">
     <%- include('partials/header') %>
 
     <!-- Bedding Hero -->
-    <section class="bedding-hero section-py">
+    <section class="bedding-hero section-py" style="padding-top: 120px;">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
@@ -51,211 +313,192 @@
             </div>
             
             <div class="row g-4">
+                <% collections.forEach(collection => { %>
                 <div class="col-md-4">
                     <div class="collection-card">
                         <div class="collection-image">
-                            <img src="/images/collections/nature.jpg" alt="The Nature Collection" class="img-fluid">
+                            <img src="<%= collection.image %>" alt="<%= collection.name %>" class="img-fluid" loading="lazy">
                         </div>
                         <div class="collection-info">
-                            <h3>The Nature Collection</h3>
-                            <p>Inspired by stillness and earth tones. Designed for complete relaxation.</p>
-                            <a href="#nature-collection" class="collection-link">View Collection →</a>
+                            <h3><%= collection.name %></h3>
+                            <p><%= collection.description %></p>
+                            <a href="/bedding?collection=<%= collection.slug %>" class="collection-link">
+                                View Collection (<%= collection.count %>) →
+                            </a>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="collection-card">
-                        <div class="collection-image">
-                            <img src="/images/collections/linen.jpg" alt="The Linen Collection" class="img-fluid">
-                        </div>
-                        <div class="collection-info">
-                            <h3>The Linen Collection</h3>
-                            <p>Breathable, soft, and timeless. Perfect for warm climates and cool comfort.</p>
-                            <a href="#linen-collection" class="collection-link">View Collection →</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="collection-card">
-                        <div class="collection-image">
-                            <img src="/images/collections/silk.jpg" alt="The Silk Collection" class="img-fluid">
-                        </div>
-                        <div class="collection-info">
-                            <h3>The Silk Collection</h3>
-                            <p>Luxurious, smooth, and gentle on skin. The ultimate in sleep luxury.</p>
-                            <a href="#silk-collection" class="collection-link">View Collection →</a>
-                        </div>
-                    </div>
-                </div>
+                <% }) %>
             </div>
         </div>
     </section>
 
     <!-- Product Grid -->
-    <section class="section-py" id="nature-collection">
+    <section class="section-py">
         <div class="container">
-            <div class="row mb-5">
+            <div class="row mb-5 align-items-end">
                 <div class="col-lg-8">
-                    <span class="section-label">Featured Collection</span>
-                    <h2 class="section-title">The Nature Collection</h2>
-                    <p class="lead">
-                        Bedding inspired by earth's calmest moments. Made with organic cotton and natural dyes.
-                    </p>
+                    <span class="section-label">
+                        <% if (filters.collection && filters.collection !== 'all') { %>
+                            <%= getCollectionName(filters.collection) %>
+                        <% } else { %>
+                            All Bedding
+                        <% } %>
+                    </span>
+                    <h2 class="section-title">
+                        <% if (filters.collection && filters.collection !== 'all') { %>
+                            <%= getCollectionName(filters.collection) %>
+                        <% } else { %>
+                            The Complete Collection
+                        <% } %>
+                    </h2>
+                    <% if (filters.collection && filters.collection !== 'all') { %>
+                        <p class="lead"><%= getCollectionDescription(filters.collection) %></p>
+                    <% } else { %>
+                        <p class="lead">Every piece designed for deep, restorative sleep.</p>
+                    <% } %>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <div class="dropdown">
                         <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Sort by: Featured
+                            Sort by: 
+                            <% if (filters.sort === 'price_low') { %>Price: Low to High<% } 
+                               else if (filters.sort === 'price_high') { %>Price: High to Low<% } 
+                               else if (filters.sort === 'newest') { %>Newest<% } 
+                               else if (filters.sort === 'rating') { %>Highest Rated<% } 
+                               else { %>Featured<% } %>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Featured</a></li>
-                            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
-                            <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
-                            <li><a class="dropdown-item" href="#">Newest</a></li>
+                            <li><a class="dropdown-item <%= filters.sort === 'featured' ? 'active' : '' %>" 
+                                   href="?sort=featured<%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                   Featured
+                            </a></li>
+                            <li><a class="dropdown-item <%= filters.sort === 'price_low' ? 'active' : '' %>" 
+                                   href="?sort=price_low<%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                   Price: Low to High
+                            </a></li>
+                            <li><a class="dropdown-item <%= filters.sort === 'price_high' ? 'active' : '' %>" 
+                                   href="?sort=price_high<%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                   Price: High to Low
+                            </a></li>
+                            <li><a class="dropdown-item <%= filters.sort === 'newest' ? 'active' : '' %>" 
+                                   href="?sort=newest<%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                   Newest
+                            </a></li>
+                            <li><a class="dropdown-item <%= filters.sort === 'rating' ? 'active' : '' %>" 
+                                   href="?sort=rating<%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                   Highest Rated
+                            </a></li>
                         </ul>
                     </div>
                 </div>
             </div>
             
-            <div class="row g-4">
-                <!-- Product 1 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/serenity-bed.jpg" alt="Serenity Bed Set" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3>Serenity Bed Set</h3>
-                            <p class="product-description">Complete bedding set in earthy taupe with subtle texture.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦85,000</span>
-                                <button class="btn-add-cart" data-id="1">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
+            <div class="row g-4" id="product-grid">
+                <% if (products.length === 0) { %>
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-bed fa-3x text-muted mb-3"></i>
+                        <h3>No products found</h3>
+                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                        <a href="/bedding" class="btn btn-outline-dark mt-3">View All Products</a>
                     </div>
-                </div>
-                
-                <!-- Product 2 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/cloud-duvet.jpg" alt="Cloud Duvet Cover" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
+                <% } else { %>
+                    <% products.forEach(product => { %>
+                        <div class="col-md-6 col-lg-4 product-item">
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
+                                         alt="<%= product.name %>" 
+                                         class="img-fluid"
+                                         loading="lazy">
+                                    <% if (product.discountPrice) { %>
+                                        <span class="product-badge">Sale</span>
+                                    <% } %>
+                                    <% if (product.isFeatured) { %>
+                                        <span class="product-badge featured">Featured</span>
+                                    <% } %>
+                                    <div class="product-overlay">
+                                        <a href="/product/<%= product._id %>" class="btn btn-outline-light btn-sm">Quick View</a>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <h3>
+                                        <a href="/product/<%= product._id %>">
+                                            <%= product.name %>
+                                        </a>
+                                    </h3>
+                                    <p class="product-description"><%= product.description ? product.description.substring(0, 80) : '' %>...</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <div>
+                                            <% if (product.discountPrice) { %>
+                                                <span class="product-price">₦<%= Number(product.discountPrice).toLocaleString() %></span>
+                                                <span class="product-original-price text-muted text-decoration-line-through ms-2">
+                                                    ₦<%= Number(product.price).toLocaleString() %>
+                                                </span>
+                                            <% } else { %>
+                                                <span class="product-price">₦<%= Number(product.price).toLocaleString() %></span>
+                                            <% } %>
+                                        </div>
+                                        <button class="btn-add-cart" 
+                                                data-id="<%= product._id %>"
+                                                data-name="<%= product.name %>"
+                                                data-price="<%= product.discountPrice || product.price %>"
+                                                data-image="<%= product.images && product.images.length > 0 ? product.images[0].url : '' %>">
+                                            <i class="fas fa-plus me-2"></i>Add
+                                        </button>
+                                    </div>
+                                    <% if (product.rating && product.rating > 0) { %>
+                                        <div class="product-rating mt-2">
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <i class="fas fa-star <%= i <= Math.round(product.rating) ? 'text-warning' : 'text-muted' %>"></i>
+                                            <% } %>
+                                            <span class="ms-2 text-muted">(<%= product.reviewCount || 0 %>)</span>
+                                        </div>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
-                        <div class="product-info">
-                            <h3>Cloud Duvet Cover</h3>
-                            <p class="product-description">300-thread count, stone-washed for ultimate softness.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦62,000</span>
-                                <button class="btn-add-cart" data-id="2">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 3 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/stillness-pillows.jpg" alt="Stillness Pillows" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3>Stillness Pillows (Set of 2)</h3>
-                            <p class="product-description">Memory foam with organic cotton casing.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦28,000</span>
-                                <button class="btn-add-cart" data-id="3">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 4 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/earth-sheet-set.jpg" alt="Earth Sheet Set" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3>Earth Sheet Set</h3>
-                            <p class="product-description">Organic cotton, deep pocket sheets in olive green.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦45,000</span>
-                                <button class="btn-add-cart" data-id="4">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 5 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/moss-throw.jpg" alt="Moss Throw Blanket" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3>Moss Throw Blanket</h3>
-                            <p class="product-description">Chunky knit, 100% organic wool in forest green.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦38,000</span>
-                                <button class="btn-add-cart" data-id="5">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 6 -->
-                <div class="col-md-6 col-lg-4">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="/images/products/stone-bedskirt.jpg" alt="Stone Bedskirt" class="img-fluid">
-                            <div class="product-overlay">
-                                <a href="#" class="btn btn-outline-light">Quick View</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3>Stone Bedskirt</h3>
-                            <p class="product-description">Linen blend with subtle pleating for elegant finish.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="product-price">₦32,000</span>
-                                <button class="btn-add-cart" data-id="6">
-                                    <i class="fas fa-plus me-2"></i>Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <% }) %>
+                <% } %>
             </div>
             
+            <% if (pagination.totalPages > 1) { %>
             <div class="text-center mt-5">
-                <button class="btn btn-outline-dark" id="loadMore">Load More Products</button>
+                <nav aria-label="Product pagination">
+                    <ul class="pagination justify-content-center">
+                        <% if (pagination.currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.currentPage - 1 %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                    Previous
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                            <% if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)) { %>
+                                <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } else if (i === pagination.currentPage - 2 || i === pagination.currentPage + 2) { %>
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            <% } %>
+                        <% } %>
+                        
+                        <% if (pagination.currentPage < pagination.totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.currentPage + 1 %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.collection && filters.collection !== 'all' ? '&collection=' + filters.collection : '' %>">
+                                    Next
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
             </div>
+            <% } %>
         </div>
     </section>
 
@@ -283,7 +526,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <img src="/images/bedding-detail.jpg" alt="Bedding Details" class="img-fluid rounded">
+                    <img src="/images/bedding-detail.jpg" alt="Bedding Details" class="img-fluid rounded" loading="lazy">
                 </div>
             </div>
         </div>
@@ -310,7 +553,6 @@
                         <p>Machine wash cold on gentle cycle with mild detergent. Avoid bleach.</p>
                     </div>
                 </div>
-                
                 <div class="col-md-4">
                     <div class="care-card text-center">
                         <div class="care-icon mb-3">
@@ -320,7 +562,6 @@
                         <p>Line dry in shade or tumble dry low. Avoid direct sunlight to prevent fading.</p>
                     </div>
                 </div>
-                
                 <div class="col-md-4">
                     <div class="care-card text-center">
                         <div class="care-icon mb-3">
@@ -330,6 +571,40 @@
                         <p>Iron on medium heat while slightly damp for best results. Steam works wonderfully.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <span class="section-label">You May Also Love</span>
+                    <h2 class="section-title">Best Sellers</h2>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <% featuredProducts.forEach(product => { %>
+                <div class="col-md-3 col-6">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
+                                 alt="<%= product.name %>" 
+                                 class="img-fluid"
+                                 loading="lazy">
+                        </div>
+                        <div class="product-info">
+                            <h4><%= product.name %></h4>
+                            <p class="product-price">₦<%= (product.discountPrice || product.price).toLocaleString() %></p>
+                            <button class="btn-add-cart" data-id="<%= product._id %>">
+                                <i class="fas fa-plus me-2"></i>Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
             </div>
         </div>
     </section>
@@ -344,7 +619,7 @@
                         Experience the difference intentional bedding makes. Your perfect night's sleep awaits.
                     </p>
                     <div class="cta-buttons">
-                        <a href="#nature-collection" class="btn btn-dark btn-lg me-3">Shop Collection</a>
+                        <a href="#product-grid" class="btn btn-dark btn-lg me-3">Shop Collection</a>
                         <a href="/contact" class="btn btn-outline-dark btn-lg">Book Consultation</a>
                     </div>
                 </div>
@@ -358,7 +633,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
-     <script src="/js/auth.js"></script>
-    <script src="/js/bedding.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/cart.js"></script>
+    
+    <!-- Bedding page specific script (minimal) -->
+    <script>
+        // Only handle infinite scroll, not add to cart (cart.js handles that)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize any bedding-specific functionality here
+            console.log('Bedding page loaded');
+            
+            // Handle load more products if you have that feature
+            const loadMoreBtn = document.getElementById('loadMore');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', loadMoreProducts);
+            }
+        });
+        
+        // Load more products function (if you have this feature)
+        async function loadMoreProducts() {
+            // Your load more logic here
+        }
+    </script>
+    
 </body>
 </html>

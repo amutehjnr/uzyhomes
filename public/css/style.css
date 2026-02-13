@@ -130,13 +130,16 @@ p {
 
 /* Logo styles */
 .brand-logo {
-    height: 42px;
+    height: 120px;
     width: auto;
     transition: transform 0.4s ease, opacity 0.4s ease;
+    max-width: 2500px;
+     object-fit: contain;
+    filter: contrast(1.1) brightness(0.9);
 }
 
 .navbar.scrolled .brand-logo {
-    height: 36px;
+    height: 120px;
 }
 
 .navbar-brand:hover .brand-logo {
@@ -959,7 +962,7 @@ a[href="/login"]:hover .fa-user {
         margin-right: 0 !important;
     }
     .nav-icon { margin: 0 0.5rem; }
-    .brand-logo { height: 30px; }
+    .brand-logo { height: 50px; }
     .navbar .container-fluid { padding: 0 0.5rem; }
 }
 

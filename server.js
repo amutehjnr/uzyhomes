@@ -6,8 +6,10 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const cors = require('cors');
 const morgan = require('morgan');
+const session = require('express-session'); // Add this
 require('dotenv').config();
 const { authenticateToken } = require('./middleware/auth');
+const beddingRoutes = require('./routes/beddingRoutes');
 
 // Import database connection
 const connectDB = require('./config/database');
@@ -18,6 +20,10 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const pageRoutes = require('./routes/pageRoutes');
+
+
 
 // Import middleware
 const { globalErrorHandler } = require('./middleware/errorHandler');
@@ -31,7 +37,6 @@ const PORT = process.env.PORT || 5000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
 // Connect to database
 connectDB();
 
@@ -44,7 +49,6 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
@@ -52,29 +56,24 @@ app.use(
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com"
         ],
-
         fontSrc: [
           "'self'",
           "https://fonts.gstatic.com",
           "https://cdnjs.cloudflare.com"
         ],
-
         scriptSrc: [
           "'self'",
           "'unsafe-inline'",
           "https://cdn.jsdelivr.net",
           "https://checkout.paystack.com"
         ],
-
         imgSrc: [
           "'self'",
           "data:"
         ],
-
         mediaSrc: [
           "'self'"
         ],
-
         connectSrc: [
           "'self'",
           "https://api.paystack.co"
@@ -84,13 +83,26 @@ app.use(
   })
 );
 
+// ============ SIMPLE SESSION SETUP - NO MONGOSTORE ============
+// This works immediately without any additional packages
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'uzyhomes-secret-key-2024',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    httpOnly: true,
+    secure: false, // Set to true only if using HTTPS
+    sameSite: 'lax'
+  }
+}));
+// =============================================================
 
 // CORS
 app.use(cors({
-  origin: true, // reflect request origin
+  origin: true,
   credentials: true
 }));
-
 
 // Compression
 app.use(compression());
@@ -123,15 +135,38 @@ app.use(mongoSanitize());
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Make user available to all views
 app.use((req, res, next) => {
-  res.locals.user = req.user || null;  // This is the key!
+  res.locals.user = req.user || null;
   next();
 });
 
-app.use('/api', authenticateToken); // Protect all other API routes
-app.use('*', authenticateToken);
+// Make session available to all views
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
 
-// Home page
+// ============ FIXED AUTHENTICATION ============
+// Remove these problematic lines:
+// app.use('/api', authenticateToken);
+// app.use('*', authenticateToken);
+
+// Instead, protect specific routes in their respective route files
+// ==============================================
+
+// Routes
+app.use('/cart', cartRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
+
+app.use('/bedding', beddingRoutes)
+app.use('/products', productRoutes);
+app.use('/', pageRoutes);  // This will handle /product/:id
+
+// Page routes
 app.get('/', (req, res) => {
   res.render('index');
 });
@@ -148,7 +183,7 @@ app.get('/decor', (req, res) => {
   res.render('decor');
 });
 
-app.get('/port', (req, res) => {
+app.get('/portfolio', (req, res) => {
   res.render('portfolio');
 });
 
@@ -172,14 +207,6 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-app.get('/checkout', (req, res) => {
-  res.render('checkout');
-});
-
-app.get('/portfolio', (req, res) => {
-  res.render('portfolio');
-});
-
 app.get('/account', (req, res) => {
   res.render('account');
 });
@@ -192,12 +219,6 @@ app.get('/health', (req, res) => {
     service: 'UZYHOMES Backend'
   });
 });
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/payments', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {

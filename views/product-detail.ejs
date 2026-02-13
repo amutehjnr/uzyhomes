@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= product.description.substring(0, 160) %>">
+    <title><%= product.name %> — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .product-gallery .main-image {
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .product-gallery .thumbnail {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .product-gallery .thumbnail:hover,
+        .product-gallery .thumbnail.active {
+            border-color: #1a1a1a;
+        }
+        
+        .product-title {
+            font-size: 2rem;
+            font-weight: 300;
+            line-height: 1.2;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .current-price {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: #1a1a1a;
+        }
+        
+        .original-price {
+            font-size: 1.1rem;
+            color: #6c757d;
+            text-decoration: line-through;
+        }
+        
+        .discount-badge {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        
+        .option-value {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .quantity-selector .input-group {
+            width: 140px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #495057;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 400;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: #1a1a1a;
+            font-weight: 500;
+            border-bottom: 2px solid #1a1a1a;
+            background: transparent;
+        }
+        
+        .tab-content {
+            padding: 2rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .review-item {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            padding: 1rem 0;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            color: #1a1a1a;
+        }
+        
+        .product-meta {
+            padding-top: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .related-product-card {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .related-product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Breadcrumb -->
+    <section class="bg-light">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/<%= product.category %>">
+                        <%= product.category.charAt(0).toUpperCase() + product.category.slice(1) %>
+                    </a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Product Detail -->
+    <section class="section-py">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-gallery">
+                        <div class="main-image mb-3">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
+                                 alt="<%= product.name %>" 
+                                 class="img-fluid w-100"
+                                 id="mainProductImage">
+                        </div>
+                        <% if (product.images && product.images.length > 1) { %>
+                        <div class="thumbnail-images d-flex gap-2">
+                            <% product.images.forEach((image, index) => { %>
+                            <div class="thumbnail <%= index === 0 ? 'active' : '' %>" 
+                                 onclick="document.getElementById('mainProductImage').src='<%= image.url %>'">
+                                <img src="<%= image.url %>" alt="<%= product.name %> - View <%= index + 1 %>" class="img-fluid">
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="product-info">
+                        <!-- Category Badges -->
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark me-2"><%= product.category %></span>
+                            <% if (product.specifications?.material) { %>
+                            <span class="badge bg-light text-dark"><%= product.specifications.material %></span>
+                            <% } %>
+                        </div>
+                        
+                        <!-- Title -->
+                        <h1 class="product-title mb-3"><%= product.name %></h1>
+                        
+                        <!-- Rating -->
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="text-warning me-2">
+                                <% for(let i = 1; i <= 5; i++) { %>
+                                    <i class="fas fa-star <%= i <= product.rating ? '' : 'text-muted' %>"></i>
+                                <% } %>
+                            </div>
+                            <span class="text-muted">
+                                <%= product.rating.toFixed(1) %> (<%= product.reviewCount %> reviews)
+                            </span>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="mb-4">
+                            <% if (product.discountPrice) { %>
+                                <span class="current-price">₦<%= product.discountPrice.toLocaleString() %></span>
+                                <span class="original-price ms-2">₦<%= product.price.toLocaleString() %></span>
+                                <span class="discount-badge ms-3">
+                                    Save ₦<%= (product.price - product.discountPrice).toLocaleString() %>
+                                </span>
+                            <% } else { %>
+                                <span class="current-price">₦<%= product.price.toLocaleString() %></span>
+                            <% } %>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <p class="lead" style="font-size: 1.1rem; line-height: 1.8;"><%= product.description %></p>
+                        </div>
+                        
+                        <!-- Stock Status -->
+                        <div class="mb-4">
+                            <% if (product.stock > 10) { %>
+                                <p class="text-success mb-0">
+                                    <i class="fas fa-check-circle me-2"></i>In Stock - Ready to Ship
+                                </p>
+                            <% } else if (product.stock > 0) { %>
+                                <p class="text-warning mb-0">
+                                    <i class="fas fa-exclamation-circle me-2"></i>Only <%= product.stock %> left in stock
+                                </p>
+                            <% } else { %>
+                                <p class="text-danger mb-0">
+                                    <i class="fas fa-times-circle me-2"></i>Out of Stock
+                                </p>
+                            <% } %>
+                        </div>
+                        
+                        <!-- Options -->
+                        <div class="mb-4">
+                            <% if (product.specifications?.size) { %>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold mb-2">Size</label>
+                                <div>
+                                    <span class="option-value"><%= product.specifications.size %></span>
+                                </div>
+                            </div>
+                            <% } %>
+                            
+                            <% if (product.specifications?.color) { %>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold mb-2">Color</label>
+                                <div>
+                                    <span class="option-value"><%= product.specifications.color %></span>
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
+                        
+                        <!-- Quantity and Add to Cart -->
+                        <div class="mb-4">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold mb-2">Quantity</label>
+                                    <div class="quantity-selector">
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-dark" type="button" id="decreaseQty">−</button>
+                                            <input type="number" class="form-control text-center" id="quantity" 
+                                                   value="1" min="1" max="<%= product.stock %>" 
+                                                   <%= product.stock === 0 ? 'disabled' : '' %>>
+                                            <button class="btn btn-outline-dark" type="button" id="increaseQty">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <button class="btn btn-dark btn-lg w-100" id="addToCartBtn" 
+                                            data-id="<%= product._id %>"
+                                            <%= product.stock === 0 ? 'disabled' : '' %>>
+                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Meta -->
+                        <div class="product-meta">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><span class="fw-bold">SKU:</span> <%= product.sku %></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <% if (product.specifications?.material) { %>
+                                    <p class="mb-2"><span class="fw-bold">Material:</span> <%= product.specifications.material %></p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Details Tabs -->
+    <section class="section-py bg-light">
+        <div class="container">
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button">Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button">Specifications</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="care-tab" data-bs-toggle="tab" data-bs-target="#care" type="button">Care Instructions</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Reviews (<%= product.reviewCount %>)</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- Details Tab -->
+                <div class="tab-pane fade show active" id="details" role="tabpanel">
+                    <h4 class="mb-3">Product Details</h4>
+                    <p style="line-height: 1.8;"><%= product.description %></p>
+                </div>
+                
+                <!-- Specifications Tab -->
+                <div class="tab-pane fade" id="specs" role="tabpanel">
+                    <h4 class="mb-3">Specifications</h4>
+                    <table class="table">
+                        <tbody>
+                            <% if (product.specifications) { %>
+                                <% Object.entries(product.specifications).forEach(([key, value]) => { %>
+                                    <% if (value && key !== 'care' && typeof value !== 'object') { %>
+                                    <tr>
+                                        <th style="width: 200px;"><%= key.charAt(0).toUpperCase() + key.slice(1) %></th>
+                                        <td><%= value %></td>
+                                    </tr>
+                                    <% } %>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Care Tab -->
+                <div class="tab-pane fade" id="care" role="tabpanel">
+                    <h4 class="mb-3">Care Instructions</h4>
+                    <p><%= product.specifications?.care || 'Professional cleaning recommended for this piece.' %></p>
+                </div>
+                
+                <!-- Reviews Tab -->
+                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    <h4 class="mb-4">Customer Reviews</h4>
+                    <% if (product.reviews && product.reviews.length > 0) { %>
+                        <% product.reviews.forEach(review => { %>
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="mb-1"><%= review.customer?.firstName || 'Anonymous' %> <%= review.customer?.lastName?.charAt(0) || '' %></h5>
+                                        <div class="text-warning mb-2">
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <i class="fas fa-star <%= i <= review.rating ? '' : 'text-muted' %>"></i>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        <%= new Date(review.createdAt).toLocaleDateString('en-NG', { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        }) %>
+                                    </small>
+                                </div>
+                                <% if (review.title) { %>
+                                    <h6 class="mb-2"><%= review.title %></h6>
+                                <% } %>
+                                <p class="mb-0"><%= review.comment %></p>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                            <h5>No reviews yet</h5>
+                            <p class="text-muted">Be the first to review this product</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+    <section class="section-py">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="section-title">You May Also Like</h2>
+                    <p class="text-muted">Complete your bedroom with these complementary pieces</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <% relatedProducts.forEach(product => { %>
+                <div class="col-md-3 col-6">
+                    <div class="related-product-card">
+                        <a href="/products/<%= product._id %>" class="text-decoration-none">
+                            <div class="mb-3">
+                                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
+                                     alt="<%= product.name %>" 
+                                     class="img-fluid rounded">
+                            </div>
+                            <h6 class="mb-2 text-dark"><%= product.name %></h6>
+                            <p class="fw-bold text-dark mb-0">₦<%= (product.discountPrice || product.price).toLocaleString() %></p>
+                        </a>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+    <%- include('partials/footer') %>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/cart.js"></script>
+    <script>
+        // Quantity selector
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decreaseQty');
+        const increaseBtn = document.getElementById('increaseQty');
+        const maxStock = <%= product.stock %>;
+
+        if (decreaseBtn && increaseBtn) {
+            decreaseBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                    quantityInput.value = value - 1;
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if (value < maxStock) {
+                    quantityInput.value = value + 1;
+                }
+            });
+        }
+
+        // Add to cart
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', async function() {
+                const productId = this.dataset.id;
+                const quantity = parseInt(document.getElementById('quantity').value);
+                
+                try {
+                    const response = await fetch('/cart/items', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId, quantity })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Update cart count in header
+                        const cartCount = document.getElementById('cart-count');
+                        if (cartCount) {
+                            cartCount.textContent = data.cartItemCount;
+                            cartCount.style.display = 'inline-block';
+                        }
+                        
+                        // Show success message
+                        alert('✓ Added to cart successfully!');
+                    } else {
+                        alert(data.message || 'Failed to add to cart');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error adding to cart. Please try again.');
+                }
+            });
+        }
+
+        // Thumbnail image switching
+        window.switchImage = function(imageUrl) {
+            document.getElementById('mainProductImage').src = imageUrl;
+        };
+    </script>
+</body>
+</html>
