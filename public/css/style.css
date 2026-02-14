@@ -909,14 +909,28 @@ a[href="/login"]:hover .fa-user {
     padding: 4rem 0 2rem;
 }
 
-.footer .brand-name {
+/* Simple footer spacing */
+.footer .navbar-brand {
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+.footer .navbar-brand .brand-name {
     color: white;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 1.3;
 }
 
 .footer-text {
     color: #999;
     font-size: 1rem;
     max-width: 300px;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
 }
 
 .footer h5 {
@@ -930,6 +944,7 @@ a[href="/login"]:hover .fa-user {
 .footer-links {
     list-style: none;
     padding: 0;
+    margin-top: 0.5rem;
 }
 
 .footer-links li {
@@ -941,6 +956,8 @@ a[href="/login"]:hover .fa-user {
     text-decoration: none;
     font-size: 0.9rem;
     transition: var(--transition);
+    display: inline-block;
+    line-height: 1.5;
 }
 
 .footer-links a:hover {
@@ -951,39 +968,24 @@ a[href="/login"]:hover .fa-user {
 .footer-links.inline {
     display: flex;
     gap: 1.5rem;
+    margin-top: 0.5rem;
+    justify-content: flex-end;
 }
 
-.social-links {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-links a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #999;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.social-links a:hover {
-    color: white;
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
+.footer-links.inline li {
+    margin-bottom: 0;
 }
 
 .footer-divider {
     border-color: rgba(255, 255, 255, 0.1);
-    margin: 2rem 0;
+    margin: 3rem 0 2rem;
 }
 
 .copyright {
     color: #777;
     font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0;
 }
 
 /* ===== BUTTONS ===== */
@@ -1028,9 +1030,45 @@ a[href="/login"]:hover .fa-user {
     .hero-title { font-size: 2.2rem; }
     .hero-section { height: 80vh; min-height: 600px; }
     .testimonial { font-size: 1.2rem; }
-    .footer-links.inline { flex-direction: column; gap: 0.5rem; }
     .brand-logo { height: 40px; }
     .navbar { padding: 1rem 0; }
+    
+    /* Footer mobile styles */
+    .footer {
+        padding: 3rem 0 1.5rem;
+    }
+    
+    .footer .row {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .footer .col-lg-4,
+    .footer .col-md-2,
+    .footer .col-md-3 {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .footer .navbar-brand .brand-name {
+        font-size: 1.8rem;
+    }
+    
+    .footer-text {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 1rem;
+    }
+    
+    .footer-links.inline {
+        justify-content: center;
+    }
+    
+    .footer .text-md-end {
+        text-align: center !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1058,6 +1096,26 @@ a[href="/login"]:hover .fa-user {
     }
     .navbar .container-fluid { 
         padding: 0 0.5rem; 
+    }
+    
+    .footer {
+        padding: 2.5rem 0 1.25rem;
+    }
+    
+    .footer .navbar-brand .brand-name {
+        font-size: 1.7rem;
+    }
+    
+    .footer-text {
+        margin-top: 0.5rem;
+    }
+    
+    .footer h5 {
+        font-size: 0.95rem;
+    }
+    
+    .copyright {
+        font-size: 0.8rem;
     }
 }
 
@@ -1177,7 +1235,6 @@ a[href="/login"]:hover .fa-user {
     font-weight: 300;
 }
 
-/* Platform-specific colors on hover */
 .social-icon.instagram:hover {
     color: #E4405F;
 }
@@ -1194,7 +1251,6 @@ a[href="/login"]:hover .fa-user {
     color: #FF0000;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 768px) {
     .floating-social-widget {
         bottom: 15px;
@@ -1229,4 +1285,15 @@ a[href="/login"]:hover .fa-user {
         width: 250px;
         right: -10px;
     }
+}
+
+/* FINAL FIX - ADD THIS AT THE VERY END */
+.footer .navbar-brand {
+    margin-bottom: 2rem !important;
+    display: block !important;
+}
+
+.footer-text {
+    margin-top: 1.5rem !important;
+    display: block !important;
 }

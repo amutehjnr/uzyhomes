@@ -215,6 +215,10 @@
         .detail-value {
             flex: 1;
         }
+        
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
     </style>
 </head>
 <body class="quiet-luxury">
@@ -370,7 +374,7 @@
                                     <h3 class="section-title mb-4">Shipping Method</h3>
                                     
                                     <div class="shipping-methods">
-                                        <div class="shipping-method" onclick="selectShipping('standard')">
+                                        <div class="shipping-method" onclick="selectShipping('standard', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="shippingMethod" id="standard" value="standard" checked>
                                                 <label class="form-check-label" for="standard">
@@ -385,7 +389,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="shipping-method" onclick="selectShipping('express')">
+                                        <div class="shipping-method" onclick="selectShipping('express', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="shippingMethod" id="express" value="express">
                                                 <label class="form-check-label" for="express">
@@ -400,7 +404,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="shipping-method" onclick="selectShipping('pickup')">
+                                        <div class="shipping-method" onclick="selectShipping('pickup', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="shippingMethod" id="pickup" value="pickup">
                                                 <label class="form-check-label" for="pickup">
@@ -429,7 +433,7 @@
                                     <h3 class="section-title mb-4">Payment Method</h3>
                                     
                                     <div class="payment-methods">
-                                        <div class="payment-method" onclick="selectPayment('card')">
+                                        <div class="payment-method" onclick="selectPayment('card', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="card" checked>
                                                 <label class="form-check-label" for="card">
@@ -462,7 +466,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="payment-method" onclick="selectPayment('transfer')">
+                                        <div class="payment-method" onclick="selectPayment('transfer', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="paymentMethod" id="transfer" value="transfer">
                                                 <label class="form-check-label" for="transfer">
@@ -484,7 +488,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="payment-method" onclick="selectPayment('paypal')">
+                                        <div class="payment-method" onclick="selectPayment('paypal', event)">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
                                                 <label class="form-check-label" for="paypal">
@@ -642,7 +646,7 @@
                                     </div>
                                     <div class="summary-row">
                                         <span>Shipping</span>
-                                        <span id="shippingCost">₦0</span>
+                                        <span id="shippingCost">₦5,000</span>
                                     </div>
                                     <% if (discount > 0) { %>
                                         <div class="summary-row">
@@ -652,7 +656,7 @@
                                     <% } %>
                                     <div class="summary-row total">
                                         <span>Total</span>
-                                        <span class="total-amount" id="total">₦<%= Number(subtotal - discount).toLocaleString() %></span>
+                                        <span class="total-amount" id="total">₦<%= Number(subtotal + 5000 - discount).toLocaleString() %></span>
                                     </div>
                                 </div>
                             </div>
@@ -683,19 +687,22 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Checkout page loaded');
             updateShippingCost();
             updateStepIndicators();
         });
 
         // Step navigation functions
         function nextStep(step) {
+            console.log('Next step called to step:', step);
+            
             if (currentStep === 1 && !validateShipping()) {
                 alert('Please fill in all shipping information');
                 return;
             }
             
             if (currentStep === 2 && !validatePayment()) {
-                alert('Please select a payment method');
+                alert('Please select a payment method and fill in required details');
                 return;
             }
             
@@ -704,6 +711,7 @@
             
             // Update step indicators
             document.getElementById(`step${currentStep}-indicator`).classList.add('completed');
+            document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
             
             // Show next step
             currentStep = step;
@@ -714,18 +722,22 @@
             if (currentStep === 3) {
                 populateReview();
             }
+            
+            console.log('Current step now:', currentStep);
         }
 
         function prevStep(step) {
+            console.log('Prev step called to step:', step);
+            
             // Hide current step
             document.getElementById(`step${currentStep}`).classList.remove('active');
             document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+            document.getElementById(`step${currentStep}-indicator`).classList.remove('completed');
             
             // Show previous step
             currentStep = step;
             document.getElementById(`step${currentStep}`).classList.add('active');
             document.getElementById(`step${currentStep}-indicator`).classList.add('active');
-            document.getElementById(`step${currentStep}-indicator`).classList.remove('completed');
         }
 
         function updateStepIndicators() {
@@ -739,37 +751,43 @@
         // Shipping validation
         function validateShipping() {
             const required = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'country'];
+            let isValid = true;
+            
             for (let field of required) {
                 const element = document.getElementById(field);
                 if (!element || !element.value.trim()) {
                     element.classList.add('is-invalid');
-                    return false;
+                    isValid = false;
                 } else {
                     element.classList.remove('is-invalid');
                 }
             }
-            return true;
+            return isValid;
         }
 
         // Payment validation
         function validatePayment() {
             if (selectedPayment === 'card') {
                 const cardFields = ['cardNumber', 'cardExpiry', 'cardCVC', 'cardName'];
+                let isValid = true;
+                
                 for (let field of cardFields) {
                     const element = document.getElementById(field);
                     if (!element || !element.value.trim()) {
                         element.classList.add('is-invalid');
-                        return false;
+                        isValid = false;
                     } else {
                         element.classList.remove('is-invalid');
                     }
                 }
+                return isValid;
             }
-            return true;
+            return true; // Other payment methods don't require validation
         }
 
         // Select shipping method
-        function selectShipping(method) {
+        function selectShipping(method, event) {
+            console.log('Selecting shipping:', method);
             selectedShipping = method;
             
             // Update radio button
@@ -798,7 +816,8 @@
         }
 
         // Select payment method
-        function selectPayment(method) {
+        function selectPayment(method, event) {
+            console.log('Selecting payment:', method);
             selectedPayment = method;
             
             // Update radio button
@@ -843,6 +862,8 @@
 
         // Populate review step
         function populateReview() {
+            console.log('Populating review');
+            
             // Get form values
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
@@ -874,6 +895,8 @@
 
         // Place order
         function placeOrder() {
+            console.log('Placing order');
+            
             // Create order data
             const orderData = {
                 shipping: {
@@ -897,6 +920,8 @@
                 }
             };
 
+            console.log('Order data:', orderData);
+
             // Send order to server
             fetch('/cart/checkout/process', {
                 method: 'POST',
@@ -907,10 +932,12 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Response:', data);
                 if (data.success) {
                     // Move to confirmation step
                     document.getElementById(`step${currentStep}`).classList.remove('active');
                     document.getElementById(`step${currentStep}-indicator`).classList.add('completed');
+                    document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
                     
                     currentStep = 4;
                     document.getElementById('step4').classList.add('active');
@@ -939,6 +966,13 @@
                 alert('Error placing order. Please try again.');
             });
         }
+
+        // Make functions global
+        window.nextStep = nextStep;
+        window.prevStep = prevStep;
+        window.selectShipping = selectShipping;
+        window.selectPayment = selectPayment;
+        window.placeOrder = placeOrder;
     </script>
 </body>
 </html>
