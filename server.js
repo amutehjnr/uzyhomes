@@ -27,7 +27,6 @@ const decorRoutes = require('./routes/decorRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
 const { globalErrorHandler } = require('./middleware/errorHandler');
@@ -137,17 +136,18 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Data sanitization
 app.use(mongoSanitize());
-app.use(authenticateToken);
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Apply authentication middleware to all routes
+// Authentication middleware - Apply to all routes (but only once)
 app.use(authenticateToken);
 
 // Make user available to all views
 app.use((req, res, next) => {
-  res.locals.session = req.session;
+  // This ensures user is always defined (even if null) in all views
+  res.locals.user = req.user || null;
+  res.locals.isLoggedIn = !!req.user;
   next();
 });
 
@@ -156,8 +156,9 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
-app.use('/admin', adminRoutes);
+
 // Routes
+app.use('/admin', adminRoutes);
 app.use('/cart', cartRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -171,31 +172,32 @@ app.use('/api/contact', contactRoutes);
 
 // Page routes
 app.get('/', (req, res) => {
-  res.render('index', { user: req.user || null });
+  // user is already available via res.locals, no need to pass it
+  res.render('index');
 });
 
 app.get('/interiors', (req, res) => {
-  res.render('interiors', { user: req.user || null });
+  res.render('interiors');
 });
 
 app.get('/bedding', (req, res) => {
-  res.render('bedding', { user: req.user || null });
+  res.render('bedding');
 });
 
 app.get('/portfolio', (req, res) => {
-  res.render('portfolio', { user: req.user || null });
+  res.render('portfolio');
 });
 
 app.get('/about', (req, res) => {
-  res.render('about', { user: req.user || null });
+  res.render('about');
 });
 
 app.get('/contact', (req, res) => {
-  res.render('contact', { user: req.user || null });
+  res.render('contact');
 });
 
 app.get('/cart', (req, res) => {
-  res.render('cart', { user: req.user || null });
+  res.render('cart');
 });
 
 app.get('/login', (req, res) => {
@@ -206,13 +208,12 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-// In server.js, update the account route
+// Account route
 app.get('/account', (req, res) => {
   if (!req.user) {
     return res.redirect('/login?redirect=/account');
   }
   
-  // Pass query parameters to the view
   res.render('account', { 
     user: req.user,
     query: req.query,
@@ -222,14 +223,13 @@ app.get('/account', (req, res) => {
   });
 });
 
-// TEST ROUTE - Add this temporarily to test redirects
+// TEST ROUTE
 app.get('/test-redirect', (req, res) => {
   console.log('Test redirect called');
   res.redirect('/account?payment=success&order=test123');
 });
 
-// ============ PAYMENT VERIFICATION ROUTE (DIRECT) ============
-// This handles Paystack's callback directly
+// ============ PAYMENT VERIFICATION ROUTE ============
 app.get('/payment/verify', async (req, res, next) => {
   console.log('💰 DIRECT PAYMENT VERIFICATION CALLED');
   console.log('Query:', req.query);
@@ -244,7 +244,6 @@ app.get('/payment/verify', async (req, res, next) => {
 
     console.log('🔍 Looking for payment with reference:', paymentReference);
     
-    // Find payment
     const Payment = require('./models/Payment');
     const payment = await Payment.findOne({ reference: paymentReference }).populate('order');
     
@@ -255,12 +254,10 @@ app.get('/payment/verify', async (req, res, next) => {
 
     console.log('✅ Payment found, verifying with Paystack...');
 
-    // Verify with Paystack
     const paystackService = require('./services/paystackService');
     const verificationData = await paystackService.verifyTransaction(paymentReference);
     console.log('✅ Paystack verification response:', verificationData.status);
     
-    // Update payment record
     payment.status = verificationData.status === 'success' ? 'completed' : 'failed';
     payment.transactionId = verificationData.id;
     payment.paymentDetails = {
@@ -276,7 +273,6 @@ app.get('/payment/verify', async (req, res, next) => {
     await payment.save();
     console.log('✅ Payment record updated, new status:', payment.status);
 
-    // Update order status
     const Order = require('./models/Order');
     const order = await Order.findById(payment.order);
     if (order) {
@@ -312,7 +308,6 @@ app.get('/payment/verify', async (req, res, next) => {
       console.log('✅ Order saved');
     }
 
-    // Redirect to appropriate page
     const frontendUrl = process.env.FRONTEND_URL || process.env.BASE_URL || 'http://localhost:5000';
     
     if (verificationData.status === 'success') {
