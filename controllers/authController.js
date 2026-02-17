@@ -1,7 +1,9 @@
+// controllers/authController.js
 const User = require('../models/User');
 const { generateToken, generateRefreshToken } = require('../middleware/auth');
 const emailService = require('../services/emailService');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res, next) => {
   try {
@@ -22,12 +24,31 @@ exports.register = async (req, res, next) => {
     await user.save();
 
     // Send welcome email
-    await emailService.sendWelcomeEmail(user);
+    if (emailService.sendWelcomeEmail) {
+      await emailService.sendWelcomeEmail(user);
+    }
 
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    // Set token in cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
+    // Set login status cookie for frontend
+    res.cookie('isLoggedIn', 'true', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
     res.status(201).json({
+      success: true,
       message: 'User registered successfully',
       user: user.toJSON(),
       token,
@@ -44,16 +65,16 @@ exports.login = async (req, res, next) => {
 
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     if (user.accountStatus === 'suspended') {
-      return res.status(403).json({ message: 'Account is suspended' });
+      return res.status(403).json({ success: false, message: 'Account is suspended' });
     }
 
     user.lastLogin = new Date();
@@ -62,7 +83,24 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    // Set token in HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
+    // Set login status cookie for frontend
+    res.cookie('isLoggedIn', 'true', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
     res.json({
+      success: true,
       message: 'Login successful',
       user: user.toJSON(),
       token,
@@ -73,23 +111,59 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.logout = async (req, res) => {
+  try {
+    // Clear cookies
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+    
+    res.clearCookie('isLoggedIn', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+    
+    // Clear session if using sessions
+    if (req.session) {
+      req.session.destroy();
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Logged out successfully' 
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error logging out' 
+    });
+  }
+};
+
 exports.requestPasswordReset = async (req, res, next) => {
   try {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
     user.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    user.passwordResetExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    user.passwordResetExpires = Date.now() + 24 * 60 * 60 * 1000;
 
     await user.save();
-    await emailService.sendPasswordResetEmail(user, resetToken);
+    
+    if (emailService.sendPasswordResetEmail) {
+      await emailService.sendPasswordResetEmail(user, resetToken);
+    }
 
-    res.json({ message: 'Password reset link sent to email' });
+    res.json({ success: true, message: 'Password reset link sent to email' });
   } catch (error) {
     next(error);
   }
@@ -106,7 +180,7 @@ exports.resetPassword = async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
+      return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
     }
 
     user.password = password;
@@ -114,7 +188,7 @@ exports.resetPassword = async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save();
 
-    res.json({ message: 'Password reset successful' });
+    res.json({ success: true, message: 'Password reset successful' });
   } catch (error) {
     next(error);
   }
@@ -128,17 +202,43 @@ exports.refreshToken = async (req, res, next) => {
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      return res.status(401).json({ success: false, message: 'User not found' });
     }
 
     const newToken = generateToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
 
+    // Update cookie
+    res.cookie('token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
     res.json({
+      success: true,
       token: newToken,
       refreshToken: newRefreshToken
     });
   } catch (error) {
-    res.status(403).json({ message: 'Invalid refresh token' });
+    res.status(403).json({ success: false, message: 'Invalid refresh token' });
+  }
+};
+
+// Get current user
+exports.getCurrentUser = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    
+    res.json({
+      success: true,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };

@@ -1,3 +1,4 @@
+<!-- views/partials/header.ejs -->
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid">
@@ -6,7 +7,8 @@
             <div class="desktop-dropdown">
                 <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="desktopDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="navbar-toggler-icon me-2"></span>
-                </button>                <ul class="dropdown-menu" aria-labelledby="desktopDropdown">
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="desktopDropdown">
                     <li><a class="dropdown-item" href="/">Home</a></li>                    
                     <li><a class="dropdown-item" href="/interiors">Interiors</a></li>
                     <li><a class="dropdown-item" href="/decor">Décor</a></li>
@@ -30,7 +32,7 @@
 
         <!-- Desktop Icons Container -->
         <div class="desktop-icons">
-            <a href="#" class="nav-icon me-3">
+            <a href="#" class="nav-icon me-3 search-icon">
                 <i class="fas fa-search"></i>
             </a>
             <a href="/cart" class="nav-icon me-4 position-relative">
@@ -43,10 +45,10 @@
                 </a>
             <% } else { %>
                 <div class="dropdown">
-                    <a href="#" class="nav-icon me-3" data-bs-toggle="dropdown" aria-label="Account">
+                    <a href="#" class="nav-icon me-3 dropdown-toggle" data-bs-toggle="dropdown" aria-label="Account" id="userDropdown">
                         <i class="fas fa-user"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="/account">My Account</a></li>
                         <li><a class="dropdown-item" href="/orders">Orders</a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -59,7 +61,7 @@
 
         <!-- Mobile Icons Container -->
         <div class="mobile-icons">
-            <a href="#" class="nav-icon me-3">
+            <a href="#" class="nav-icon me-3 search-icon">
                 <i class="fas fa-search"></i>
             </a>
             <a href="/cart" class="nav-icon me-3 position-relative">
@@ -103,3 +105,17 @@
         </div>
     </div>
 </nav>
+
+<!-- Pass user data to JavaScript -->
+<script>
+    window.userData = {
+        isLoggedIn: <%= user ? 'true' : 'false' %>,
+        <% if (user) { %>
+        id: '<%= user._id %>',
+        email: '<%= user.email %>',
+        firstName: '<%= user.firstName %>',
+        lastName: '<%= user.lastName %>'
+        <% } %>
+    };
+    console.log('Header loaded - User logged in:', window.userData.isLoggedIn);
+</script>

@@ -2,6 +2,8 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const Coupon = require('../models/Coupon');
+const Order = require('../models/Order');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Get user's cart - Works for both guests and logged-in users
@@ -863,6 +865,272 @@ exports.getAllCarts = async (req, res, next) => {
 };
 
 /**
+ * Render checkout page with cart data - AUTHENTICATED USERS ONLY
+ */
+exports.getCheckout = async (req, res, next) => {
+  try {
+    console.log('✅ getCheckout called');
+    
+    // Check if user is authenticated
+    if (!req.user) {
+      console.log('❌ Unauthenticated user trying to access checkout');
+      return res.redirect('/login?redirect=/cart/checkout');
+    }
+
+    // Logged-in user only - get from database
+    console.log('Logged-in user checkout flow');
+    
+    let cart = await Cart.findOne({ customer: req.user._id })
+      .populate({
+        path: 'items.product',
+        select: 'name price discountPrice images category stock specifications isActive'
+      });
+
+    if (!cart) {
+      cart = {
+        items: [],
+        subtotal: 0,
+        tax: 0,
+        shippingCost: 2500,
+        total: 0,
+        couponCode: null,
+        couponDiscount: 0
+      };
+    }
+
+    // Calculate totals
+    if (cart.items && cart.items.length > 0) {
+      let subtotal = 0;
+      cart.items.forEach(item => {
+        const price = item.product?.discountPrice || item.product?.price || 0;
+        subtotal += price * (item.quantity || 1);
+      });
+      cart.subtotal = subtotal;
+      cart.tax = Math.round(subtotal * 0.08 * 100) / 100;
+      cart.shippingCost = subtotal > 50000 ? 0 : 2500;
+      cart.total = subtotal + cart.tax + cart.shippingCost - (cart.couponDiscount || 0);
+    }
+
+    res.render('checkout', {
+      title: 'Checkout',
+      cart: cart,
+      user: req.user,
+      isGuest: false
+    });
+
+  } catch (error) {
+    console.error('❌ Error in getCheckout:', error);
+    next(error);
+  }
+};
+
+/**
+ * Process checkout and create order - AUTHENTICATED USERS ONLY
+ */
+exports.processCheckout = async (req, res, next) => {
+  try {
+    console.log('✅ processCheckout called');
+    console.log('Request body:', req.body);
+    
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'You must be logged in to place an order' 
+      });
+    }
+    
+    const {
+      firstName, lastName, email, phone, address, city, state, zipCode, country,
+      shippingMethod, paymentMethod
+    } = req.body;
+
+    // Validate required fields
+    if (!firstName || !lastName || !email || !phone || !address || !city || !state || !country) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Please fill in all required fields' 
+      });
+    }
+
+    // Get cart from database for logged-in user
+    const cart = await Cart.findOne({ customer: req.user._id })
+      .populate('items.product');
+    
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Your cart is empty' 
+      });
+    }
+    
+    // Prepare cart items
+    const cartItems = cart.items.map(item => ({
+      product: item.product._id,
+      quantity: item.quantity,
+      price: item.product.discountPrice || item.product.price
+    }));
+    
+    const subtotal = cart.subtotal || 0;
+    const discount = cart.couponDiscount || 0;
+    const couponCode = cart.couponCode;
+
+    // Calculate shipping cost based on method
+    let shippingCost = 0;
+    switch(shippingMethod) {
+      case 'express':
+        shippingCost = 12000;
+        break;
+      case 'standard':
+        shippingCost = 5000;
+        break;
+      case 'pickup':
+        shippingCost = 0;
+        break;
+      default:
+        shippingCost = 5000;
+    }
+
+    // Calculate tax (8%)
+    const tax = Math.round(subtotal * 0.08 * 100) / 100;
+    
+    // Calculate total
+    const total = subtotal + tax + shippingCost - discount;
+
+    // Create shipping address object
+    const shippingAddress = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      street: address, // Note: your model uses 'street' not 'address'
+      city,
+      state,
+      zipCode: zipCode || '',
+      country
+    };
+
+    // Generate order number
+    const timestamp = Date.now();
+    const count = await Order.countDocuments();
+    const orderNumber = `ORD-${timestamp}-${count + 1}`;
+    const reference = `UZY-${timestamp}-${Math.random().toString(36).substring(2, 10)}`;
+
+    // Map payment method to what your model expects
+    let paymentMethodEnum;
+    switch(paymentMethod) {
+      case 'card':
+        paymentMethodEnum = 'card'; // Your model expects 'card' as enum value
+        break;
+      case 'transfer':
+        paymentMethodEnum = 'paypal'; // Map to appropriate enum
+        break;
+      case 'paypal':
+        paymentMethodEnum = 'paypal';
+        break;
+      default:
+        paymentMethodEnum = 'card';
+    }
+
+    // Create order object
+    const orderData = {
+      orderNumber: orderNumber,
+      customer: req.user._id, // This is now required and we have it
+      items: cartItems,
+      shippingAddress,
+      billingAddress: {
+        firstName,
+        lastName,
+        street: address,
+        city,
+        state,
+        zipCode: zipCode || '',
+        country
+      },
+      subtotal,
+      tax,
+      shippingCost,
+      discount,
+      total,
+      couponCode: couponCode || undefined,
+      paymentMethod: paymentMethodEnum,
+      paymentStatus: 'pending',
+      orderStatus: 'pending',
+      paymentDetails: {
+        reference
+      }
+    };
+
+    console.log('Creating order with data:', orderData);
+
+    // Create order in database
+    const order = new Order(orderData);
+    await order.save();
+
+    // Update coupon usage if applied
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: couponCode },
+        { $inc: { usageCount: 1 } }
+      );
+    }
+
+    // Clear cart
+    cart.items = [];
+    cart.couponCode = null;
+    cart.couponDiscount = 0;
+    cart.subtotal = 0;
+    cart.tax = 0;
+    cart.shippingCost = 0;
+    cart.total = 0;
+    await cart.save();
+
+    console.log('✅ Order created successfully:', order._id);
+
+    res.json({
+      success: true,
+      message: 'Order placed successfully',
+      order: {
+        id: order._id,
+        orderNumber: order.orderNumber,
+        total: order.total
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error in processCheckout:', error);
+    
+    // Handle validation errors specifically
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false, 
+        message: `Order validation failed: ${messages.join(', ')}` 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Error processing order' 
+    });
+  }
+};
+
+/**
+ * Show order confirmation page
+ */
+exports.getConfirmation = async (req, res, next) => {
+  try {
+    res.render('confirmation', {
+      title: 'Order Confirmed',
+      user: req.user || null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Helper function to calculate cart totals for logged-in users
  */
 async function calculateCartTotals(cart) {
@@ -937,285 +1205,6 @@ async function calculateGuestCartTotals(cart) {
   if (cart.total < 0) cart.total = 0;
 
   return cart;
-};
-
-// In controllers/cartController.js, add this method:
-
-/**
- * Render checkout page with cart data
- */
-// In controllers/cartController.js
-
-/**
- * Render checkout page with cart data
- */
-exports.getCheckout = async (req, res, next) => {
-  try {
-    console.log('getCheckout called'); // Add this for debugging
-    
-    // Handle guest user
-    if (!req.user) {
-      console.log('Guest user checkout');
-      // Get guest cart from session
-      const guestCart = req.session.guestCart || {
-        items: [],
-        subtotal: 0,
-        tax: 0,
-        shippingCost: 2500,
-        total: 0,
-        couponCode: null,
-        couponDiscount: 0
-      };
-
-      console.log('Guest cart:', guestCart); // Debug log
-
-      // Make sure items have product data
-      if (guestCart.items && guestCart.items.length > 0) {
-        for (const item of guestCart.items) {
-          if (!item.product || !item.product.name) {
-            const product = await Product.findById(item.productId)
-              .select('name price discountPrice images category stock specifications');
-            if (product) {
-              item.product = {
-                _id: product._id,
-                name: product.name,
-                price: product.discountPrice || product.price,
-                images: product.images,
-                category: product.category,
-                stock: product.stock,
-                specifications: product.specifications
-              };
-            }
-          }
-        }
-      }
-
-      // Calculate guest cart totals if needed
-      if (guestCart.items.length > 0) {
-        let subtotal = 0;
-        guestCart.items.forEach(item => {
-          const price = item.product?.price || 0;
-          subtotal += price * (item.quantity || 1);
-        });
-        guestCart.subtotal = subtotal;
-        guestCart.tax = Math.round(subtotal * 0.08 * 100) / 100;
-        guestCart.shippingCost = subtotal > 50000 ? 0 : 2500;
-        guestCart.total = subtotal + guestCart.tax + guestCart.shippingCost - (guestCart.couponDiscount || 0);
-      }
-
-      return res.render('checkout', {
-        title: 'Checkout',
-        cart: guestCart,
-        user: null,
-        isGuest: true
-      });
-    }
-
-    // Handle logged-in user
-    console.log('Logged-in user checkout');
-    let cart = await Cart.findOne({ customer: req.user._id })
-      .populate({
-        path: 'items.product',
-        select: 'name price discountPrice images category stock specifications isActive'
-      });
-
-    console.log('Found cart:', cart); // Debug log
-
-    if (!cart) {
-      cart = {
-        items: [],
-        subtotal: 0,
-        tax: 0,
-        shippingCost: 2500,
-        total: 0,
-        couponCode: null,
-        couponDiscount: 0
-      };
-    }
-
-    // Filter out inactive products
-    if (cart.items && cart.items.length > 0) {
-      const validItems = cart.items.filter(item => 
-        item.product && 
-        item.product.isActive !== false && 
-        item.product.stock > 0
-      );
-
-      if (validItems.length !== cart.items.length) {
-        cart.items = validItems;
-        cart.couponCode = null;
-        cart.couponDiscount = 0;
-        if (cart.save) await cart.save();
-      }
-    }
-
-    // Recalculate totals
-    if (cart.items && cart.items.length > 0) {
-      let subtotal = 0;
-      cart.items.forEach(item => {
-        const price = item.product?.discountPrice || item.product?.price || 0;
-        subtotal += price * (item.quantity || 1);
-      });
-      cart.subtotal = subtotal;
-      cart.tax = Math.round(subtotal * 0.08 * 100) / 100;
-      cart.shippingCost = subtotal > 50000 ? 0 : 2500;
-      cart.total = subtotal + cart.tax + cart.shippingCost - (cart.couponDiscount || 0);
-    }
-
-    console.log('Rendering checkout with cart:', cart); // Debug log
-
-    res.render('checkout', {
-      title: 'Checkout',
-      cart: cart,
-      user: req.user,
-      isGuest: false
-    });
-
-  } catch (error) {
-    console.error('Error in getCheckout:', error);
-    next(error);
-  }
-};
-
-/**
- * Process checkout and create order
- */
-exports.processCheckout = async (req, res, next) => {
-  try {
-    const {
-      firstName, lastName, email, phone, address, city, state, zipCode, country,
-      shippingMethod, paymentMethod, saveAddress,
-      cardNumber, cardExpiry, cardCVC, cardName
-    } = req.body;
-
-    // Validate required fields
-    if (!firstName || !lastName || !email || !phone || !address || !city || !state || !country) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please fill in all required fields' 
-      });
-    }
-
-    // Get cart data
-    let cart;
-    if (!req.user) {
-      cart = req.session.guestCart;
-      if (!cart || !cart.items || cart.items.length === 0) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Your cart is empty' 
-        });
-      }
-    } else {
-      cart = await Cart.findOne({ customer: req.user._id })
-        .populate('items.product');
-      
-      if (!cart || !cart.items || cart.items.length === 0) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Your cart is empty' 
-        });
-      }
-    }
-
-    // Calculate shipping cost based on method
-    let shippingCost = 0;
-    switch(shippingMethod) {
-      case 'express':
-        shippingCost = 12000;
-        break;
-      case 'standard':
-        shippingCost = 5000;
-        break;
-      case 'pickup':
-        shippingCost = 0;
-        break;
-      default:
-        shippingCost = 5000;
-    }
-
-    // Calculate totals
-    const subtotal = cart.subtotal || 0;
-    const tax = cart.tax || 0;
-    const discount = cart.couponDiscount || 0;
-    const total = subtotal + tax + shippingCost - discount;
-
-    // Create order object
-    const orderData = {
-      customer: req.user ? req.user._id : null,
-      items: cart.items.map(item => ({
-        product: item.productId || item.product._id,
-        quantity: item.quantity,
-        price: item.product?.discountPrice || item.product?.price || 0
-      })),
-      shippingAddress: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        address,
-        city,
-        state,
-        zipCode,
-        country
-      },
-      paymentMethod,
-      shippingMethod,
-      subtotal,
-      tax,
-      shippingCost,
-      discount,
-      total,
-      couponCode: cart.couponCode,
-      status: 'pending',
-      createdAt: new Date()
-    };
-
-    // Here you would save the order to database
-    // const order = await Order.create(orderData);
-
-    // Clear cart after successful order
-    if (!req.user) {
-      req.session.guestCart = {
-        items: [],
-        subtotal: 0,
-        tax: 0,
-        shippingCost: 0,
-        total: 0,
-        couponCode: null,
-        couponDiscount: 0
-      };
-    } else {
-      cart.items = [];
-      cart.couponCode = null;
-      cart.couponDiscount = 0;
-      cart.subtotal = 0;
-      cart.tax = 0;
-      cart.shippingCost = 0;
-      cart.total = 0;
-      await cart.save();
-    }
-
-    // Redirect to confirmation page
-    res.redirect('/checkout/confirmation');
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Show order confirmation page
- */
-exports.getConfirmation = async (req, res, next) => {
-  try {
-    res.render('confirmation', {
-      title: 'Order Confirmed',
-      user: req.user || null
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+}
 
 module.exports = exports;

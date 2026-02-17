@@ -9,13 +9,116 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cart.js initialized');
     initializeQuantityControls();
+    initializeCartButtons();
     initializeAddToCartButtons();
     loadRecommendedProducts();
     updateCartCount();
+    initializeLogoutButtons();
     
     // Add coupon message container if it doesn't exist
     addCouponMessageContainer();
 });
+
+/**
+ * Initialize all cart buttons with event listeners (no inline handlers)
+ */
+function initializeCartButtons() {
+    // Remove item buttons
+    document.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const itemId = this.dataset.itemId;
+            if (itemId) {
+                removeFromCart(itemId);
+            }
+        });
+    });
+
+    // Clear cart button
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            clearCart();
+        });
+    }
+
+    // Apply coupon button
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    if (applyCouponBtn) {
+        applyCouponBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyCoupon();
+        });
+    }
+
+    // Remove coupon buttons
+    document.querySelectorAll('.remove-coupon-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            removeCoupon();
+        });
+    });
+
+    // Search icon (if you want to add search functionality later)
+    document.querySelectorAll('.search-icon').forEach(icon => {
+        icon.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Add search functionality here if needed
+            console.log('Search clicked');
+        });
+    });
+}
+
+/**
+ * Initialize logout buttons
+ */
+function initializeLogoutButtons() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await logout();
+        });
+    }
+    
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await logout();
+        });
+    }
+}
+
+/**
+ * Logout function
+ */
+async function logout() {
+    try {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        } else {
+            showNotification('Error logging out', 'error');
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        showNotification('Error logging out', 'error');
+    }
+}
 
 /**
  * Add coupon message container if not present
@@ -136,7 +239,6 @@ async function updateQuantity(itemId, quantity, cartItem) {
             }
             
             // Reload the page to show updated totals
-            // This is more reliable than trying to update DOM manually
             setTimeout(() => {
                 window.location.reload();
             }, 500);
@@ -159,7 +261,7 @@ async function updateQuantity(itemId, quantity, cartItem) {
 /**
  * Remove item from cart
  */
-window.removeFromCart = async function(itemId) {
+async function removeFromCart(itemId) {
     if (!itemId) {
         console.error('removeFromCart called without itemId');
         return;
@@ -205,12 +307,12 @@ window.removeFromCart = async function(itemId) {
         if (cartItem) cartItem.style.opacity = '1';
         showNotification('Error removing item. Please try again.', 'error');
     }
-};
+}
 
 /**
  * Clear entire cart
  */
-window.clearCart = async function() {
+async function clearCart() {
     if (!confirm('Clear all items from your cart? This action cannot be undone.')) return;
 
     const clearBtn = document.getElementById('clearCartBtn');
@@ -249,12 +351,12 @@ window.clearCart = async function() {
             clearBtn.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Clear Cart';
         }
     }
-};
+}
 
 /**
  * Apply coupon to cart
  */
-window.applyCoupon = async function() {
+async function applyCoupon() {
     const codeInput = document.getElementById('couponCode');
     const code = codeInput?.value.trim().toUpperCase();
     
@@ -319,12 +421,12 @@ window.applyCoupon = async function() {
             applyBtn.innerHTML = 'Apply';
         }
     }
-};
+}
 
 /**
  * Remove coupon from cart
  */
-window.removeCoupon = async function() {
+async function removeCoupon() {
     try {
         const response = await fetch('/cart/coupon', {
             method: 'DELETE',
@@ -348,12 +450,12 @@ window.removeCoupon = async function() {
         console.error('Error removing coupon:', error);
         showNotification('Error removing coupon. Please try again.', 'error');
     }
-};
+}
 
 /**
  * Add to cart from anywhere (product cards, recommended products)
  */
-window.addToCart = async function(productId, quantity = 1) {
+async function addToCart(productId, quantity = 1) {
     if (!productId) {
         console.error('addToCart called without productId');
         return;
@@ -411,7 +513,7 @@ window.addToCart = async function(productId, quantity = 1) {
             }
         }
     }
-};
+}
 
 /**
  * Load recommended products
@@ -470,7 +572,7 @@ async function loadRecommendedProducts() {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const productId = this.dataset.id;
-                    window.addToCart(productId, 1);
+                    addToCart(productId, 1);
                 });
             });
         } else {
@@ -626,7 +728,7 @@ function initializeAddToCartButtons() {
                 return;
             }
             
-            await window.addToCart(productId, 1);
+            await addToCart(productId, 1);
         });
     });
 }
@@ -704,7 +806,3 @@ if (!document.getElementById('cart-animation-styles')) {
 window.showNotification = showNotification;
 window.updateCartCount = updateCartCount;
 window.addToCart = addToCart;
-window.removeFromCart = removeFromCart;
-window.clearCart = clearCart;
-window.applyCoupon = applyCoupon;
-window.removeCoupon = removeCoupon;

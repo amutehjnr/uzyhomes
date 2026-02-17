@@ -487,8 +487,8 @@
                                         </div>
                                         <div class="col-md-1 col-12 mt-3 mt-md-0">
                                             <div class="cart-item-remove text-md-end">
-                                                <button class="btn-remove" onclick="removeFromCart('<%= itemId %>')" aria-label="Remove item">
-                                                    <i class="fas fa-times"></i>
+                                                <button class="btn-remove remove-item-btn" data-item-id="<%= itemId %>" aria-label="Remove item">
+                                                   <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -506,8 +506,8 @@
                                     </a>
                                 </div>
                                 <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                                    <button class="btn btn-outline-dark" id="clearCartBtn" onclick="clearCart()">
-                                        <i class="fas fa-trash-alt me-2"></i>Clear Cart
+                                    <button class="btn btn-outline-dark" id="clearCartBtn">
+                                       <i class="fas fa-trash-alt me-2"></i>Clear Cart
                                     </button>
                                 </div>
                             </div>
@@ -523,7 +523,7 @@
                                                placeholder="Enter promo code"
                                                value="<%= cart.couponCode || '' %>"
                                                aria-label="Coupon code">
-                                        <button class="btn btn-outline-dark" type="button" onclick="applyCoupon()" id="applyCouponBtn">
+                                        <button class="btn btn-outline-dark" type="button" id="applyCouponBtn">
                                             Apply
                                         </button>
                                     </div>
@@ -539,8 +539,8 @@
                                                     <strong><%= cart.couponCode %></strong>
                                                     <span class="text-success ms-2">-₦<%= Number(cart.couponDiscount || 0).toLocaleString() %></span>
                                                 </div>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="removeCoupon()">
-                                                    <i class="fas fa-times"></i> Remove
+                                                <button class="btn btn-sm btn-outline-danger remove-coupon-btn">
+                                                   <i class="fas fa-times"></i> Remove
                                                 </button>
                                             </div>
                                         </div>

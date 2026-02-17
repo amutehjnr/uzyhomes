@@ -1,3 +1,4 @@
+<!-- views/account.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,13 +20,59 @@
     <link rel="stylesheet" href="/css/account.css">
 </head>
 <body class="quiet-luxury">
+
+    <!-- Add this right after <body> and before <%- include('partials/header') %> -->
+<script>
+  // Log URL parameters for debugging
+  console.log('Account page loaded');
+  console.log('URL:', window.location.href);
+  console.log('Search params:', window.location.search);
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  console.log('payment param:', urlParams.get('payment'));
+  console.log('order param:', urlParams.get('order'));
+  console.log('error param:', urlParams.get('error'));
+</script>
     <%- include('partials/header') %>
+
+    <!-- PAYMENT STATUS MESSAGES - ADD THIS SECTION -->
+    <% 
+        // Get query parameters from server.js
+        const paymentStatus = locals.payment_status || query?.payment;
+        const orderId = locals.order_id || query?.order;
+        const errorMsg = locals.error || query?.error;
+    %>
+    
+    <% if (paymentStatus === 'success') { %>
+        <div class="container mt-4">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Payment Successful!</strong> Your order has been placed and payment confirmed.
+                <% if (orderId) { %>
+                    <a href="/orders/<%= orderId %>" class="alert-link ms-2">View Order</a>
+                <% } %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    <% } else if (paymentStatus === 'failed') { %>
+        <div class="container mt-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Payment Failed!</strong> 
+                <%= errorMsg ? decodeURIComponent(errorMsg) : 'There was an issue with your payment. Please try again.' %>
+                <% if (orderId) { %>
+                    <a href="/orders/<%= orderId %>/retry" class="alert-link ms-2">Retry Payment</a>
+                <% } %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    <% } %>
 
     <section class="account-section section-py">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
-                    <!-- Account Sidebar -->
+                    <!-- Account Sidebar (your existing sidebar) -->
                     <div class="account-sidebar">
                         <div class="user-info text-center mb-4">
                             <div class="user-avatar mb-3">
@@ -190,5 +237,18 @@
     <script src="/js/auth.js"></script>
     <script src="/js/cart.js"></script>
     <script src="/js/account.js"></script>
+    
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
 </body>
 </html>

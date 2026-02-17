@@ -1,3 +1,4 @@
+// services/paystackService.js
 const axios = require('axios');
 const logger = require('../config/logger');
 
@@ -17,20 +18,32 @@ const paystackClient = axios.create({
  * @param {Object} params - Transaction parameters
  * @returns {Promise} Paystack response
  */
+// In services/paystackService.js - update initializeTransaction
 exports.initializeTransaction = async (params) => {
   try {
     const {
-      amount, // in kobo (smallest unit)
+      amount,
       email,
       reference,
+      callbackUrl,
       orderId,
       metadata = {}
     } = params;
+
+    console.log('💰 Initializing Paystack transaction:', { 
+      amount, 
+      email, 
+      reference, 
+      callbackUrl,
+      currency: 'NGN' 
+    });
 
     const response = await paystackClient.post('/transaction/initialize', {
       amount,
       email,
       reference,
+      currency: 'NGN', // Make sure this is set
+      callback_url: callbackUrl,
       metadata: {
         orderId,
         ...metadata
@@ -52,6 +65,8 @@ exports.initializeTransaction = async (params) => {
  */
 exports.verifyTransaction = async (reference) => {
   try {
+    console.log('🔍 Verifying Paystack transaction:', reference);
+    
     const response = await paystackClient.get(`/transaction/verify/${reference}`);
 
     logger.info(`Transaction verified: ${reference} - ${response.data.data.status}`);
@@ -230,7 +245,7 @@ exports.createPlan = async (params) => {
  */
 exports.verifyWebhookSignature = (signature, payload) => {
   const crypto = require('crypto');
-  const secret = process.env.PAYSTACK_WEBHOOK_SECRET;
+  const secret = process.env.PAYSTACK_WEBHOOK_SECRET || process.env.PAYSTACK_SECRET_KEY;
 
   const computedSignature = crypto
     .createHmac('sha512', secret)

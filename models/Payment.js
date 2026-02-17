@@ -1,3 +1,4 @@
+// models/Payment.js
 const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
@@ -17,32 +18,52 @@ const paymentSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
-    default: 'USD'
+    default: 'NGN' // Changed from USD to NGN
   },
   paymentMethod: {
     type: String,
-    enum: ['stripe', 'paypal', 'card'],
+    enum: ['card', 'transfer', 'paypal', 'bank_transfer', 'ussd', 'mobile_money'], // Updated enum
     required: true
   },
+  provider: {
+    type: String,
+    enum: ['paystack', 'paypal', 'stripe'],
+    default: 'paystack'
+  },
+  reference: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  transactionId: String,
   status: {
     type: String,
-    enum: ['pending', 'processing', 'completed', 'failed', 'refunded'],
+    enum: ['pending', 'completed', 'failed', 'refunded', 'abandoned'],
     default: 'pending'
   },
-  transactionId: {
-    type: String,
-    unique: true,
-    sparse: true
+  paymentDetails: {
+    authorizationUrl: String,
+    accessCode: String,
+    authorization: {
+      authorizationCode: String,
+      bin: String,
+      last4: String,
+      expMonth: String,
+      expYear: String,
+      cardType: String,
+      bank: String,
+      countryCode: String,
+      brand: String,
+      reusable: Boolean
+    },
+    paidAt: Date,
+    channel: String
   },
-  stripePaymentIntentId: String,
-  paypalOrderId: String,
-  cardDetails: {
-    brand: String,
-    last4: String,
-    expiryMonth: Number,
-    expiryYear: Number
+  metadata: {
+    type: Map,
+    of: String
   },
-  metadata: mongoose.Schema.Types.Mixed,
+  response: mongoose.Schema.Types.Mixed,
   errorMessage: String,
   refundAmount: {
     type: Number,
@@ -51,6 +72,9 @@ const paymentSchema = new mongoose.Schema({
   refundReason: String,
   refundedAt: Date,
   receiptUrl: String,
+  ipAddress: String,
+  userAgent: String,
+  notes: String,
   createdAt: {
     type: Date,
     default: Date.now
@@ -60,5 +84,12 @@ const paymentSchema = new mongoose.Schema({
     default: Date.now
   }
 }, { timestamps: true });
+
+// Indexes for faster queries
+paymentSchema.index({ reference: 1 });
+paymentSchema.index({ order: 1 });
+paymentSchema.index({ customer: 1 });
+paymentSchema.index({ status: 1 });
+paymentSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

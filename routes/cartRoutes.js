@@ -4,26 +4,42 @@ const router = express.Router();
 const cartController = require('../controllers/cartController');
 const { authenticateToken, authorize } = require('../middleware/auth');
 
-// Apply authentication - doesn't block, just sets req.user
+// Apply authentication to all routes
 router.use(authenticateToken);
 
-// Cart routes - all accessible to both guests and logged-in users
-router.get('/', cartController.getCart);                    // View cart
-router.post('/items', cartController.addToCart);           // Add item
-router.put('/items/:itemId', cartController.updateCartItem); // Update quantity
-router.delete('/items/:itemId', cartController.removeFromCart); // Remove item
-router.post('/coupon', cartController.applyCoupon);        // Apply coupon
-router.delete('/coupon', cartController.removeCoupon);     // Remove coupon
-router.delete('/clear', cartController.clearCart);         // Clear cart
-router.get('/count', cartController.getCartCount);         // Get cart count
-router.post('/sync', cartController.syncCart);             // Sync guest cart after login
+// Cart routes - accessible to both guests and logged-in users
+router.get('/', cartController.getCart);
+router.post('/items', cartController.addToCart);
+router.put('/items/:itemId', cartController.updateCartItem);
+router.delete('/items/:itemId', cartController.removeFromCart);
+router.post('/coupon', cartController.applyCoupon);
+router.delete('/coupon', cartController.removeCoupon);
+router.delete('/clear', cartController.clearCart);
+router.get('/count', cartController.getCartCount);
+router.post('/sync', cartController.syncCart);
 
-// Checkout routes
-router.get('/checkout', cartController.getCheckout);       // Checkout page
-router.post('/checkout/process', cartController.processCheckout); // Process order
-router.get('/checkout/confirmation', cartController.getConfirmation); // Order confirmation
+// Checkout routes - REQUIRE AUTHENTICATION
+router.get('/checkout', (req, res, next) => {
+  if (!req.user) {
+    console.log('❌ Unauthenticated user trying to access checkout');
+    return res.redirect('/login?redirect=/cart/checkout');
+  }
+  next();
+}, cartController.getCheckout);
 
-// Admin only routes (if needed)
+router.post('/checkout/process', (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'You must be logged in to place an order' 
+    });
+  }
+  next();
+}, cartController.processCheckout);
+
+router.get('/checkout/confirmation', authenticateToken, cartController.getConfirmation);
+
+// Admin only routes
 router.get('/admin/all', 
   authenticateToken, 
   authorize('admin'), 

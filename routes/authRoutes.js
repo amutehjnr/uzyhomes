@@ -1,14 +1,18 @@
+// routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { validateUserRegistration, validateLogin, handleValidationErrors } = require('../middleware/validation');
+const { authenticateToken } = require('../middleware/auth');
+const { validateUserRegistration, validateLogin, handleValidationErrors } = require('../middleware/auth');
 
+// Regular auth routes
 router.post('/register', validateUserRegistration, handleValidationErrors, authController.register);
 router.post('/login', validateLogin, handleValidationErrors, authController.login);
+router.post('/logout', authController.logout);
 router.post('/forgot-password', authController.requestPasswordReset);
 router.post('/reset-password', authController.resetPassword);
 router.post('/refresh-token', authController.refreshToken);
-
+router.get('/me', authenticateToken, authController.getCurrentUser);
 
 // ============ SOCIAL LOGIN ROUTES ============
 
@@ -68,7 +72,7 @@ router.get('/google/callback', async (req, res) => {
                 firstName: userData.given_name || userData.name.split(' ')[0],
                 lastName: userData.family_name || userData.name.split(' ')[1] || '',
                 email: userData.email,
-                password: crypto.randomBytes(20).toString('hex'), // Random password
+                password: crypto.randomBytes(20).toString('hex'),
                 googleId: userData.id,
                 avatar: userData.picture,
                 accountStatus: 'active',
@@ -84,18 +88,26 @@ router.get('/google/callback', async (req, res) => {
         }
         
         // Generate tokens
-        const token = generateToken(user._id);
-        const refreshToken = generateRefreshToken(user._id);
+        const token = authController.generateToken(user._id);
+        const refreshToken = authController.generateRefreshToken(user._id);
         
-        // Set cookie
+        // Set cookies
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            sameSite: 'lax'
         });
         
-        // Redirect with tokens in URL (will be captured by frontend)
-        res.redirect(`/login?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(user.toJSON()))}`);
+        res.cookie('isLoggedIn', 'true', {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            sameSite: 'lax'
+        });
+        
+        // Redirect to home with success
+        res.redirect('/?login=success');
         
     } catch (error) {
         console.error('Google OAuth error:', error);
@@ -164,17 +176,25 @@ router.get('/facebook/callback', async (req, res) => {
         }
         
         // Generate tokens
-        const token = generateToken(user._id);
-        const refreshToken = generateRefreshToken(user._id);
+        const token = authController.generateToken(user._id);
+        const refreshToken = authController.generateRefreshToken(user._id);
         
-        // Set cookie
+        // Set cookies
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            sameSite: 'lax'
         });
         
-        res.redirect(`/login?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(user.toJSON()))}`);
+        res.cookie('isLoggedIn', 'true', {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            sameSite: 'lax'
+        });
+        
+        res.redirect('/?login=success');
         
     } catch (error) {
         console.error('Facebook OAuth error:', error);
