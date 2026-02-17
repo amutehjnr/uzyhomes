@@ -6,7 +6,7 @@ const adminController = require('../controllers/adminController');
 const adminAuthController = require('../controllers/adminAuthController');
 
 // Import proper authentication middleware
-const { protect, requireAdmin } = require('../middleware/adminauth');
+const { generateToken, generateRefreshToken } = require('../middleware/adminAuth');
 
 // PUBLIC ROUTES - No authentication required
 router.get('/login', (req, res) => {
