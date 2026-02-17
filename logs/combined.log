@@ -7600,3 +7600,13 @@
 {"level":"info","message":"::1 - - [17/Feb/2026:17:12:48 +0000] \"GET /admin/auth/verify HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-02-17 18:12:48"}
 {"level":"info","message":"::1 - - [17/Feb/2026:17:12:48 +0000] \"GET /admin/dashboard HTTP/1.1\" 302 41 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-02-17 18:12:48"}
 {"level":"info","message":"::1 - - [17/Feb/2026:17:12:48 +0000] \"GET /admin/login HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-02-17 18:12:48"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:21"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:21"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:21"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:21"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:24"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:35"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:35"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:35"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:35"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-02-17 18:25:39"}
