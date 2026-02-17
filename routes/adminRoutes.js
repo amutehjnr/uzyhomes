@@ -46,6 +46,30 @@ router.get('/api/dashboard/stats', protect, requireAdmin, adminController.getDas
 router.get('/api/dashboard/charts', protect, requireAdmin, adminController.getDashboardCharts);
 router.get('/api/products/low-stock', protect, requireAdmin, adminController.getLowStockProducts);
 
+// Contact Messages Routes
+router.get('/contacts', adminController.getContactsPage);
+router.get('/api/contacts', adminController.getContactMessages);
+router.get('/api/contacts/count', adminController.getContactCounts);
+router.get('/api/contacts/:id', adminController.getContactDetails);
+router.put('/api/contacts/:id/status', adminController.updateContactStatus);
+router.post('/api/contacts/:id/reply', adminController.replyToContact);
+router.delete('/api/contacts/:id', adminController.deleteContact);
+router.get('/contacts/export', adminController.exportContacts);
+
+// Newsletter Subscribers Routes
+router.get('/subscribers', adminController.getSubscribersPage);
+router.get('/api/subscribers', adminController.getSubscribers);
+router.get('/api/subscribers/count', adminController.getSubscriberCounts);
+router.delete('/api/subscribers/:id', adminController.deleteSubscriber);
+router.post('/api/subscribers/send-newsletter', adminController.sendNewsletter);
+router.post('/api/subscribers/send-test', adminController.sendTestEmail);
+router.get('/subscribers/export', adminController.exportSubscribers);
+
+// Add this route to your adminRoutes.js (after your other order routes)
+router.get('/orders/:id', adminController.getOrderDetailsAdmin);
+
+// Also add the API endpoint for AJAX
+router.get('/api/orders/:id', protect, requireAdmin, adminController.getOrderDetailsAPI);
 // VIEW ROUTES (HTML responses) - These render pages
 // All routes below require admin authentication
 router.use(protect, requireAdmin);

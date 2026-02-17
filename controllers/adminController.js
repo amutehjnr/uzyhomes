@@ -4,6 +4,9 @@ const User = require('../models/User');
 const Payment = require('../models/Payment');
 const Coupon = require('../models/Coupon');
 const logger = require('../config/logger');
+const Contact = require('../models/Contact'); // Add this
+const Subscriber = require('../models/Subscriber'); // Add 
+const emailService = require('../services/emailService'); // Add this for email functionality
 
 // ======================================================
 // DASHBOARD METHODS
@@ -1425,6 +1428,662 @@ exports.updatePaymentSettings = async (req, res, next) => {
       success: false,
       message: 'Failed to update payment settings'
     });
+  }
+};
+
+/**
+ * Admin Order Details - Render Page
+ */
+exports.getOrderDetailsAdmin = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('customer', 'firstName lastName email phone')
+      .populate('items.product', 'name sku images price');
+
+    if (!order) {
+      return res.status(404).render('error', {
+        title: 'Order Not Found',
+        message: 'The order you are looking for does not exist'
+      });
+    }
+
+    res.render('admin/order-details', {
+      title: 'Order Details',
+      user: req.user,
+      order,
+      currentPage: 'orders',
+      page: 'order-details'
+    });
+  } catch (error) {
+    logger.error('Get order details error:', error);
+    next(error);
+  }
+};
+
+/**
+ * Order Details API - Returns JSON for AJAX
+ */
+exports.getOrderDetailsAPI = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('customer', 'firstName lastName email phone')
+      .populate('items.product', 'name sku images price');
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      order
+    });
+  } catch (error) {
+    logger.error('Get order details API error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load order details'
+    });
+  }
+};
+
+// ======================================================
+// CONTACT MESSAGES METHODS
+// ======================================================
+
+/**
+ * Contacts page
+ */
+exports.getContactsPage = async (req, res, next) => {
+  try {
+    res.render('admin/contacts', {
+      title: 'Contact Messages',
+      user: req.user,
+      currentPage: 'contacts',
+      page: 'contacts'
+    });
+  } catch (error) {
+    logger.error('Get contacts page error:', error);
+    next(error);
+  }
+};
+
+/**
+ * Get contact messages (API)
+ */
+exports.getContactMessages = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, status, search, service, date } = req.query;
+    const skip = (page - 1) * limit;
+
+    // Check if Contact model is available
+    if (!Contact) {
+      logger.error('Contact model not found');
+      return res.status(500).json({
+        success: false,
+        message: 'Contact model not initialized'
+      });
+    }
+
+    let filter = {};
+    if (status) filter.status = status;
+    if (service) filter.service = service;
+    
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { message: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (date) {
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(date);
+      endDate.setHours(23, 59, 59, 999);
+      filter.createdAt = { $gte: startDate, $lte: endDate };
+    }
+
+    const messages = await Contact.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Contact.countDocuments(filter);
+    
+    // Get stats for status cards
+    const stats = {
+      total: await Contact.countDocuments(),
+      new: await Contact.countDocuments({ status: 'new' }),
+      read: await Contact.countDocuments({ status: 'read' }),
+      replied: await Contact.countDocuments({ status: 'replied' }),
+      archived: await Contact.countDocuments({ status: 'archived' })
+    };
+
+    res.json({
+      success: true,
+      messages,
+      stats,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    logger.error('Get contact messages error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving messages: ' + error.message
+    });
+  }
+};
+
+/**
+ * Get contact counts
+ */
+exports.getContactCounts = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const filter = status ? { status } : {};
+    const count = await Contact.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      count
+    });
+  } catch (error) {
+    logger.error('Get contact counts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving counts'
+    });
+  }
+};
+
+/**
+ * Get single contact details
+ */
+exports.getContactDetails = async (req, res, next) => {
+  try {
+    const message = await Contact.findById(req.params.id);
+    
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: 'Message not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message
+    });
+  } catch (error) {
+    logger.error('Get contact details error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving message'
+    });
+  }
+};
+
+/**
+ * Update contact status
+ */
+exports.updateContactStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const message = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { status, updatedAt: Date.now() },
+      { new: true }
+    );
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: 'Message not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message
+    });
+  } catch (error) {
+    logger.error('Update contact status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating message'
+    });
+  }
+};
+
+/**
+ * Reply to contact message
+ */
+exports.replyToContact = async (req, res, next) => {
+  try {
+    const { reply } = req.body;
+    const message = await Contact.findById(req.params.id);
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: 'Message not found'
+      });
+    }
+
+    // Send email reply
+    await emailService.sendEmail(
+      message.email,
+      `Re: Your UZYHOMES Inquiry - ${message.service}`,
+      `
+        <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="font-family: 'Playfair Display', serif;">UZYHOMES</h2>
+          <p>Dear ${message.name},</p>
+          <div style="background: #f8f9fa; padding: 20px; border-left: 3px solid #b8a48c;">
+            ${reply.replace(/\n/g, '<br>')}
+          </div>
+          <p style="margin-top: 20px;">Warm regards,<br>The UZYHOMES Team</p>
+        </div>
+      `
+    );
+
+    // Update status
+    message.status = 'replied';
+    message.updatedAt = Date.now();
+    await message.save();
+
+    res.json({
+      success: true,
+      message: 'Reply sent successfully'
+    });
+  } catch (error) {
+    logger.error('Reply to contact error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending reply'
+    });
+  }
+};
+
+/**
+ * Delete contact message
+ */
+exports.deleteContact = async (req, res, next) => {
+  try {
+    const message = await Contact.findByIdAndDelete(req.params.id);
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: 'Message not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Message deleted successfully'
+    });
+  } catch (error) {
+    logger.error('Delete contact error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting message'
+    });
+  }
+};
+
+/**
+ * Export contacts to CSV
+ */
+exports.exportContacts = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    let filter = {};
+    if (status) filter.status = status;
+
+    const messages = await Contact.find(filter).sort({ createdAt: -1 });
+
+    // Create CSV
+    const csv = [
+      ['Date', 'Name', 'Email', 'Phone', 'Service', 'Message', 'Newsletter', 'Status'].join(','),
+      ...messages.map(m => [
+        new Date(m.createdAt).toLocaleDateString(),
+        `"${m.name}"`,
+        m.email,
+        m.phone || '',
+        m.service,
+        `"${m.message.replace(/"/g, '""')}"`,
+        m.subscribeToNewsletter ? 'Yes' : 'No',
+        m.status
+      ].join(','))
+    ].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=contacts.csv');
+    res.send(csv);
+  } catch (error) {
+    logger.error('Export contacts error:', error);
+    next(error);
+  }
+};
+
+// ======================================================
+// NEWSLETTER SUBSCRIBERS METHODS
+// ======================================================
+
+/**
+ * Subscribers page
+ */
+exports.getSubscribersPage = async (req, res, next) => {
+  try {
+    res.render('admin/subscribers', {
+      title: 'Newsletter Subscribers',
+      user: req.user,
+      currentPage: 'subscribers',
+      page: 'subscribers'
+    });
+  } catch (error) {
+    logger.error('Get subscribers page error:', error);
+    next(error);
+  }
+};
+
+/**
+ * Get subscribers (API)
+ */
+exports.getSubscribers = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 50, status, source, search, date } = req.query;
+    const skip = (page - 1) * limit;
+
+    // Check if Subscriber model is available
+    if (!Subscriber) {
+      logger.error('Subscriber model not found');
+      return res.status(500).json({
+        success: false,
+        message: 'Subscriber model not initialized'
+      });
+    }
+
+    let filter = {};
+    if (status) filter.status = status;
+    if (source) filter.source = source;
+    
+    if (search) {
+      filter.$or = [
+        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (date) {
+      const startDate = new Date(date);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(date);
+      endDate.setHours(23, 59, 59, 999);
+      filter.subscribedAt = { $gte: startDate, $lte: endDate };
+    }
+
+    const subscribers = await Subscriber.find(filter)
+      .sort({ subscribedAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Subscriber.countDocuments(filter);
+    
+    // Get stats
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const stats = {
+      active: await Subscriber.countDocuments({ status: 'active' }),
+      unsubscribed: await Subscriber.countDocuments({ status: 'unsubscribed' }),
+      bounced: await Subscriber.countDocuments({ status: 'bounced' }),
+      newThisMonth: await Subscriber.countDocuments({
+        status: 'active',
+        subscribedAt: { $gte: firstDayOfMonth }
+      })
+    };
+
+    res.json({
+      success: true,
+      subscribers,
+      stats,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    logger.error('Get subscribers error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving subscribers: ' + error.message
+    });
+  }
+};
+
+/**
+ * Get subscriber counts
+ */
+exports.getSubscriberCounts = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    
+    // Check if Subscriber model is available
+    if (!Subscriber) {
+      logger.error('Subscriber model not found');
+      return res.status(500).json({
+        success: false,
+        message: 'Subscriber model not initialized'
+      });
+    }
+    
+    const filter = status ? { status } : {};
+    const count = await Subscriber.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      count
+    });
+  } catch (error) {
+    logger.error('Get subscriber counts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving counts: ' + error.message
+    });
+  }
+};
+
+/**
+ * Delete subscriber
+ */
+exports.deleteSubscriber = async (req, res, next) => {
+  try {
+    const subscriber = await Subscriber.findByIdAndDelete(req.params.id);
+
+    if (!subscriber) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subscriber not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Subscriber deleted successfully'
+    });
+  } catch (error) {
+    logger.error('Delete subscriber error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting subscriber'
+    });
+  }
+};
+
+/**
+ * Send newsletter to all active subscribers
+ */
+exports.sendNewsletter = async (req, res, next) => {
+  try {
+    const { subject, content, sendTestFirst } = req.body;
+
+    if (!subject || !content) {
+      return res.status(400).json({
+        success: false,
+        message: 'Subject and content are required'
+      });
+    }
+
+    const subscribers = await Subscriber.find({ status: 'active' });
+
+    if (subscribers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No active subscribers found'
+      });
+    }
+
+    // Send test first if requested
+    if (sendTestFirst) {
+      await emailService.sendEmail(
+        req.user.email,
+        `[TEST] ${subject}`,
+        `
+          <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="font-family: 'Playfair Display', serif;">UZYHOMES Newsletter</h2>
+            <h3>${subject}</h3>
+            <div style="background: #f8f9fa; padding: 20px; border-left: 3px solid #b8a48c;">
+              ${content.replace(/\n/g, '<br>')}
+            </div>
+            <p style="margin-top: 20px; color: #6c757d;">
+              This is a test email sent to ${subscribers.length} subscribers.
+            </p>
+          </div>
+        `
+      );
+
+      return res.json({
+        success: true,
+        message: 'Test email sent successfully'
+      });
+    }
+
+    // Send to all subscribers
+    const html = `
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="font-family: 'Playfair Display', serif;">UZYHOMES Newsletter</h2>
+        <h3>${subject}</h3>
+        <div style="background: #f8f9fa; padding: 20px; border-left: 3px solid #b8a48c;">
+          ${content.replace(/\n/g, '<br>')}
+        </div>
+        <p style="margin-top: 20px; color: #6c757d;">
+          <a href="{{unsubscribe_link}}">Unsubscribe</a>
+        </p>
+      </div>
+    `;
+
+    // Send in batches of 50
+    for (let i = 0; i < subscribers.length; i += 50) {
+      const batch = subscribers.slice(i, i + 50);
+      await Promise.all(batch.map(sub => 
+        emailService.sendEmail(sub.email, subject, html)
+      ));
+    }
+
+    logger.info(`Newsletter sent to ${subscribers.length} subscribers`);
+
+    res.json({
+      success: true,
+      message: `Newsletter sent to ${subscribers.length} subscribers`
+    });
+
+  } catch (error) {
+    logger.error('Send newsletter error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending newsletter'
+    });
+  }
+};
+
+/**
+ * Send test email
+ */
+exports.sendTestEmail = async (req, res, next) => {
+  try {
+    const { email, subject, content } = req.body;
+
+    await emailService.sendEmail(
+      email,
+      subject,
+      `
+        <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="font-family: 'Playfair Display', serif;">UZYHOMES Newsletter</h2>
+          <h3>${subject}</h3>
+          <div style="background: #f8f9fa; padding: 20px; border-left: 3px solid #b8a48c;">
+            ${content.replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `
+    );
+
+    res.json({
+      success: true,
+      message: 'Test email sent successfully'
+    });
+  } catch (error) {
+    logger.error('Send test email error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending test email'
+    });
+  }
+};
+
+/**
+ * Export subscribers to CSV
+ */
+exports.exportSubscribers = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    let filter = {};
+    if (status) filter.status = status;
+
+    const subscribers = await Subscriber.find(filter).sort({ subscribedAt: -1 });
+
+    // Create CSV
+    const csv = [
+      ['Date', 'Email', 'Name', 'Source', 'Status', 'Unsubscribed'].join(','),
+      ...subscribers.map(s => [
+        new Date(s.subscribedAt).toLocaleDateString(),
+        s.email,
+        `"${s.name || ''}"`,
+        s.source,
+        s.status,
+        s.unsubscribedAt ? new Date(s.unsubscribedAt).toLocaleDateString() : ''
+      ].join(','))
+    ].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=subscribers.csv');
+    res.send(csv);
+  } catch (error) {
+    logger.error('Export subscribers error:', error);
+    next(error);
   }
 };
 

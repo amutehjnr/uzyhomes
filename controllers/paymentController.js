@@ -649,4 +649,74 @@ async function handleRefundFailed(data) {
   }
 }
 
+/**
+ * Get user's payments (for account page - alias for getPaymentHistory)
+ */
+exports.getUserPayments = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10, status, method } = req.query;
+
+    let filter = { customer: req.user._id };
+    if (status) filter.status = status;
+    if (method) filter.paymentMethod = method;
+
+    const skip = (page - 1) * limit;
+    const total = await Payment.countDocuments(filter);
+    
+    const payments = await Payment.find(filter)
+      .populate('order', 'orderNumber total')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Format the response to match what the frontend expects
+    res.json({
+      success: true,
+      transactions: payments, // Using 'transactions' to match frontend
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    logger.error('Get user payments error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load payments'
+    });
+  }
+};
+
+/**
+ * Get single payment details for user
+ */
+exports.getPaymentDetails = async (req, res, next) => {
+  try {
+    const payment = await Payment.findOne({
+      _id: req.params.id,
+      customer: req.user._id
+    }).populate('order');
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Payment not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      payment
+    });
+  } catch (error) {
+    logger.error('Get payment details error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load payment details'
+    });
+  }
+};
+
 module.exports = exports;

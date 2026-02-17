@@ -61,6 +61,22 @@
             </a>
         </div>
         
+        <div class="nav-section-label">Communications</div>
+        <div class="nav-item">
+            <a href="/admin/contacts" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'contacts') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-envelope"></i></span>
+                <span>Contact Messages</span>
+                <span class="nav-badge" id="unreadMessages">0</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="/admin/subscribers" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'subscribers') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-newspaper"></i></span>
+                <span>Newsletter</span>
+                <span class="nav-badge" id="activeSubscribers">0</span>
+            </a>
+        </div>
+        
         <div class="nav-section-label">System</div>
         <div class="nav-item">
             <a href="/admin/settings" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'settings') ? 'active' : '' %>">
@@ -94,5 +110,43 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay.classList.remove('open');
         });
     }
+    
+    // Load counts for badges
+    loadMessageCounts();
 });
+
+async function loadMessageCounts() {
+    try {
+        // Get unread messages count
+        const msgRes = await fetch('/admin/api/contacts/count?status=new', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            }
+        });
+        const msgData = await msgRes.json();
+        if (msgData.success) {
+            const badge = document.getElementById('unreadMessages');
+            if (badge) {
+                badge.textContent = msgData.count || 0;
+                badge.style.display = msgData.count > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
+        // Get active subscribers count
+        const subRes = await fetch('/admin/api/subscribers/count?status=active', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            }
+        });
+        const subData = await subRes.json();
+        if (subData.success) {
+            const badge = document.getElementById('activeSubscribers');
+            if (badge) {
+                badge.textContent = subData.count || 0;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading counts:', error);
+    }
+}
 </script>

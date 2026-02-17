@@ -27,6 +27,13 @@ const decorRoutes = require('./routes/decorRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
+// Import controllers (not routes - these are for direct use)
+const wishlistController = require('./controllers/wishlistController');
+const orderController = require('./controllers/orderController');
+const paymentController = require('./controllers/paymentController');
+const authController = require('./controllers/authController');
+const addressController = require('./controllers/addressController');
+
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
 const { globalErrorHandler } = require('./middleware/errorHandler');
@@ -140,12 +147,11 @@ app.use(mongoSanitize());
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Authentication middleware - Apply to all routes (but only once)
+// Authentication middleware - Apply to all routes
 app.use(authenticateToken);
 
 // Make user available to all views
 app.use((req, res, next) => {
-  // This ensures user is always defined (even if null) in all views
   res.locals.user = req.user || null;
   res.locals.isLoggedIn = !!req.user;
   next();
@@ -170,9 +176,70 @@ app.use('/', pageRoutes);
 app.use('/decor', decorRoutes);
 app.use('/api/contact', contactRoutes);
 
+// ======================================================
+// USER ACCOUNT API ROUTES (Direct controller usage)
+// ======================================================
+
+// Address routes (using user model)
+app.get('/api/addresses', authenticateToken, addressController.getAddresses);
+app.put('/api/addresses', authenticateToken, addressController.updateAddress);
+app.delete('/api/addresses', authenticateToken, addressController.deleteAddress);
+
+// Wishlist routes
+app.get('/api/wishlist', authenticateToken, wishlistController.getWishlist);
+app.post('/api/wishlist', authenticateToken, wishlistController.addToWishlist);
+app.delete('/api/wishlist/:itemId', authenticateToken, wishlistController.removeFromWishlist);
+app.delete('/api/wishlist', authenticateToken, wishlistController.clearWishlist);
+
+// Orders routes for users
+app.get('/api/orders', authenticateToken, orderController.getOrders);  // Use getOrders (already exists)
+app.get('/api/orders/:id', authenticateToken, orderController.getOrderById);  // Use getOrderById (already exists)
+
+// Payments routes for users
+app.get('/api/payments', authenticateToken, paymentController.getUserPayments); // Use the new method
+app.get('/api/payments/:id', authenticateToken, paymentController.getPaymentDetails);
+
+// Auth routes for profile
+app.get('/api/auth/me', authenticateToken, authController.getMe);
+app.put('/api/auth/profile', authenticateToken, authController.updateProfile);
+app.post('/api/auth/change-password', authenticateToken, authController.changePassword);
+
+// ======================================================
+// PAGE ROUTES - Order matters! Put specific routes first
+// ======================================================
+
+// Order details page - MUST come BEFORE /orders
+app.get('/orders/:id', (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login?redirect=' + encodeURIComponent(req.originalUrl));
+  }
+  res.render('order-details', { 
+    user: req.user,
+    orderId: req.params.id
+  });
+});
+
+// Orders list page
+app.get('/orders', (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login?redirect=/orders');
+  }
+  res.render('orders');
+});
+
+// Transaction details page
+app.get('/transactions/:id', (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login?redirect=' + encodeURIComponent(req.originalUrl));
+  }
+  res.render('transaction-details', { 
+    user: req.user,
+    transactionId: req.params.id
+  });
+});
+
 // Page routes
 app.get('/', (req, res) => {
-  // user is already available via res.locals, no need to pass it
   res.render('index');
 });
 
@@ -340,13 +407,6 @@ app.get('/payment-failed', (req, res) => {
     query: req.query,
     user: req.user 
   });
-});
-
-app.get('/orders', (req, res) => {
-  if (!req.user) {
-    return res.redirect('/login?redirect=/orders');
-  }
-  res.render('orders');
 });
 
 // TEST REDIRECT ROUTE

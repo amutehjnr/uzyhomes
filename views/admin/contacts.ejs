@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Messages — UZYHOMES Admin</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom Admin CSS -->
+    <link rel="stylesheet" href="/css/admin.css">
+    
+    <style>
+        /* Messages Table Styles */
+        .message-item {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .message-item:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        .message-item.unread {
+            background: #f8f9ff;
+            font-weight: 500;
+        }
+        .message-item.unread .message-subject {
+            font-weight: 600;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-new { background: #e3f2fd; color: #0d47a1; }
+        .status-read { background: #f5f5f5; color: #616161; }
+        .status-replied { background: #e8f5e9; color: #1b5e20; }
+        .status-archived { background: #fafafa; color: #9e9e9e; }
+        
+        /* Message Detail Modal */
+        .message-detail-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        .message-detail-value {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            word-break: break-word;
+        }
+        .message-detail-value pre {
+            margin: 0;
+            font-family: inherit;
+            white-space: pre-wrap;
+        }
+        
+        /* Service Tags */
+        .service-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        .service-interior-design { background: #e8eaf6; color: #283593; }
+        .service-bedding { background: #fce4ec; color: #880e4f; }
+        .service-decor { background: #f3e5f5; color: #4a148c; }
+        .service-styling { background: #e0f2f1; color: #00695c; }
+        .service-collaboration { background: #fff3e0; color: #bf360c; }
+        .service-other { background: #eeeeee; color: #616161; }
+        
+        /* Quick Reply */
+        .quick-reply {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="admin-panel" data-page="contacts">
+
+    <%- include('partials/header') %>
+    
+    <div class="admin-wrapper">
+        <%- include('partials/sidebar', { currentPage: 'contacts' }) %>
+        
+        <main class="admin-main">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Contact Messages</h1>
+                        <p class="page-subtitle">Manage inquiries from the contact form</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" onclick="loadMessages()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportMessages()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="filterMessages('')">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-label">Total Messages</div>
+                            <div class="stat-value" id="totalMessages">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="filterMessages('new')">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-label">New</div>
+                            <div class="stat-value" id="newMessages">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="filterMessages('replied')">
+                        <div class="stat-icon green">
+                            <i class="fas fa-reply"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-label">Replied</div>
+                            <div class="stat-value" id="repliedMessages">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="filterMessages('archived')">
+                        <div class="stat-icon grey">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-label">Archived</div>
+                            <div class="stat-value" id="archivedMessages">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-bar">
+                    <div class="search-input-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="messageSearch" class="form-control" 
+                               placeholder="Search by name or email..." data-search="contacts">
+                    </div>
+                    <select id="statusFilter" class="form-control" data-filter="contacts">
+                        <option value="">All Status</option>
+                        <option value="new">New</option>
+                        <option value="read">Read</option>
+                        <option value="replied">Replied</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                    <select id="serviceFilter" class="form-control" data-filter="contacts">
+                        <option value="">All Services</option>
+                        <option value="interior-design">Interior Design</option>
+                        <option value="bedding">Bedding</option>
+                        <option value="decor">Décor</option>
+                        <option value="styling">Styling</option>
+                        <option value="collaboration">Collaboration</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="date" id="dateFilter" class="form-control" data-filter="contacts" style="max-width:180px">
+                </div>
+
+                <!-- Messages Table -->
+                <div class="card">
+                    <div class="table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Service</th>
+                                    <th>Message</th>
+                                    <th>Newsletter</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <div class="spinner-border text-primary"></div>
+                                        <p class="mt-2">Loading messages...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-wrap" id="paginationWrap"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Message Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="message-detail-label">From</div>
+                            <div class="message-detail-value" id="modalName"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="message-detail-label">Email</div>
+                            <div class="message-detail-value" id="modalEmail"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="message-detail-label">Phone</div>
+                            <div class="message-detail-value" id="modalPhone"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="message-detail-label">Service</div>
+                            <div class="message-detail-value" id="modalService"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-detail-label">Message</div>
+                    <div class="message-detail-value" id="modalMessage"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="message-detail-label">Status</div>
+                            <div class="message-detail-value" id="modalStatus"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="message-detail-label">Newsletter</div>
+                            <div class="message-detail-value" id="modalNewsletter"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="message-detail-label">Date</div>
+                            <div class="message-detail-value" id="modalDate"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="message-detail-label">IP Address</div>
+                            <div class="message-detail-value" id="modalIP"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="message-detail-label">User Agent</div>
+                            <div class="message-detail-value" id="modalUserAgent"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Reply -->
+                    <div class="quick-reply">
+                        <h6>Quick Reply</h6>
+                        <textarea id="replyMessage" class="form-control mb-2" rows="3" 
+                                  placeholder="Type your reply..."></textarea>
+                        <button class="btn btn-primary btn-sm" onclick="sendReply()">
+                            <i class="fas fa-paper-plane"></i> Send Reply
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="markAsRead()">Mark as Read</button>
+                    <button class="btn btn-outline" onclick="markAsArchived()">Archive</button>
+                    <button class="btn btn-outline" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentPage = 1;
+        let currentFilters = {};
+        let currentMessageId = null;
+        
+        // Load messages
+        async function loadMessages(page = 1, filters = {}) {
+            currentPage = page;
+            currentFilters = { ...currentFilters, ...filters };
+            
+            let url = `/admin/api/contacts?page=${page}&limit=20`;
+            if (filters.status) url += `&status=${filters.status}`;
+            if (filters.service) url += `&service=${filters.service}`;
+            if (filters.search) url += `&search=${filters.search}`;
+            if (filters.date) url += `&date=${filters.date}`;
+            
+            try {
+                const res = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    displayMessages(data.messages, data.pagination);
+                    updateStats(data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+        
+        function displayMessages(messages, pagination) {
+            const tbody = document.getElementById('messagesTableBody');
+            
+            if (!messages || messages.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
+                            <p class="text-muted">No messages found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = messages.map(msg => `
+                <tr class="message-item ${msg.status === 'new' ? 'unread' : ''}" 
+                    onclick="viewMessage('${msg._id}')">
+                    <td>
+                        <span class="status-badge status-${msg.status}">
+                            ${msg.status}
+                        </span>
+                    </td>
+                    <td>${msg.name}</td>
+                    <td>${msg.email}</td>
+                    <td>
+                        <span class="service-tag service-${msg.service}">
+                            ${msg.service.replace('-', ' ')}
+                        </span>
+                    </td>
+                    <td>${msg.message.substring(0, 50)}${msg.message.length > 50 ? '...' : ''}</td>
+                    <td>
+                        ${msg.subscribeToNewsletter ? 
+                            '<i class="fas fa-check-circle text-success"></i>' : 
+                            '<i class="fas fa-times-circle text-muted"></i>'}
+                    </td>
+                    <td>${new Date(msg.createdAt).toLocaleDateString()}</td>
+                    <td onclick="event.stopPropagation()">
+                        <button class="btn btn-sm btn-icon" onclick="viewMessage('${msg._id}')" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-icon" onclick="deleteMessage('${msg._id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            updatePagination(pagination);
+        }
+        
+        function updateStats(stats) {
+            document.getElementById('totalMessages').textContent = stats?.total || 0;
+            document.getElementById('newMessages').textContent = stats?.new || 0;
+            document.getElementById('repliedMessages').textContent = stats?.replied || 0;
+            document.getElementById('archivedMessages').textContent = stats?.archived || 0;
+        }
+        
+        function updatePagination(pagination) {
+            const wrap = document.getElementById('paginationWrap');
+            if (!wrap) return;
+            
+            if (pagination.pages <= 1) {
+                wrap.innerHTML = '';
+                return;
+            }
+            
+            let html = `
+                <div class="pagination-info">
+                    Page ${pagination.page} of ${pagination.pages} (${pagination.total} messages)
+                </div>
+                <div class="pagination">
+            `;
+            
+            for (let i = 1; i <= pagination.pages; i++) {
+                html += `
+                    <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
+                            onclick="loadMessages(${i}, currentFilters)">${i}</button>
+                `;
+            }
+            
+            html += '</div>';
+            wrap.innerHTML = html;
+        }
+        
+        async function viewMessage(id) {
+            currentMessageId = id;
+            
+            try {
+                const res = await fetch(`/admin/api/contacts/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    const msg = data.message;
+                    
+                    document.getElementById('modalName').textContent = msg.name;
+                    document.getElementById('modalEmail').textContent = msg.email;
+                    document.getElementById('modalPhone').textContent = msg.phone || 'Not provided';
+                    document.getElementById('modalService').innerHTML = 
+                        `<span class="service-tag service-${msg.service}">${msg.service.replace('-', ' ')}</span>`;
+                    document.getElementById('modalMessage').innerHTML = `<pre>${msg.message}</pre>`;
+                    document.getElementById('modalStatus').innerHTML = 
+                        `<span class="status-badge status-${msg.status}">${msg.status}</span>`;
+                    document.getElementById('modalNewsletter').innerHTML = msg.subscribeToNewsletter ?
+                        '<i class="fas fa-check-circle text-success"></i> Subscribed' :
+                        '<i class="fas fa-times-circle text-muted"></i> Not subscribed';
+                    document.getElementById('modalDate').textContent = new Date(msg.createdAt).toLocaleString();
+                    document.getElementById('modalIP').textContent = msg.ipAddress || 'N/A';
+                    document.getElementById('modalUserAgent').textContent = msg.userAgent || 'N/A';
+                    
+                    // If message was new, mark as read
+                    if (msg.status === 'new') {
+                        await updateMessageStatus(id, 'read');
+                    }
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Error loading message:', error);
+            }
+        }
+        
+        async function updateMessageStatus(id, status) {
+            try {
+                await fetch(`/admin/api/contacts/${id}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                loadMessages(currentPage, currentFilters);
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+        
+        function markAsRead() {
+            if (currentMessageId) {
+                updateMessageStatus(currentMessageId, 'read');
+                bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+            }
+        }
+        
+        function markAsArchived() {
+            if (currentMessageId) {
+                updateMessageStatus(currentMessageId, 'archived');
+                bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+            }
+        }
+        
+        async function sendReply() {
+            const reply = document.getElementById('replyMessage').value;
+            if (!reply) {
+                alert('Please enter a reply message');
+                return;
+            }
+            
+            try {
+                const res = await fetch(`/admin/api/contacts/${currentMessageId}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    },
+                    body: JSON.stringify({ reply })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('Reply sent successfully!');
+                    document.getElementById('replyMessage').value = '';
+                    updateMessageStatus(currentMessageId, 'replied');
+                    bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+                } else {
+                    alert(data.message || 'Failed to send reply');
+                }
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Failed to send reply');
+            }
+        }
+        
+        async function deleteMessage(id) {
+            if (!confirm('Are you sure you want to delete this message?')) return;
+            
+            try {
+                const res = await fetch(`/admin/api/contacts/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+                
+                if (res.ok) {
+                    loadMessages(currentPage, currentFilters);
+                }
+            } catch (error) {
+                console.error('Error deleting message:', error);
+            }
+        }
+        
+        function filterMessages(status) {
+            document.getElementById('statusFilter').value = status;
+            loadMessages(1, { status });
+        }
+        
+        function exportMessages() {
+            window.open('/admin/contacts/export', '_blank');
+        }
+        
+        // Filter event listeners
+        document.getElementById('statusFilter')?.addEventListener('change', (e) => {
+            loadMessages(1, { status: e.target.value });
+        });
+        
+        document.getElementById('serviceFilter')?.addEventListener('change', (e) => {
+            loadMessages(1, { service: e.target.value });
+        });
+        
+        document.getElementById('dateFilter')?.addEventListener('change', (e) => {
+            loadMessages(1, { date: e.target.value });
+        });
+        
+        document.getElementById('messageSearch')?.addEventListener('input', debounce((e) => {
+            loadMessages(1, { search: e.target.value });
+        }, 500));
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMessages();
+        });
+    </script>
+</body>
+</html>

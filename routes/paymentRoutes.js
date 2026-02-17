@@ -12,9 +12,10 @@ router.use(authenticateToken);
 
 // Payment initialization
 router.post('/initialize', paymentController.initializePayment);
-
+router.get('/', authenticateToken, paymentController.getUserPayments);
 // Payment history and details
 router.get('/history', paymentController.getPaymentHistory);
+router.get('/user', paymentController.getUserPayments); // New route for user payments
 router.get('/:id', paymentController.getPaymentDetails);
 
 // Retry payment
