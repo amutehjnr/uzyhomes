@@ -1,0 +1,98 @@
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">UZYHOMES <span>Admin</span></div>
+    </div>
+    
+    <% if (user) { %>
+    <div class="sidebar-user">
+        <div class="sidebar-avatar">
+            <%= (user.firstName || 'A').charAt(0).toUpperCase() %>
+        </div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name">
+                <%= user.firstName || '' %> <%= user.lastName || '' %>
+            </div>
+            <div class="sidebar-user-role">
+                <%= user.role === 'super_admin' ? 'Super Admin' : 'Administrator' %>
+            </div>
+        </div>
+    </div>
+    <% } %>
+    
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <div class="nav-item">
+            <a href="/admin/dashboard" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="/admin/products" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'products') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-box"></i></span>
+                <span>Products</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="/admin/orders" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'orders') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+                <span>Orders</span>
+                <span class="nav-badge">12</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="/admin/users" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'users') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-users"></i></span>
+                <span>Users</span>
+            </a>
+        </div>
+        
+        <div class="nav-section-label">Management</div>
+        <div class="nav-item">
+            <a href="/admin/transactions" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'transactions') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-credit-card"></i></span>
+                <span>Transactions</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="/admin/coupons" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'coupons') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-ticket-alt"></i></span>
+                <span>Coupons</span>
+            </a>
+        </div>
+        
+        <div class="nav-section-label">System</div>
+        <div class="nav-item">
+            <a href="/admin/settings" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'settings') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                <span>Settings</span>
+            </a>
+        </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <div class="sidebar-version">v1.0.0</div>
+    </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+    
+    if (toggle && sidebar && overlay) {
+        toggle.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+        
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    }
+});
+</script>

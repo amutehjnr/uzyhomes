@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — UZYHOMES Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body data-page="orders">
+
+<!-- FIXED: Pass both currentPage and user to sidebar -->
+<%- include('./partials/sidebar', { currentPage: 'orders', user: user }) %>
+
+<div class="admin-main">
+  <!-- FIXED: Pass user to header instead of admin -->
+  <%- include('./partials/header', { pageTitle: 'Orders', user: user }) %>
+
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Orders</h1>
+        <p class="page-subtitle">Track and manage all customer orders</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="Orders.loadTable()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-secondary" onclick="exportOrders()"><i class="fas fa-download"></i> Export</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-shopping-bag"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value"><%= stats && stats.total ? stats.total.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Pending</div>
+          <div class="stat-value"><%= stats && stats.pending ? stats.pending.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-truck"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Shipped</div>
+          <div class="stat-value"><%= stats && stats.shipped ? stats.shipped.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-double"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Delivered</div>
+          <div class="stat-value"><%= stats && stats.delivered ? stats.delivered.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm status-tab active" data-status="" onclick="setOrderTab(this, '')">All</button>
+      <button class="btn btn-secondary btn-sm status-tab" data-status="pending" onclick="setOrderTab(this, 'pending')"><span class="badge badge-warning" style="font-size:0.7rem">●</span> Pending</button>
+      <button class="btn btn-secondary btn-sm status-tab" data-status="processing" onclick="setOrderTab(this, 'processing')"><span class="badge badge-info" style="font-size:0.7rem">●</span> Processing</button>
+      <button class="btn btn-secondary btn-sm status-tab" data-status="shipped" onclick="setOrderTab(this, 'shipped')"><span class="badge badge-purple" style="font-size:0.7rem">●</span> Shipped</button>
+      <button class="btn btn-secondary btn-sm status-tab" data-status="delivered" onclick="setOrderTab(this, 'delivered')"><span class="badge badge-success" style="font-size:0.7rem">●</span> Delivered</button>
+      <button class="btn btn-secondary btn-sm status-tab" data-status="cancelled" onclick="setOrderTab(this, 'cancelled')"><span class="badge badge-danger" style="font-size:0.7rem">●</span> Cancelled</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="orderSearch" class="form-control" placeholder="Search order # or customer..." data-search-for="orders">
+      </div>
+      <input type="date" id="orderDate" class="form-control" data-filter-for="orders" style="max-width:180px">
+      <select id="orderStatus" class="form-control" data-filter-for="orders" style="display:none">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="7" class="text-center" style="padding:40px"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrap" id="paginationWrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <h2 class="modal-title">Update Order Status</h2>
+      <button class="modal-close" onclick="Modal.close('statusModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">New Status <span style="color:var(--red)">*</span></label>
+        <select id="orderStatusSelect" class="form-control">
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tracking Number</label>
+        <input type="text" id="trackingNumber" class="form-control" placeholder="Optional — e.g. WAYBILL123456">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note / Message to Customer</label>
+        <textarea id="statusNote" class="form-control" placeholder="Optional note..." style="min-height:80px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Modal.close('statusModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="Orders.updateStatus()"><i class="fas fa-check"></i> Update Status</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/admin.js"></script>
+<script>
+function setOrderTab(btn, status) {
+  document.querySelectorAll('.status-tab').forEach(b => b.classList.remove('active', 'btn-primary'));
+  document.querySelectorAll('.status-tab').forEach(b => b.classList.add('btn-secondary'));
+  btn.classList.remove('btn-secondary');
+  btn.classList.add('active', 'btn-primary');
+  document.getElementById('orderStatus').value = status;
+  Orders.loadTable('status=' + status);
+}
+
+function exportOrders() {
+  window.open('/admin/orders/export', '_blank');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if Orders object exists and has loadTable method
+  if (typeof Orders !== 'undefined' && Orders.loadTable) {
+    Orders.loadTable();
+  }
+});
+</script>
+</body>
+</html>

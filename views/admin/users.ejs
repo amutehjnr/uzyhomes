@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users — UZYHOMES Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body data-page="users">
+
+<!-- FIXED: Added missing closing %> tag -->
+<%- include('./partials/sidebar', { currentPage: 'users', user: user }) %>
+
+<div class="admin-main">
+  <%- include('./partials/header', { pageTitle: 'Users', user: user }) %>
+
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Users</h1>
+        <p class="page-subtitle">Manage customer accounts and access</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="Users.loadTable()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value"><%= stats && stats.total ? stats.total.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-user-check"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Active</div>
+          <div class="stat-value"><%= stats && stats.active ? stats.active.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-user-plus"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">New This Month</div>
+          <div class="stat-value"><%= stats && stats.new ? stats.new.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-user-slash"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Inactive</div>
+          <div class="stat-value"><%= stats && stats.inactive ? stats.inactive.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="userSearch" class="form-control" placeholder="Search by name or email..." data-search-for="users">
+      </div>
+      <select id="userStatus" class="form-control" data-filter-for="users">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <select id="userSort" class="form-control" data-filter-for="users">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="most-orders">Most Orders</option>
+        <option value="most-spent">Highest Spend</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Orders</th>
+              <th>Total Spent</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="6" class="text-center" style="padding:40px"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrap" id="paginationWrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="deleteModalTitle">Delete User</h2>
+      <button class="modal-close" onclick="Modal.close('deleteModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:32px">
+      <div style="font-size:2.5rem;margin-bottom:16px">⚠️</div>
+      <p style="color:var(--text-secondary);margin-bottom:8px">You are about to permanently delete:</p>
+      <p class="fw-600" id="deleteTargetName" style="color:var(--text-primary);margin-bottom:16px"></p>
+      <p style="font-size:0.85rem;color:var(--text-muted)">All user data including orders and history will be removed.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Modal.close('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteAction()"><i class="fas fa-trash"></i> Delete User</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/admin.js"></script>
+<script>
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof Users !== 'undefined' && Users.loadTable) {
+    Users.loadTable();
+  }
+});
+</script>
+</body>
+</html>

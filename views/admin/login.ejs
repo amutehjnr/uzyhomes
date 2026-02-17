@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> — UZYHOMES</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .brand-tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-list {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-list li {
+            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .feature-list i {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+        
+        .login-subtitle {
+            color: #6c757d;
+            margin-bottom: 40px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 15px;
+        }
+        
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        
+        .forgot-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #6c757d;
+            margin: 30px 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .divider span {
+            padding: 0 10px;
+            font-size: 0.85rem;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link a:hover {
+            color: #1a1a1a;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left {
+                padding: 40px 30px;
+                min-height: 300px;
+            }
+            
+            .login-right {
+                padding: 40px 30px;
+            }
+            
+            .brand-logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Panel -->
+        <div class="login-left">
+            <div class="brand-logo">UZYHOMES</div>
+            <div class="brand-tagline">Admin Control Panel</div>
+            <ul class="feature-list">
+                <li>
+                    <i class="fas fa-chart-line"></i>
+                    <span>Comprehensive Dashboard & Analytics</span>
+                </li>
+                <li>
+                    <i class="fas fa-box"></i>
+                    <span>Product & Inventory Management</span>
+                </li>
+                <li>
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Order Processing & Tracking</span>
+                </li>
+                <li>
+                    <i class="fas fa-users"></i>
+                    <span>Customer Management System</span>
+                </li>
+                <li>
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Encrypted Access</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Right Panel - Login Form -->
+        <div class="login-right">
+            <h1 class="login-title">Admin Login</h1>
+            <p class="login-subtitle">Sign in to access your dashboard</p>
+            
+            <!-- Alert Container -->
+            <div id="alertContainer">
+                <% if (locals.error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                <% if (locals.message) { %>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <%= message %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        name="email"
+                        placeholder="admin@uzyhomes.com"
+                        required
+                        autocomplete="username"
+                        value="<%= locals.email || '' %>"
+                    >
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="position-relative">
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            id="rememberMe" 
+                            name="rememberMe"
+                        >
+                        <label class="form-check-label" for="rememberMe">
+                            Remember me
+                        </label>
+                    </div>
+                    <a href="/admin/forgot-password" class="forgot-link">
+                        Forgot Password?
+                    </a>
+                </div>
+                
+                <button type="submit" class="btn btn-login w-100" id="loginBtn">
+                    <span id="loginText">Sign In</span>
+                    <span id="loginSpinner" style="display: none;">
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        Signing in...
+                    </span>
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>Need help?</span>
+            </div>
+            
+            <div class="back-link">
+                <a href="/">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Main Site
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Login Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginText = document.getElementById('loginText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            // Password toggle
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+            
+            // Form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                
+                // Validation
+                if (!email || !password) {
+                    showAlert('danger', 'Please fill in all fields');
+                    return;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showAlert('danger', 'Please enter a valid email address');
+                    return;
+                }
+                
+                // Show loading
+                loginBtn.disabled = true;
+                loginText.style.display = 'none';
+                loginSpinner.style.display = 'inline-block';
+                
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+                    
+                    const response = await fetch('/admin/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password, rememberMe }),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    // Check if the response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('Non-JSON response:', text.substring(0, 200));
+                        
+                        // Check if it's an HTML error page
+                        if (text.includes('<!DOCTYPE html>')) {
+                            throw new Error('Server returned an HTML page. This might be due to a server error or redirect.');
+                        } else {
+                            throw new Error('Server returned an invalid response. Please try again.');
+                        }
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Store tokens
+                        if (data.token) {
+                            localStorage.setItem('adminToken', data.token);
+                        }
+                        if (data.refreshToken) {
+                            localStorage.setItem('adminRefreshToken', data.refreshToken);
+                        }
+                        
+                        showAlert('success', 'Login successful! Redirecting...');
+                        
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = data.redirectUrl || '/admin/dashboard';
+                        }, 1000);
+                    } else {
+                        showAlert('danger', data.message || 'Login failed. Please check your credentials.');
+                        
+                        // Reset form
+                        loginBtn.disabled = false;
+                        loginText.style.display = 'inline-block';
+                        loginSpinner.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    
+                    // Handle different error types
+                    let errorMessage = 'Network error. Please check your connection and try again.';
+                    
+                    if (error.name === 'AbortError') {
+                        errorMessage = 'Request timeout. Please try again.';
+                    } else if (error.message.includes('HTML')) {
+                        errorMessage = 'Server error. Please try again later or contact support.';
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Cannot connect to server. Please check if the server is running.';
+                    }
+                    
+                    showAlert('danger', errorMessage);
+                    
+                    // Reset form
+                    loginBtn.disabled = false;
+                    loginText.style.display = 'inline-block';
+                    loginSpinner.style.display = 'none';
+                }
+            });
+            
+            // Show alert function
+            function showAlert(type, message) {
+                const alertContainer = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                alertContainer.innerHTML = '';
+                alertContainer.appendChild(alert);
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        if (alertContainer.contains(alert)) {
+                            alertContainer.removeChild(alert);
+                        }
+                    }, 150);
+                }, 5000);
+            }
+            
+            // Check if already logged in
+            const adminToken = localStorage.getItem('adminToken');
+            if (adminToken) {
+                // Verify token and redirect if valid
+                fetch('/admin/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/admin/dashboard';
+                    } else {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminRefreshToken');
+                    }
+                })
+                .catch(() => {
+                    // Invalid token, stay on login page
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminRefreshToken');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

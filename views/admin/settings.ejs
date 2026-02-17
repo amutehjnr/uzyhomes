@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — UZYHOMES Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body data-page="settings">
+
+<!-- FIXED: Pass both currentPage and user to sidebar -->
+<%- include('./partials/sidebar', { currentPage: 'settings', user: user }) %>
+
+<div class="admin-main">
+  <!-- FIXED: Pass user to header instead of admin -->
+  <%- include('./partials/header', { pageTitle: 'Settings', user: user }) %>
+
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Configure your store preferences and account</p>
+      </div>
+    </div>
+
+    <!-- Settings Tabs -->
+    <div style="display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:0">
+      <button class="settings-tab active" data-tab="general" onclick="switchTab(this,'general')">
+        <i class="fas fa-store"></i> Store
+      </button>
+      <button class="settings-tab" data-tab="account" onclick="switchTab(this,'account')">
+        <i class="fas fa-user"></i> Account
+      </button>
+      <button class="settings-tab" data-tab="security" onclick="switchTab(this,'security')">
+        <i class="fas fa-shield-alt"></i> Security
+      </button>
+      <button class="settings-tab" data-tab="notifications" onclick="switchTab(this,'notifications')">
+        <i class="fas fa-bell"></i> Notifications
+      </button>
+    </div>
+
+    <!-- ── Tab: Store General ── -->
+    <div id="tab-general" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Store Information</span>
+        </div>
+        <div class="card-body">
+          <form id="generalForm">
+            <div class="setting-section">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Store Name</label>
+                  <input type="text" name="storeName" class="form-control" value="<%= settings && settings.storeName ? settings.storeName : 'UZYHOMES' %>">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Store Email</label>
+                  <input type="email" name="storeEmail" class="form-control" value="<%= settings && settings.storeEmail ? settings.storeEmail : 'hello@uzyhomes.com' %>">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Store Phone</label>
+                  <input type="text" name="storePhone" class="form-control" value="<%= settings && settings.storePhone ? settings.storePhone : '+234 704 751 1911' %>">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Currency</label>
+                  <select name="currency" class="form-control">
+                    <option value="NGN" selected>Nigerian Naira (₦)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="GBP">British Pound (£)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Store Address</label>
+                <textarea name="storeAddress" class="form-control" style="min-height:80px"><%= settings && settings.storeAddress ? settings.storeAddress : '' %></textarea>
+              </div>
+            </div>
+          </form>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="Settings.save('generalForm')"><i class="fas fa-save"></i> Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-header"><span class="card-title">Store Features</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Maintenance Mode</div>
+              <div class="setting-desc">Temporarily close the store to customers</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="maintenanceMode">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Allow Guest Checkout</div>
+              <div class="setting-desc">Let customers checkout without creating an account</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="guestCheckout" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Product Reviews</div>
+              <div class="setting-desc">Allow customers to leave product reviews</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="allowReviews" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Low Stock Alerts</div>
+              <div class="setting-desc">Get notified when product stock falls below threshold</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="lowStockAlerts" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Account ── -->
+    <div id="tab-account" class="tab-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Admin Profile</span></div>
+        <div class="card-body">
+          <form id="profileForm">
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)">
+              <div class="sidebar-avatar" style="width:64px;height:64px;font-size:1.4rem">
+                <%= user && user.firstName ? user.firstName.charAt(0).toUpperCase() : 'A' %>
+              </div>
+              <div>
+                <div class="fw-600" style="font-size:1.1rem"><%= user && user.firstName ? user.firstName + ' ' + user.lastName : 'Admin User' %></div>
+                <div class="text-muted" style="font-size:0.85rem"><%= user && user.email ? user.email : '' %></div>
+                <span class="badge badge-gold" style="margin-top:6px"><%= user && user.role ? user.role.replace('_', ' ') : 'admin' %></span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" value="<%= user && user.firstName ? user.firstName : '' %>">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" value="<%= user && user.lastName ? user.lastName : '' %>">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="<%= user && user.email ? user.email : '' %>" readonly style="opacity:0.6;cursor:not-allowed">
+                <div class="form-hint">Contact super admin to change email</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="text" name="phone" class="form-control" value="<%= user && user.phone ? user.phone : '' %>">
+              </div>
+            </div>
+          </form>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="Settings.save('profileForm')"><i class="fas fa-save"></i> Update Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Security ── -->
+    <div id="tab-security" class="tab-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Change Password</span></div>
+        <div class="card-body">
+          <form id="passwordForm">
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" id="newPassword" class="form-control" placeholder="At least 8 characters">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Repeat new password">
+              </div>
+            </div>
+          </form>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="Settings.changePassword()"><i class="fas fa-lock"></i> Update Password</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-header"><span class="card-title">Active Sessions</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Current Session</div>
+              <div class="setting-desc">Last login: <%= user && user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Unknown' %> from <%= user && user.lastLoginIP ? user.lastLoginIP : 'Unknown IP' %></div>
+            </div>
+            <span class="badge badge-success">Active</span>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-danger btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out All Devices</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Notifications ── -->
+    <div id="tab-notifications" class="tab-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Email Notifications</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">New Order</div>
+              <div class="setting-desc">Receive email when a new order is placed</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Low Stock Alert</div>
+              <div class="setting-desc">Receive alert when product stock is low</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Payment Received</div>
+              <div class="setting-desc">Notify when a payment is confirmed</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">Order Cancelled</div>
+              <div class="setting-desc">Notify when a customer cancels an order</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label">New User Registration</div>
+              <div class="setting-desc">Notify when a new customer registers</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+          </div>
+          <div style="margin-top:16px;display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="Toast.success('Notification preferences saved')"><i class="fas fa-save"></i> Save Preferences</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/admin.js"></script>
+<script>
+/* Settings Tab Switcher */
+function switchTab(btn, tabName) {
+  document.querySelectorAll('.settings-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+  btn.classList.add('active');
+  document.getElementById('tab-' + tabName).style.display = 'block';
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure first tab is visible
+  document.querySelectorAll('.tab-panel').forEach((p, index) => {
+    p.style.display = index === 0 ? 'block' : 'none';
+  });
+});
+</script>
+<style>
+.settings-tab {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  margin-bottom: -1px;
+}
+.settings-tab:hover { color: var(--text-primary); }
+.settings-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+</style>
+</body>
+</html>

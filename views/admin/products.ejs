@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — UZYHOMES Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body data-page="products">
+
+<!-- FIXED: Pass both currentPage and user to sidebar -->
+<%- include('./partials/sidebar', { currentPage: 'products', user: user }) %>
+
+<div class="admin-main">
+  <!-- FIXED: Pass user to header instead of admin -->
+  <%- include('./partials/header', { pageTitle: 'Products', user: user }) %>
+
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Products</h1>
+        <p class="page-subtitle">Manage your product catalogue and inventory</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="Products.loadTable()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-primary" onclick="Products.openCreate()"><i class="fas fa-plus"></i> Add Product</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-value"><%= stats && stats.total ? stats.total.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Active</div>
+          <div class="stat-value"><%= stats && stats.active ? stats.active.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Low Stock</div>
+          <div class="stat-value"><%= stats && stats.lowStock ? stats.lowStock.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Out of Stock</div>
+          <div class="stat-value"><%= stats && stats.outOfStock ? stats.outOfStock.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="productSearch" class="form-control" placeholder="Search products..." data-search-for="products">
+      </div>
+      <select id="productCategory" class="form-control" data-filter-for="products">
+        <option value="">All Categories</option>
+        <option value="bedroom">Bedroom</option>
+        <option value="living-room">Living Room</option>
+        <option value="dining">Dining</option>
+        <option value="kitchen">Kitchen</option>
+        <option value="bathroom">Bathroom</option>
+        <option value="office">Office</option>
+        <option value="outdoor">Outdoor</option>
+        <option value="decor">Decor</option>
+      </select>
+      <select id="productStatus" class="form-control" data-filter-for="products">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsTableBody">
+            <tr><td colspan="6" class="text-center" style="padding:40px"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrap" id="paginationWrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="productModalTitle">Add Product</h2>
+      <button class="modal-close" onclick="Modal.close('productModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="productForm" onsubmit="event.preventDefault(); Products.save();">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Product Name <span style="color:var(--red)">*</span></label>
+            <input type="text" name="productName" id="productName" class="form-control" placeholder="e.g. Luxe Velvet Sofa" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">SKU</label>
+            <input type="text" name="sku" id="sku" class="form-control" placeholder="e.g. FURN-001">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select name="category" id="category" class="form-control">
+              <option value="">Select category</option>
+              <option value="bedroom">Bedroom</option>
+              <option value="living-room">Living Room</option>
+              <option value="dining">Dining</option>
+              <option value="kitchen">Kitchen</option>
+              <option value="bathroom">Bathroom</option>
+              <option value="office">Office</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="decor">Decor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₦) <span style="color:var(--red)">*</span></label>
+            <input type="number" name="price" id="price" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Stock Quantity</label>
+            <input type="number" name="stock" id="stock" class="form-control" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount Price</label>
+            <input type="number" name="discountPrice" id="discountPrice" class="form-control" placeholder="0.00" min="0" step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea name="description" id="description" class="form-control" placeholder="Product description..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" name="isActive" id="isActive" checked>
+            <span>Product is active (visible on store)</span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Modal.close('productModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="Products.save()"><i class="fas fa-save"></i> Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="deleteModalTitle">Confirm Delete</h2>
+      <button class="modal-close" onclick="Modal.close('deleteModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:32px">
+      <div style="font-size:2.5rem;margin-bottom:16px">🗑️</div>
+      <p style="color:var(--text-secondary);margin-bottom:8px">You are about to permanently delete:</p>
+      <p class="fw-600" id="deleteTargetName" style="color:var(--text-primary);margin-bottom:16px"></p>
+      <p style="font-size:0.85rem;color:var(--text-muted)">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Modal.close('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteAction()"><i class="fas fa-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/admin.js"></script>
+</body>
+</html>

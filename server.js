@@ -25,6 +25,7 @@ const pageRoutes = require('./routes/pageRoutes');
 const beddingRoutes = require('./routes/beddingRoutes');
 const decorRoutes = require('./routes/decorRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 
 // Import middleware
@@ -136,6 +137,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Data sanitization
 app.use(mongoSanitize());
+app.use(authenticateToken);
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -145,8 +147,7 @@ app.use(authenticateToken);
 
 // Make user available to all views
 app.use((req, res, next) => {
-  res.locals.user = req.user || null;
-  res.locals.isLoggedIn = !!req.user;
+  res.locals.session = req.session;
   next();
 });
 
@@ -155,7 +156,7 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
-
+app.use('/admin', adminRoutes);
 // Routes
 app.use('/cart', cartRoutes);
 app.use('/api/auth', authRoutes);

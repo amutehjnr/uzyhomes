@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions — UZYHOMES Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body data-page="transactions">
+
+<%- include('./partials/sidebar', { currentPage: 'transactions', user: user }) %>
+
+<div class="admin-main">
+  <%- include('./partials/header', { pageTitle: 'Transactions', user: user }) %>
+
+  <div class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Transactions</h1>
+        <p class="page-subtitle">Payment history and revenue overview</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="Transactions.loadTable()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-secondary" onclick="window.open('/admin/transactions/export','_blank')"><i class="fas fa-download"></i> Export</button>
+      </div>
+    </div>
+
+    <!-- Revenue Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-naira-sign"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">₦<%= totalRevenue ? Number(totalRevenue).toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Successful</div>
+          <div class="stat-value"><%= stats && stats.successful ? stats.successful.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Failed</div>
+          <div class="stat-value"><%= stats && stats.failed ? stats.failed.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-undo-alt"></i></div>
+        <div class="stat-body">
+          <div class="stat-label">Refunded</div>
+          <div class="stat-value"><%= stats && stats.refunded ? stats.refunded.toLocaleString() : '0' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="txSearch" class="form-control" placeholder="Search reference or customer..." data-search="transactions">
+      </div>
+      <select id="txStatus" class="form-control" data-filter="transactions">
+        <option value="">All Status</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+        <option value="refunded">Refunded</option>
+      </select>
+      <input type="date" id="txDate" class="form-control" data-filter="transactions" style="max-width:180px">
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsTableBody">
+            <tr><td colspan="6" class="text-center" style="padding:40px"><div class="spinner"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrap" id="paginationWrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/admin.js"></script>
+</body>
+</html>
