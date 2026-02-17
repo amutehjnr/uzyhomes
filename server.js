@@ -171,31 +171,31 @@ app.use('/api/contact', contactRoutes);
 
 // Page routes
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('index', { user: req.user || null });
 });
 
 app.get('/interiors', (req, res) => {
-  res.render('interiors');
+  res.render('interiors', { user: req.user || null });
 });
 
 app.get('/bedding', (req, res) => {
-  res.render('bedding');
+  res.render('bedding', { user: req.user || null });
 });
 
 app.get('/portfolio', (req, res) => {
-  res.render('portfolio');
+  res.render('portfolio', { user: req.user || null });
 });
 
 app.get('/about', (req, res) => {
-  res.render('about');
+  res.render('about', { user: req.user || null });
 });
 
 app.get('/contact', (req, res) => {
-  res.render('contact');
+  res.render('contact', { user: req.user || null });
 });
 
 app.get('/cart', (req, res) => {
-  res.render('cart');
+  res.render('cart', { user: req.user || null });
 });
 
 app.get('/login', (req, res) => {
