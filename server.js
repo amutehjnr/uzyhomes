@@ -275,6 +275,10 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
+app.get('/nature-collection', (req, res) => {
+  res.render('nature-collection');
+});
+
 // Account route
 app.get('/account', (req, res) => {
   if (!req.user) {

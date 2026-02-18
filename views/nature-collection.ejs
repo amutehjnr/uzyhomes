@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Collection | Uzyhomes</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* UZYHOMES - Quiet Luxury CSS */
+        :root {
+            --color-ivory: #FAF9F7;
+            --color-stone: #F5F3F0;
+            --color-sand: #E8E4DD;
+            --color-charcoal: #2D2D2D;
+            --color-grey: #777777;
+            --color-clay: #A68A6F;
+            --color-linen: #D9D1C7;
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-weight: 300;
+            color: var(--color-charcoal);
+            background-color: var(--color-ivory);
+            line-height: 1.6;
+        }
+
+        /* Navigation - Simplified for static page */
+        .navbar {
+            padding: 1.5rem 0;
+            background-color: rgba(250, 249, 247, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: var(--color-charcoal);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--color-charcoal);
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--color-clay);
+        }
+
+        /* Page Header */
+        .page-header {
+            background-color: var(--color-stone);
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--color-charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .breadcrumb {
+            background: transparent;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        .page-header .breadcrumb-item,
+        .page-header .breadcrumb-item a {
+            color: var(--color-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .page-header .breadcrumb-item.active {
+            color: var(--color-charcoal);
+        }
+
+        .page-header .breadcrumb-item a:hover {
+            color: var(--color-clay);
+        }
+
+        /* Collection Description */
+        .collection-description {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+
+        .collection-description h2 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            color: var(--color-charcoal);
+        }
+
+        .collection-description p {
+            color: var(--color-grey);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .collection-description .divider {
+            width: 60px;
+            height: 1px;
+            background-color: var(--color-clay);
+            margin: 2rem auto;
+        }
+
+        /* Product Cards - Enhanced for product page */
+        .product-card {
+            background: white;
+            transition: var(--transition);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+
+        .product-overlay .btn {
+            padding: 0.8rem 2rem;
+            letter-spacing: 1px;
+            border: 1px solid white;
+            color: white;
+            background: transparent;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: var(--transition);
+        }
+
+        .product-overlay .btn:hover {
+            background-color: white;
+            color: var(--color-charcoal);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .product-info h3 {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .product-price {
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            color: var(--color-grey);
+            letter-spacing: 1px;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--color-clay);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        /* Features Section */
+        .features-section {
+            background-color: var(--color-stone);
+            padding: 4rem 0;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--color-clay);
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h4 {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .feature-item p {
+            color: var(--color-grey);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f3eaea;
+            color: var(--color-grey);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer h5 {
+            color: rgb(12, 12, 12);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--color-charcoal);
+            padding-left: 5px;
+        }
+
+        .copyright {
+            color: #777;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 3rem 0;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .product-image {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .product-image {
+                height: 280px;
+            }
+            
+            .collection-description h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">UZYHOMES</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/collections">Collections</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bedding">Bedding</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Nature Collection</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/collections">Collections</a></li>
+                    <li class="breadcrumb-item"><a href="/bedding">Bedding</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Nature Collection</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Collection Description -->
+        <div class="collection-description">
+            <h2>Inspired by the tranquility of nature</h2>
+            <p>Our Nature Collection brings the calming essence of the outdoors into your bedroom. Crafted from the finest organic cotton, each piece is designed to create a sanctuary of peace and comfort.</p>
+            <div class="divider"></div>
+        </div>
+
+        <!-- Products Grid - 3 Products -->
+        <div class="row g-4">
+            <!-- Product 1 - Serenity Bed Set -->
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card">
+                    <div class="product-image">
+                        <span class="product-badge">Bestseller</span>
+                        <img src="/images/products/nature-1.jpg" alt="Serenity Bed Set" class="img-fluid">
+                        <div class="product-overlay">
+                            <a href="#product-details-1" class="btn" data-bs-toggle="modal">Quick View</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Serenity Bed Set</h3>
+                        <p class="product-price">₦85,000</p>
+                        <p class="product-description text-muted small mt-2">Complete 4-piece bed set including duvet cover, fitted sheet, and 2 pillowcases</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 2 - Cloud Duvet Cover -->
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/products/nature-2.jpg" alt="Cloud Duvet Cover" class="img-fluid">
+                        <div class="product-overlay">
+                            <a href="#product-details-2" class="btn" data-bs-toggle="modal">Quick View</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Cloud Duvet Cover</h3>
+                        <p class="product-price">₦62,000</p>
+                        <p class="product-description text-muted small mt-2">Luxurious duvet cover with hidden button closure and corner ties</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 3 - Stillness Pillows -->
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card">
+                    <div class="product-image">
+                        <span class="product-badge">Set of 2</span>
+                        <img src="/images/products/nature-3.jpg" alt="Stillness Pillows" class="img-fluid">
+                        <div class="product-overlay">
+                            <a href="#product-details-3" class="btn" data-bs-toggle="modal">Quick View</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Stillness Pillows (Set of 2)</h3>
+                        <p class="product-price">₦28,000</p>
+                        <p class="product-description text-muted small mt-2">European goose feather pillows with 100% cotton casing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="row mt-5 pt-4">
+            <div class="col-12">
+                <h3 class="text-center mb-4" style="font-family: var(--font-serif);">Complete Your Sanctuary</h3>
+            </div>
+            
+            <!-- Product 1 Details -->
+            <div class="col-md-4 mb-4" id="product-details-1">
+                <div class="p-3 bg-light">
+                    <h4 class="h5" style="font-family: var(--font-serif);">Serenity Bed Set</h4>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>100% Organic Cotton</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>400 Thread Count</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Includes: Duvet cover, fitted sheet, 2 pillowcases</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Available in King, Queen, Double</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline-dark btn-sm w-100">Add to Cart - ₦85,000</a>
+                </div>
+            </div>
+            
+            <!-- Product 2 Details -->
+            <div class="col-md-4 mb-4" id="product-details-2">
+                <div class="p-3 bg-light">
+                    <h4 class="h5" style="font-family: var(--font-serif);">Cloud Duvet Cover</h4>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Egyptian Cotton</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>500 Thread Count</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Hidden button closure</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Available in all standard sizes</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline-dark btn-sm w-100">Add to Cart - ₦62,000</a>
+                </div>
+            </div>
+            
+            <!-- Product 3 Details -->
+            <div class="col-md-4 mb-4" id="product-details-3">
+                <div class="p-3 bg-light">
+                    <h4 class="h5" style="font-family: var(--font-serif);">Stillness Pillows</h4>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>European goose feathers</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>100% Cotton casing</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Medium support</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Set of 2 pillows</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline-dark btn-sm w-100">Add to Cart - ₦28,000</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h4>Free Delivery</h4>
+                        <p>On orders over ₦100,000</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                        <h4>30-Day Returns</h4>
+                        <p>Hassle-free returns</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h4>Secure Payment</h4>
+                        <p>100% secure transactions</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h4>Eco-Friendly</h4>
+                        <p>Sustainable materials</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>UZYHOMES</h5>
+                    <p class="text-muted small">Quiet luxury for your sanctuary. Curated bedding and home essentials for the discerning individual.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Shop</h5>
+                    <ul class="footer-links">
+                        <li><a href="/bedding">Bedding</a></li>
+                        <li><a href="/bath">Bath</a></li>
+                        <li><a href="/decor">Decor</a></li>
+                        <li><a href="/collections">Collections</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>About</h5>
+                    <ul class="footer-links">
+                        <li><a href="/our-story">Our Story</a></li>
+                        <li><a href="/craftsmanship">Craftsmanship</a></li>
+                        <li><a href="/sustainability">Sustainability</a></li>
+                        <li><a href="/press">Press</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Contact</h5>
+                    <ul class="footer-links">
+                        <li><a href="mailto:info@uzyhomes.com">info@uzyhomes.com</a></li>
+                        <li><a href="tel:+234123456789">+234 123 456 789</a></li>
+                        <li><a href="/contact">Contact Form</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 UZYHOMES. All rights reserved. Quiet Luxury.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Optional: Add to Cart functionality -->
+    <script>
+        // Simple add to cart functionality
+        document.querySelectorAll('.btn-outline-dark').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Product added to cart!');
+            });
+        });
+        
+        // Quick view modal functionality (simplified)
+        document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Quick view feature - Product details would appear in a modal');
+            });
+        });
+    </script>
+</body>
+</html>

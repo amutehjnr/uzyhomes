@@ -130,7 +130,7 @@ p {
 
 /* Logo styles */
 .brand-logo {
-    height: 120px;
+    height: 200px;
     width: auto;
     transition: transform 0.4s ease, opacity 0.4s ease;
     max-width: 2500px;
@@ -139,7 +139,7 @@ p {
 }
 
 .navbar.scrolled .brand-logo {
-    height: 120px;
+    height: 150px;
 }
 
 .navbar-brand:hover .brand-logo {
@@ -331,11 +331,11 @@ p {
         z-index: 1;
     }
     
-    /* Fix for the brand logo size on mobile */
+    /* Fix for the brand logo size on mobile - INCREASED SIZE */
     .brand-logo {
-        height: 45px;
+        height: 80px;  /* Increased from 200px for better mobile visibility */
         width: auto;
-        max-width: 160px;
+        max-width: 250px;  /* Increased from 200px */
         display: block;
     }
     
@@ -904,7 +904,7 @@ a[href="/login"]:hover .fa-user {
 
 /* ===== FOOTER ===== */
 .footer {
-    background-color: var(--color-charcoal);
+    background-color: #f3eaea;
     color: var(--color-grey);
     padding: 4rem 0 2rem;
 }
@@ -916,7 +916,7 @@ a[href="/login"]:hover .fa-user {
 }
 
 .footer .navbar-brand .brand-name {
-    color: white;
+    color: rgb(17, 17, 17);
     font-family: var(--font-serif);
     font-size: 2rem;
     font-weight: 400;
@@ -925,7 +925,7 @@ a[href="/login"]:hover .fa-user {
 }
 
 .footer-text {
-    color: #999;
+    color: #0e0d0d;
     font-size: 1rem;
     max-width: 300px;
     margin-top: 0.5rem;
@@ -934,7 +934,7 @@ a[href="/login"]:hover .fa-user {
 }
 
 .footer h5 {
-    color: white;
+    color: rgb(12, 12, 12);
     font-size: 1rem;
     letter-spacing: 1px;
     margin-bottom: 1.5rem;
@@ -1030,7 +1030,10 @@ a[href="/login"]:hover .fa-user {
     .hero-title { font-size: 2.2rem; }
     .hero-section { height: 80vh; min-height: 600px; }
     .testimonial { font-size: 1.2rem; }
-    .brand-logo { height: 40px; }
+    .brand-logo { 
+        height: 100px;  /* Increased from 40px for tablet */
+        max-width: 220px;  /* Added max-width control */
+    }
     .navbar { padding: 1rem 0; }
     
     /* Footer mobile styles */
@@ -1087,12 +1090,12 @@ a[href="/login"]:hover .fa-user {
         margin-left: 0.75rem;
     }
     .nav-icon { 
-        width: 20px;
-        height: 20px;
+        width: 22px;  /* Slightly increased icon size */
+        height: 22px;
     }
     .brand-logo { 
-        height: 35px;
-        max-width: 140px;
+        height: 150px;  /* Increased from 35px for better mobile visibility */
+        max-width: 300px;  /* Increased from 140px */
     }
     .navbar .container-fluid { 
         padding: 0 0.5rem; 
@@ -1116,6 +1119,14 @@ a[href="/login"]:hover .fa-user {
     
     .copyright {
         font-size: 0.8rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .brand-logo {
+        height: 50px;  /* Slightly smaller for very small screens */
+        max-width: 160px;
     }
 }
 
