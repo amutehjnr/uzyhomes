@@ -62,7 +62,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="founder-image">
-                        <img src="/images/founder.jpg" alt="Founder Ozzy" class="img-fluid">
+                        <img src="/images/founder.jpeg" alt="Founder Ozzy" class="img-fluid">
                         <div class="founder-caption">
                             <strong>Ozzy</strong>
                             <span>Founder & Creative Director</span>
@@ -332,13 +332,7 @@
                 
                 <div class="col-lg-6">
                     <div class="office-map">
-                        <div class="map-placeholder">
-                            <div class="map-content">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <p>Map would appear here</p>
-                                <small>Praf Mall, Wuse 2, Abuja</small>
-                            </div>
-                        </div>
+                        <div id="map" style="width: 100%; height: 400px;"></div>
                     </div>
                 </div>
             </div>
@@ -373,5 +367,31 @@
      <script src="/js/auth.js"></script>
      <script src="/js/cart.js"></script>
     <script src="/js/about.js"></script>
+
+    <!-- Google Maps -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+
+<script>
+function initMap() {
+    // Office location (Praf Mall, Wuse 2, Abuja)
+    const uzyhomes = { lat: 9.0765, lng: 7.3986 };
+    
+    // Create the map
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: uzyhomes,
+    });
+    
+    // Add a marker
+    const marker = new google.maps.Marker({
+        position: uzyhomes,
+        map: map,
+        title: "UZYHOMES"
+    });
+}
+
+// Initialize map when page loads
+window.onload = initMap;
+</script>
 </body>
 </html>
