@@ -1,0 +1,420 @@
+/* ===== INTERIORS PAGE STYLES ===== */
+/* Add this to your existing style.css file */
+
+/* Interiors Hero Section */
+.interiors-hero {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    background-color: var(--color-ivory);
+}
+
+.interiors-hero h1 {
+    font-size: 3.2rem;
+    line-height: 1.2;
+    color: var(--color-charcoal);
+}
+
+.interiors-hero .lead {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Design Philosophy Section */
+.philosophy-item {
+    text-align: left;
+    padding: 1.5rem;
+    background: white;
+    transition: var(--transition);
+    height: 100%;
+}
+
+.philosophy-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-subtle);
+}
+
+.philosophy-item i {
+    font-size: 2rem;
+    color: var(--color-clay);
+    margin-bottom: 1rem;
+}
+
+.philosophy-item h5 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-charcoal);
+}
+
+.philosophy-item p {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    color: var(--color-grey);
+}
+
+.philosophy-image {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.philosophy-image::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--color-sand);
+    z-index: -1;
+}
+
+.philosophy-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Design Process Timeline */
+.process-timeline {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.process-timeline::before {
+    content: '';
+    position: absolute;
+    left: 50px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-sand);
+}
+
+.process-step {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.process-step:last-child {
+    margin-bottom: 0;
+}
+
+.step-number {
+    font-family: var(--font-serif);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--color-clay);
+    line-height: 1;
+    min-width: 100px;
+    opacity: 0.5;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h3 {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    color: var(--color-charcoal);
+    margin-bottom: 0.25rem;
+}
+
+.step-content h4 {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--color-clay);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+.step-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.step-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.step-content ul li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--color-grey);
+}
+
+.step-content ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--color-clay);
+}
+
+/* Service Cards Full */
+.service-card-full {
+    background: white;
+    padding: 2.5rem;
+    height: 100%;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.service-card-full:hover {
+    border-color: var(--color-sand);
+    box-shadow: var(--shadow-subtle);
+}
+
+.service-card-full h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-charcoal);
+}
+
+.service-price {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-clay);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-sand);
+}
+
+.service-card-full ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.service-card-full ul li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--color-grey);
+}
+
+.service-card-full ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-clay);
+    font-weight: 300;
+}
+
+/* Project Cards */
+.project-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+.project-image {
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.project-image img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.05);
+}
+
+.project-info h3 {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-charcoal);
+}
+
+.project-info p {
+    font-size: 0.95rem;
+    color: var(--color-grey);
+    margin-bottom: 0.5rem;
+}
+
+.project-category {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-clay);
+}
+
+/* Testimonial Slider */
+.testimonial-slider {
+    position: relative;
+}
+
+.testimonial-item {
+    display: none;
+}
+
+.testimonial-item.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+.testimonial {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Add navigation dots */
+.testimonial-slider::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .interiors-hero h1 {
+        font-size: 2.8rem;
+    }
+    
+    .philosophy-image {
+        margin-top: 3rem;
+        padding-left: 0;
+    }
+    
+    .process-step {
+        gap: 2rem;
+    }
+    
+    .step-number {
+        font-size: 2.5rem;
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .interiors-hero {
+        padding-top: 6rem;
+        padding-bottom: 3rem;
+    }
+    
+    .interiors-hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .process-timeline::before {
+        left: 30px;
+    }
+    
+    .process-step {
+        gap: 1.5rem;
+    }
+    
+    .step-number {
+        font-size: 2rem;
+        min-width: 60px;
+    }
+    
+    .step-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .service-card-full {
+        padding: 2rem;
+    }
+    
+    .project-image img {
+        height: 280px;
+    }
+}
+
+@media (max-width: 576px) {
+    .interiors-hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .process-timeline::before {
+        left: 20px;
+    }
+    
+    .process-step {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .step-number {
+        font-size: 1.8rem;
+    }
+    
+    .philosophy-item {
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .philosophy-item i {
+        font-size: 1.8rem;
+    }
+    
+    .service-card-full {
+        padding: 1.5rem;
+    }
+    
+    .service-card-full h3 {
+        font-size: 1.3rem;
+    }
+    
+    .project-image img {
+        height: 220px;
+    }
+    
+    .testimonial {
+        font-size: 1.2rem;
+    }
+}
+
+/* Add simple testimonial slider animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Optional: Add simple dots navigation */
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.testimonial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-sand);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.testimonial-dot.active {
+    background: var(--color-clay);
+    width: 24px;
+    border-radius: 4px;
+}
