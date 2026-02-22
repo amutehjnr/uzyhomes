@@ -1184,6 +1184,321 @@ const Coupons = {
   }
 };
 
+/* ─── Blog Management ────────────────────────────── */
+const Blog = {
+  currentId: null,
+  
+  async loadTable(params = '') {
+    const tbody = document.getElementById('blogTableBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>`;
+    
+    const res = await API.get('/admin/api/blog?' + params);
+    if (!res.ok) { 
+      Toast.error('Failed to load blog posts'); 
+      tbody.innerHTML = `<tr><td colspan="10" class="text-center py-5 text-danger">Failed to load blog posts</td></tr>`;
+      return; 
+    }
+    
+    const { posts, pagination } = res.data;
+    
+    if (!posts || !posts.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="10">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <div class="empty-title">No blog posts found</div>
+              <p class="empty-text">Get started by writing your first blog post.</p>
+              <button class="btn btn-primary mt-3" onclick="window.location.href='/admin/blog/new'">
+                <i class="fas fa-plus me-2"></i>Create First Post
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    tbody.innerHTML = posts.map(p => {
+      const statusClass = p.isPublished ? 'badge-success' : 'badge-secondary';
+      const statusText = p.isPublished ? 'Published' : 'Draft';
+      const featuredStar = p.isFeatured ? '★' : '☆';
+      
+      return `
+        <tr>
+          <td>
+            <input type="checkbox" class="post-checkbox" value="${p._id}" onchange="Blog.updateBulkActions()">
+          </td>
+          <td>
+            <img src="${p.featured_image || '/images/placeholder.jpg'}" 
+                 class="post-thumb" alt="${p.title.replace(/'/g, "\\'")}">
+          </td>
+          <td>
+            <div class="post-info">
+              <div class="post-title fw-500">
+                <a href="/admin/blog/${p._id}/edit">${p.title}</a>
+              </div>
+              <div class="post-slug text-muted small">/${p.slug}</div>
+            </div>
+          </td>
+          <td>${p.author_name || 'Admin'}</td>
+          <td>${p.category || '—'}</td>
+          <td>${new Date(p.publishedAt).toLocaleDateString()}</td>
+          <td>
+            <span class="badge ${statusClass}">${statusText}</span>
+          </td>
+          <td>
+            <span class="featured-star" onclick="Blog.toggleFeatured('${p._id}')">
+              ${featuredStar}
+            </span>
+          </td>
+          <td>${p.views || 0}</td>
+          <td>
+            <div class="action-buttons">
+              <a href="/blog/${p.slug}" class="btn btn-sm btn-ghost" target="_blank" title="View">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a href="/admin/blog/${p._id}/edit" class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button class="btn btn-sm btn-ghost text-danger" 
+                      onclick="Blog.confirmDelete('${p._id}', '${p.title.replace(/'/g, "\\'")}')" 
+                      title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    
+    this.updatePagination(pagination);
+    this.updateBulkActions();
+  },
+  
+  async loadStats() {
+    const res = await API.get('/admin/api/blog/stats');
+    if (!res.ok) return;
+    
+    this.updateStats(res.data.stats);
+  },
+  
+  updateStats(stats) {
+    // Update stats cards if they exist
+    const elements = {
+      totalPosts: document.getElementById('totalPosts'),
+      publishedPosts: document.getElementById('publishedPosts'),
+      draftPosts: document.getElementById('draftPosts'),
+      featuredPosts: document.getElementById('featuredPosts')
+    };
+    
+    if (elements.totalPosts) {
+      elements.totalPosts.textContent = stats.totalPosts?.toLocaleString() || '0';
+    }
+    if (elements.publishedPosts) {
+      elements.publishedPosts.textContent = stats.publishedPosts?.toLocaleString() || '0';
+    }
+    if (elements.draftPosts) {
+      elements.draftPosts.textContent = stats.draftPosts?.toLocaleString() || '0';
+    }
+    if (elements.featuredPosts) {
+      elements.featuredPosts.textContent = stats.featuredPosts?.toLocaleString() || '0';
+    }
+    
+    // Update sidebar badge
+    const badge = document.getElementById('blogPostsCount');
+    if (badge) {
+      badge.textContent = stats.publishedPosts || 0;
+    }
+  },
+  
+  async toggleFeatured(id) {
+    const res = await API.post(`/admin/blog/${id}/feature`);
+    
+    if (res.ok) {
+      Toast.success(res.data.message || 'Featured status updated');
+      this.loadTable();
+    } else {
+      Toast.error(res.data.message || 'Failed to update featured status');
+    }
+  },
+  
+  async togglePublish(id) {
+    const res = await API.post(`/admin/blog/${id}/publish`);
+    
+    if (res.ok) {
+      Toast.success(res.data.message || 'Publish status updated');
+      this.loadTable();
+    } else {
+      Toast.error(res.data.message || 'Failed to update publish status');
+    }
+  },
+  
+  confirmDelete(id, title) {
+    this.currentId = id;
+    document.getElementById('deleteTargetName').textContent = title;
+    document.getElementById('deleteModalTitle').textContent = 'Delete Blog Post';
+    Modal.open('deleteModal');
+  },
+  
+  async deleteConfirmed() {
+    const res = await API.delete(`/admin/blog/${this.currentId}`);
+    
+    if (res.ok) { 
+      Toast.success('Blog post deleted successfully'); 
+      Modal.close('deleteModal'); 
+      this.loadTable(); 
+      this.loadStats();
+    } else {
+      Toast.error(res.data.message || 'Delete failed');
+    }
+  },
+  
+  updatePagination(pagination) {
+    if (!pagination) return;
+    
+    const paginationWrap = document.getElementById('paginationWrap');
+    if (!paginationWrap) return;
+    
+    let html = '';
+    
+    if (pagination.pages > 1) {
+      html += `
+        <div class="pagination-info">
+          Page ${pagination.page} of ${pagination.pages} (${pagination.total} posts)
+        </div>
+        <div class="pagination">
+      `;
+      
+      for (let i = 1; i <= pagination.pages; i++) {
+        html += `
+          <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
+                  onclick="Blog.loadTable('page=${i}')">${i}</button>
+        `;
+      }
+      
+      html += '</div>';
+    }
+    
+    paginationWrap.innerHTML = html;
+  },
+  
+  filter() {
+    const search = document.getElementById('blogSearch')?.value || '';
+    const status = document.getElementById('blogStatus')?.value || 'all';
+    const category = document.getElementById('blogCategory')?.value || 'all';
+    
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (status !== 'all') params.append('status', status);
+    if (category !== 'all') params.append('category', category);
+    
+    this.loadTable(params.toString());
+  },
+  
+  // Bulk actions
+  selectedPosts: [],
+  
+  updateBulkActions() {
+    this.selectedPosts = [];
+    document.querySelectorAll('.post-checkbox:checked').forEach(cb => {
+      this.selectedPosts.push(cb.value);
+    });
+    
+    const bulkActions = document.getElementById('bulkActions');
+    if (!bulkActions) return;
+    
+    if (this.selectedPosts.length > 0) {
+      bulkActions.classList.add('show');
+      document.getElementById('selectedCount').textContent = this.selectedPosts.length;
+    } else {
+      bulkActions.classList.remove('show');
+    }
+  },
+  
+  selectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.post-checkbox');
+    
+    checkboxes.forEach(cb => {
+      cb.checked = selectAll.checked;
+    });
+    
+    this.updateBulkActions();
+  },
+  
+  clearSelection() {
+    document.querySelectorAll('.post-checkbox').forEach(cb => {
+      cb.checked = false;
+    });
+    if (document.getElementById('selectAll')) {
+      document.getElementById('selectAll').checked = false;
+    }
+    this.updateBulkActions();
+  },
+  
+  async bulkPublish() {
+    if (this.selectedPosts.length === 0) return;
+    
+    if (confirm(`Publish ${this.selectedPosts.length} post(s)?`)) {
+      const res = await API.post('/admin/blog/bulk/publish', { 
+        ids: this.selectedPosts, 
+        publish: true 
+      });
+      
+      if (res.ok) {
+        Toast.success(res.data.message || `${this.selectedPosts.length} posts published`);
+        this.clearSelection();
+        this.loadTable();
+        this.loadStats();
+      } else {
+        Toast.error(res.data.message || 'Bulk publish failed');
+      }
+    }
+  },
+  
+  async bulkUnpublish() {
+    if (this.selectedPosts.length === 0) return;
+    
+    if (confirm(`Unpublish ${this.selectedPosts.length} post(s)?`)) {
+      const res = await API.post('/admin/blog/bulk/publish', { 
+        ids: this.selectedPosts, 
+        publish: false 
+      });
+      
+      if (res.ok) {
+        Toast.success(res.data.message || `${this.selectedPosts.length} posts unpublished`);
+        this.clearSelection();
+        this.loadTable();
+        this.loadStats();
+      } else {
+        Toast.error(res.data.message || 'Bulk unpublish failed');
+      }
+    }
+  },
+  
+  async bulkDelete() {
+    if (this.selectedPosts.length === 0) return;
+    
+    if (confirm(`Are you sure you want to delete ${this.selectedPosts.length} post(s)? This action cannot be undone.`)) {
+      const res = await API.post('/admin/blog/bulk/delete', { 
+        ids: this.selectedPosts 
+      });
+      
+      if (res.ok) {
+        Toast.success(res.data.message || `${this.selectedPosts.length} posts deleted`);
+        this.clearSelection();
+        this.loadTable();
+        this.loadStats();
+      } else {
+        Toast.error(res.data.message || 'Bulk delete failed');
+      }
+    }
+  }
+};
+
 /* ─── Transactions Management ────────────────────────── */
 const Transactions = {
   statusBadges: {
@@ -1405,6 +1720,8 @@ function confirmDeleteAction() {
     Users.deleteConfirmed();
   } else if (page === 'coupons') {
     Coupons.deleteConfirmed();
+  } else if (page === 'blog') {
+    Blog.deleteConfirmed();
   }
 }
 
@@ -1453,6 +1770,9 @@ document.addEventListener('DOMContentLoaded', () => {
     Transactions.loadTable();
   } else if (page === 'coupons') {
     Coupons.loadTable();
+  } else if (page === 'blog') {
+    Blog.loadTable();
+    Blog.loadStats();
   }
   
   // Initialize search inputs with debounce
@@ -1464,6 +1784,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target === 'users') Users.filter();
       if (target === 'transactions') Transactions.filter();
       if (target === 'coupons') Coupons.filter();
+      if (target === 'blog') Blog.filter();
     }));
   });
   
@@ -1476,6 +1797,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target === 'users') Users.filter();
       if (target === 'transactions') Transactions.filter();
       if (target === 'coupons') Coupons.filter();
+      if (target === 'blog') Blog.filter();
     });
   });
   
@@ -1499,6 +1821,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target === 'users') Users.filter();
         if (target === 'transactions') Transactions.filter();
         if (target === 'coupons') Coupons.filter();
+        if (target === 'blog') Blog.filter();
       }
     });
   });
@@ -1510,6 +1833,64 @@ window.Orders = Orders;
 window.Users = Users;
 window.Coupons = Coupons;
 window.Transactions = Transactions;
+window.Blog = Blog;
 window.Settings = Settings;
 window.Modal = Modal;
 window.confirmDeleteAction = confirmDeleteAction;
+
+/* ─── Mobile Sidebar Toggle ───────────────────────────── */
+function initMobileSidebar() {
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('adminSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  if (!toggleBtn || !sidebar) return;
+  
+  // Create overlay if it doesn't exist
+  let sidebarOverlay = overlay;
+  if (!sidebarOverlay) {
+    sidebarOverlay = document.createElement('div');
+    sidebarOverlay.id = 'sidebarOverlay';
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.body.appendChild(sidebarOverlay);
+  }
+  
+  // Toggle sidebar
+  toggleBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    sidebar.classList.toggle('open');
+    sidebarOverlay.classList.toggle('open');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  });
+  
+  // Close when clicking overlay
+  sidebarOverlay.addEventListener('click', function() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+  
+  // Close on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024 && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      if (sidebarOverlay) sidebarOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+}
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', function() {
+  initMobileSidebar();
+});

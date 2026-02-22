@@ -90,6 +90,19 @@ exports.getDashboard = async (req, res, next) => {
       .select('name stock sku')
       .limit(10);
 
+    // Get blog stats
+    const BlogPost = require('../models/BlogPost');
+    const blogStats = await BlogPost.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          published: { $sum: { $cond: ['$isPublished', 1, 0] } },
+          draft: { $sum: { $cond: ['$isPublished', 0, 1] } }
+        }
+      }
+    ]);
+
     res.render('admin/dashboard', {
       title: 'Admin Dashboard',
       user: req.user,
@@ -104,6 +117,7 @@ exports.getDashboard = async (req, res, next) => {
       monthlyRevenue,
       topProducts,
       lowStockProducts,
+      blogStats: blogStats[0] || { total: 0, published: 0, draft: 0 },
       page: 'dashboard'
     });
   } catch (error) {

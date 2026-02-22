@@ -76,6 +76,14 @@
                 <span class="nav-badge" id="activeSubscribers">0</span>
             </a>
         </div>
+
+        <div class="nav-item">
+            <a href="/admin/blog" class="nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'blog') ? 'active' : '' %>">
+                <span class="nav-icon"><i class="fas fa-newspaper"></i></span>
+                <span>Blog Posts</span>
+                <span class="nav-badge" id="blogPostsCount">0</span>
+            </a>
+        </div>
         
         <div class="nav-section-label">System</div>
         <div class="nav-item">

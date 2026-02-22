@@ -1,38 +1,42 @@
-// Simple testimonial slider
+// Testimonial Slider
 document.addEventListener('DOMContentLoaded', function() {
-    const testimonials = document.querySelectorAll('.testimonial-item');
-    if (testimonials.length > 0) {
-        // Show first testimonial
-        testimonials[0].classList.add('active');
+    const slides = document.querySelectorAll('.testimonial-slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.querySelector('.testimonial-arrow.prev');
+    const nextBtn = document.querySelector('.testimonial-arrow.next');
+    
+    if (slides.length > 0) {
+        let currentIndex = 0;
         
-        // Create dots
-        const slider = document.querySelector('.testimonial-slider');
-        const dotsContainer = document.createElement('div');
-        dotsContainer.className = 'testimonial-dots';
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            currentIndex = index;
+        }
         
-        testimonials.forEach((_, index) => {
-            const dot = document.createElement('span');
-            dot.className = 'testimonial-dot';
-            if (index === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => showTestimonial(index));
-            dotsContainer.appendChild(dot);
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                showSlide(currentIndex);
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                showSlide(currentIndex);
+            });
+        }
+        
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showSlide(index));
         });
         
-        slider.appendChild(dotsContainer);
-        
-        // Auto rotate
-        let currentIndex = 0;
+        // Auto advance every 5 seconds
         setInterval(() => {
-            currentIndex = (currentIndex + 1) % testimonials.length;
-            showTestimonial(currentIndex);
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex);
         }, 5000);
-        
-        function showTestimonial(index) {
-            testimonials.forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.testimonial-dot').forEach(d => d.classList.remove('active'));
-            
-            testimonials[index].classList.add('active');
-            document.querySelectorAll('.testimonial-dot')[index].classList.add('active');
-        }
     }
 });

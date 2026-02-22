@@ -1421,3 +1421,38 @@ textarea.form-control {
     margin: 16px;
   }
 }
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Dashboard specific mobile adjustments */
+body[data-page="dashboard"] .admin-content {
+  padding-top: 35px;
+}
+
+@media (max-width: 768px) {
+  body[data-page="dashboard"] .admin-content {
+    padding-top: 40px; /* Adjust this value as needed */
+  }
+  
+  body[data-page="dashboard"] .page-header {
+    margin-top: 20px;
+  }
+}

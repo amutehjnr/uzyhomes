@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= post.excerpt %>">
+    <title><%= title %></title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <style>
+        /* Post Specific Styles */
+        .blog-post-hero {
+            padding: 8rem 0 4rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--white) 100%);
+            text-align: center;
+        }
+
+        .blog-post-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 400;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            color: var(--grey);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .post-category {
+            color: var(--primary);
+        }
+
+        .post-featured-image {
+            margin: 3rem 0;
+        }
+
+        .post-featured-image img {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+        }
+
+        .post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .post-content h2,
+        .post-content h3 {
+            font-family: 'Playfair Display', serif;
+            margin: 2rem 0 1rem;
+            color: var(--dark);
+        }
+
+        .post-content h2 {
+            font-size: 2rem;
+        }
+
+        .post-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .post-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--grey);
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content ul {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .post-content li {
+            color: var(--grey);
+            margin-bottom: 0.5rem;
+        }
+
+        .post-share {
+            margin: 3rem 0;
+            padding: 2rem 0;
+            border-top: 1px solid var(--sand);
+            border-bottom: 1px solid var(--sand);
+            text-align: center;
+        }
+
+        .post-share h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .share-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .share-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--sand);
+            color: var(--grey);
+            transition: var(--transition);
+        }
+
+        .share-links a:hover {
+            background: var(--dark);
+            color: var(--white);
+            border-color: var(--dark);
+        }
+
+        .related-posts {
+            margin-top: 4rem;
+        }
+
+        .related-posts h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .blog-post-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .post-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="quiet-luxury">
+    <%- include('partials/header') %>
+
+    <!-- Post Hero -->
+    <section class="blog-post-hero">
+        <div class="container">
+            <h1 data-aos="fade-up"><%= post.title %></h1>
+            <div class="post-meta" data-aos="fade-up" data-aos-delay="100">
+                <span class="post-category"><%= post.category %></span>
+                <span class="post-date"><%= post.date %></span>
+                <span class="post-author">By <%= post.author || 'UZYHOMES Design Team' %></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Image -->
+    <div class="container">
+        <div class="post-featured-image" data-aos="fade-up">
+            <img src="<%= post.image %>" alt="<%= post.title %>" class="img-fluid">
+        </div>
+    </div>
+
+    <!-- Post Content -->
+    <section class="post-content">
+        <div class="container">
+            <div data-aos="fade-up">
+                <%- post.content %>
+            </div>
+
+            <!-- Share -->
+            <div class="post-share" data-aos="fade-up">
+                <h4>Share this article</h4>
+                <div class="share-links">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://uzyhomes.com/blog/' + post.slug) %>" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://uzyhomes.com/blog/' + post.slug) %>&text=<%= encodeURIComponent(post.title) %>" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= encodeURIComponent('https://uzyhomes.com/blog/' + post.slug) %>" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://pinterest.com/pin/create/button/?url=<%= encodeURIComponent('https://uzyhomes.com/blog/' + post.slug) %>&media=<%= encodeURIComponent(post.image) %>&description=<%= encodeURIComponent(post.title) %>" target="_blank"><i class="fab fa-pinterest"></i></a>
+                    <a href="mailto:?subject=<%= encodeURIComponent(post.title) %>&body=<%= encodeURIComponent('I thought you might enjoy this: https://uzyhomes.com/blog/' + post.slug) %>"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+
+            <!-- Related Posts -->
+            <% if (relatedPosts && relatedPosts.length > 0) { %>
+            <div class="related-posts" data-aos="fade-up">
+                <h3>You Might Also Like</h3>
+                <div class="row g-4">
+                    <% relatedPosts.forEach(post => { %>
+                    <div class="col-md-4">
+                        <a href="/blog/<%= post.slug %>" class="blog-card">
+                            <div class="blog-card-content">
+                                <h4><%= post.title %></h4>
+                                <span class="read-more">Read More <i class="fas fa-arrow-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Back to Blog -->
+            <div class="text-center mt-5">
+                <a href="/blog" class="btn btn-outline-custom"><i class="fas fa-arrow-left me-2"></i>Back to Blog</a>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/cart.js"></script>
+    
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

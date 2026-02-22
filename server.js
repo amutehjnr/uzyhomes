@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
+const flash = require('connect-flash');
 
 // Import database connection
 const connectDB = require('./config/database');
@@ -33,6 +34,7 @@ const orderController = require('./controllers/orderController');
 const paymentController = require('./controllers/paymentController');
 const authController = require('./controllers/authController');
 const addressController = require('./controllers/addressController');
+const blogRoutes = require('./routes/blog');
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -126,6 +128,8 @@ app.use(morgan('combined', {
   } 
 }));
 
+app.use(flash());
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -175,6 +179,7 @@ app.use('/products', productRoutes);
 app.use('/', pageRoutes);
 app.use('/decor', decorRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/', blogRoutes);
 
 // ======================================================
 // USER ACCOUNT API ROUTES (Direct controller usage)
