@@ -735,11 +735,12 @@ a[href="/login"]:hover .fa-user {
     color: var(--color-clay);
 }
 
-/* ===== BEFORE/AFTER SLIDER ===== */
+/* ===== BEFORE/AFTER SLIDER - FIXED CSS-ONLY VERSION ===== */
 .before-after-slider {
     position: relative;
     overflow: hidden;
     height: 500px;
+    width: 100%;
 }
 
 .slider-container {
@@ -748,34 +749,46 @@ a[href="/login"]:hover .fa-user {
     height: 100%;
 }
 
-.before-image, .after-image {
+/* Both images positioned absolutely */
+.before-image,
+.after-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
-.before-image img, .after-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.before-image {
+    z-index: 1;
 }
 
 .after-image {
-    width: 50%;
+    z-index: 2;
+    /* Clip the after image to show only the right half */
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
 }
 
+.before-image img,
+.after-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Visual handle */
 .slider-handle {
     position: absolute;
     top: 0;
     left: 50%;
-    width: 2px;
+    width: 4px;
     height: 100%;
     background-color: white;
-    cursor: ew-resize;
     transform: translateX(-50%);
+    z-index: 3;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    pointer-events: none;
 }
 
 .slider-handle::before {
@@ -788,7 +801,25 @@ a[href="/login"]:hover .fa-user {
     height: 40px;
     border: 2px solid white;
     border-radius: 50%;
-    background-color: transparent;
+    background-color: rgba(0,0,0,0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .before-after-slider {
+        height: 400px;
+    }
+    
+    .slider-handle::before {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media (max-width: 576px) {
+    .before-after-slider {
+        height: 300px;
+    }
 }
 
 /* ===== PORTFOLIO ===== */
