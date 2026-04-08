@@ -35,6 +35,9 @@ const paymentController = require('./controllers/paymentController');
 const authController = require('./controllers/authController');
 const addressController = require('./controllers/addressController');
 const blogRoutes = require('./routes/blog');
+const collectionsController = require('./controllers/collectionsController');
+
+app.get('/collections', collectionsController.getCollections);
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -180,6 +183,7 @@ app.use('/', pageRoutes);
 app.use('/decor', decorRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/', blogRoutes);
+app.get('/collections', collectionsController.getCollections);
 
 // ======================================================
 // USER ACCOUNT API ROUTES (Direct controller usage)
@@ -246,26 +250,6 @@ app.get('/transactions/:id', (req, res) => {
 // Page routes
 app.get('/', (req, res) => {
   res.render('index');
-});
-
-app.get('/collections', async (req, res, next) => {
-    try {
-        const { filter } = req.query;
-        const Product = require('./models/Product');
-        
-        const allProducts = await Product.find({ isActive: true })
-            .sort({ isFeatured: -1, createdAt: -1 })
-            .limit(100);
-        
-        res.render('collections', {
-            title: 'The Collection — UZYHOMES',
-            allProducts,
-            filter: filter || 'all',
-            user: req.user || null
-        });
-    } catch (error) {
-        next(error);
-    }
 });
 
 app.get('/interiors', (req, res) => {
