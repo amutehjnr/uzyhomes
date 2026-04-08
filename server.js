@@ -248,6 +248,26 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+app.get('/collections', async (req, res, next) => {
+    try {
+        const { filter } = req.query;
+        const Product = require('./models/Product');
+        
+        const allProducts = await Product.find({ isActive: true })
+            .sort({ isFeatured: -1, createdAt: -1 })
+            .limit(100);
+        
+        res.render('collections', {
+            title: 'The Collection — UZYHOMES',
+            allProducts,
+            filter: filter || 'all',
+            user: req.user || null
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 app.get('/interiors', (req, res) => {
   res.render('interiors');
 });

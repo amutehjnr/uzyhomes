@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Collection — UZYHOMES</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .collection-hero {
+            padding: 100px 0 60px;
+            text-align: center;
+            background: #FAF9F7;
+        }
+        .collection-hero .eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #777;
+            margin-bottom: 16px;
+        }
+        .collection-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 400;
+            max-width: 560px;
+            margin: 0 auto 16px;
+            line-height: 1.2;
+        }
+        .collection-hero .subtitle {
+            font-size: 1rem;
+            color: #777;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+        .filter-bar {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            position: sticky;
+            top: 70px;
+            z-index: 100;
+            overflow-x: auto;
+        }
+        .filter-bar .inner {
+            display: flex;
+            gap: 0;
+            padding: 0 24px;
+        }
+        .ftab {
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border: none;
+            background: none;
+            color: #777;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+        .ftab.active, .ftab:hover { color: #2D2D2D; }
+        .ftab.active { border-bottom: 2px solid #2D2D2D; font-weight: 500; }
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #777;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+        }
+        .feat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+        .feat-card {
+            position: relative;
+            overflow: hidden;
+            background: #f5f3f0;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .feat-card.big { grid-row: span 2; min-height: 480px; }
+        .feat-card.sm { min-height: 225px; }
+        .feat-card .img-wrap {
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+        }
+        .feat-card .img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .feat-card .img-placeholder {
+            width: 100%;
+            min-height: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feat-card .card-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.55));
+            color: white;
+        }
+        .feat-card .card-label .cat {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+        .feat-card .card-label .name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        .feat-card .card-label .price {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+        .prod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .prod-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .prod-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .prod-img {
+            aspect-ratio: 1 / 1;
+            background: #f5f3f0;
+            overflow: hidden;
+        }
+        .prod-img img { width: 100%; height: 100%; object-fit: cover; }
+        .prod-img .no-img {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+        .prod-info { padding: 14px 16px 16px; }
+        .prod-cat {
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #A68A6F;
+            margin-bottom: 5px;
+        }
+        .prod-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
+        .prod-price { font-size: 0.85rem; color: #777; margin-bottom: 4px; }
+        .prod-desc { font-size: 0.78rem; color: #999; line-height: 1.4; }
+        .btn-add {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #2D2D2D;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-add:hover { background: #2D2D2D; color: white; }
+        .story-band {
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 60px 0;
+            margin: 48px 0;
+        }
+        .story-img {
+            background: #f5f3f0;
+            border-radius: 12px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .story-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        .cat-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+        .cat-pill {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #2D2D2D;
+        }
+        .cat-pill:hover, .cat-pill.active { border-color: #2D2D2D; background: #2D2D2D; color: white; }
+        @media (max-width: 767px) {
+            .feat-grid { grid-template-columns: 1fr; }
+            .feat-card.big { min-height: 300px; }
+            .collection-hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body class="quiet-luxury" style="background: #FAF9F7;">
+    <%- include('partials/header') %>
+
+    <div class="collection-hero">
+        <p class="eyebrow">The Collection</p>
+        <h1>Bringing luxury &amp; comfort to every room</h1>
+        <p class="subtitle">Curated bedding, wall art, vases, and décor — every piece chosen to elevate how your home feels.</p>
+    </div>
+
+    <div class="filter-bar">
+        <div class="inner">
+            <button class="ftab active" data-filter="all">All</button>
+            <button class="ftab" data-filter="art">Wall art</button>
+            <button class="ftab" data-filter="vases">Vases</button>
+            <button class="ftab" data-filter="bedding">Bedding</button>
+            <button class="ftab" data-filter="bowls">Trays &amp; bowls</button>
+            <button class="ftab" data-filter="objects">Books &amp; objects</button>
+        </div>
+    </div>
+
+    <section style="padding: 60px 0;">
+        <div class="container">
+
+            <%/* Featured grid — top 3 highest-priced products */%>
+            <div class="d-flex justify-content-between align-items-baseline mb-4">
+                <div>
+                    <p class="section-label mb-1">Curated picks</p>
+                    <h2 class="section-title">Featured pieces</h2>
+                </div>
+                <a href="#all-products" style="font-size:0.85rem;color:#777;text-decoration:none;">View all &rarr;</a>
+            </div>
+
+            <div class="feat-grid">
+                <%
+                    // Sort featured products — biggest first
+                    const featuredProducts = allProducts.sort((a,b) => b.price - a.price).slice(0,3);
+                    const [first, second, third] = featuredProducts;
+                %>
+                <% if (first) { %>
+                <a href="/product/<%= first._id %>" class="feat-card big" style="text-decoration:none;">
+                    <div class="img-wrap">
+                        <% if (first.images && first.images[0]) { %>
+                            <img src="<%= first.images[0].url %>" alt="<%= first.name %>">
+                        <% } else { %>
+                            <div class="img-placeholder" style="min-height:480px;">
+                                <i class="fas fa-image fa-3x" style="color:#ccc;"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="card-label">
+                        <div class="cat"><%= first.category %></div>
+                        <div class="name"><%= first.name %></div>
+                        <div class="price">₦<%= Number(first.discountPrice || first.price).toLocaleString() %></div>
+                    </div>
+                </a>
+                <% } %>
+                <% if (second) { %>
+                <a href="/product/<%= second._id %>" class="feat-card sm" style="text-decoration:none;">
+                    <div class="img-wrap">
+                        <% if (second.images && second.images[0]) { %>
+                            <img src="<%= second.images[0].url %>" alt="<%= second.name %>">
+                        <% } else { %>
+                            <div class="img-placeholder" style="min-height:225px;">
+                                <i class="fas fa-image fa-2x" style="color:#ccc;"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="card-label">
+                        <div class="cat"><%= second.category %></div>
+                        <div class="name"><%= second.name %></div>
+                        <div class="price">₦<%= Number(second.discountPrice || second.price).toLocaleString() %></div>
+                    </div>
+                </a>
+                <% } %>
+                <% if (third) { %>
+                <a href="/product/<%= third._id %>" class="feat-card sm" style="text-decoration:none;">
+                    <div class="img-wrap">
+                        <% if (third.images && third.images[0]) { %>
+                            <img src="<%= third.images[0].url %>" alt="<%= third.name %>">
+                        <% } else { %>
+                            <div class="img-placeholder" style="min-height:225px;">
+                                <i class="fas fa-image fa-2x" style="color:#ccc;"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="card-label">
+                        <div class="cat"><%= third.category %></div>
+                        <div class="name"><%= third.name %></div>
+                        <div class="price">₦<%= Number(third.discountPrice || third.price).toLocaleString() %></div>
+                    </div>
+                </a>
+                <% } %>
+            </div>
+
+            <%/* Story band */%>
+        </div>
+    </section>
+
+    <div class="story-band">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <div class="story-img">
+                        <i class="fas fa-image fa-3x" style="color:#ccc;"></i>
+                        <%/* Replace with: <img src="/images/story-comfort.jpg" alt="UZYHOMES comfort story"> */%>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <p class="section-label mb-2">Our philosophy</p>
+                    <h2 class="section-title mb-3">Comfort is the new luxury</h2>
+                    <p style="color:#777;line-height:1.8;margin-bottom:24px;">Every piece in our collection is chosen for one reason: the way it makes a room feel. Not just how it looks — but the warmth it adds, the calm it creates, the quiet confidence it brings to your home.</p>
+                    <a href="/about" class="cat-pill">Explore our story &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="all-products" style="padding: 0 0 80px;">
+        <div class="container">
+
+            <%/* Category pills */%>
+            <div class="cat-pills">
+                <a href="?filter=all" class="cat-pill <%= !filter || filter === 'all' ? 'active' : '' %>">All</a>
+                <a href="?filter=decor" class="cat-pill <%= filter === 'decor' ? 'active' : '' %>">Décor</a>
+                <a href="?filter=bedding" class="cat-pill <%= filter === 'bedding' ? 'active' : '' %>">Bedding</a>
+                <a href="?filter=art" class="cat-pill <%= filter === 'art' ? 'active' : '' %>">Wall art</a>
+                <a href="?filter=vases" class="cat-pill <%= filter === 'vases' ? 'active' : '' %>">Vases</a>
+                <a href="?filter=objects" class="cat-pill <%= filter === 'objects' ? 'active' : '' %>">Books &amp; objects</a>
+            </div>
+
+            <%/* Wall art section */%>
+            <% const artProducts = allProducts.filter(p => p.category === 'decor' && p.subcategory === 'art'); %>
+            <% if (artProducts.length > 0 && (!filter || filter === 'all' || filter === 'art')) { %>
+            <div class="d-flex justify-content-between align-items-baseline mb-3 mt-4">
+                <h3 class="section-title" style="font-size:1.3rem;">Wall art</h3>
+                <a href="/decor?category=art" style="font-size:0.85rem;color:#777;text-decoration:none;">See all &rarr;</a>
+            </div>
+            <div class="prod-grid mb-5">
+                <% artProducts.slice(0, 8).forEach(p => { %>
+                <div class="prod-card">
+                    <div class="prod-img">
+                        <% if (p.images && p.images[0]) { %>
+                            <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div class="no-img"><i class="fas fa-image fa-2x" style="color:#ddd;"></i></div>
+                        <% } %>
+                    </div>
+                    <div class="prod-info">
+                        <div class="prod-cat"><%= p.subcategory || p.category %></div>
+                        <div class="prod-name"><%= p.name %></div>
+                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <% if (p.specifications && (p.specifications.size || p.specifications.dimensions)) { %>
+                            <div class="prod-desc"><%= p.specifications.size || '' %></div>
+                        <% } %>
+                        <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>">+ Add to cart</button>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+
+            <%/* Vases section */%>
+            <% const vaseProducts = allProducts.filter(p => p.subcategory === 'vases'); %>
+            <% if (vaseProducts.length > 0 && (!filter || filter === 'all' || filter === 'vases')) { %>
+            <div class="d-flex justify-content-between align-items-baseline mb-3 mt-4">
+                <h3 class="section-title" style="font-size:1.3rem;">Vases &amp; vessels</h3>
+                <a href="/decor?category=vases" style="font-size:0.85rem;color:#777;text-decoration:none;">See all &rarr;</a>
+            </div>
+            <div class="prod-grid mb-5">
+                <% vaseProducts.slice(0, 4).forEach(p => { %>
+                <div class="prod-card">
+                    <div class="prod-img">
+                        <% if (p.images && p.images[0]) { %>
+                            <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div class="no-img"><i class="fas fa-image fa-2x" style="color:#ddd;"></i></div>
+                        <% } %>
+                    </div>
+                    <div class="prod-info">
+                        <div class="prod-cat">Vases</div>
+                        <div class="prod-name"><%= p.name %></div>
+                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <div class="prod-desc"><%= p.description ? p.description.substring(0,70) + '...' : '' %></div>
+                        <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>">+ Add to cart</button>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+
+            <%/* Bedding section */%>
+            <% const beddingProducts = allProducts.filter(p => p.category === 'bedding'); %>
+            <% if (beddingProducts.length > 0 && (!filter || filter === 'all' || filter === 'bedding')) { %>
+            <div class="d-flex justify-content-between align-items-baseline mb-3 mt-4">
+                <h3 class="section-title" style="font-size:1.3rem;">Bedding</h3>
+                <a href="/bedding" style="font-size:0.85rem;color:#777;text-decoration:none;">See all &rarr;</a>
+            </div>
+            <div class="prod-grid mb-5">
+                <% beddingProducts.slice(0, 4).forEach(p => { %>
+                <div class="prod-card">
+                    <div class="prod-img">
+                        <% if (p.images && p.images[0]) { %>
+                            <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div class="no-img"><i class="fas fa-image fa-2x" style="color:#ddd;"></i></div>
+                        <% } %>
+                    </div>
+                    <div class="prod-info">
+                        <div class="prod-cat">Bedding</div>
+                        <div class="prod-name"><%= p.name %></div>
+                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <div class="prod-desc"><%= p.description ? p.description.substring(0,70) + '...' : '' %></div>
+                        <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>">+ Add to cart</button>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+
+            <%/* Books & Objects section */%>
+            <% const objectProducts = allProducts.filter(p => p.subcategory === 'books' || p.subcategory === 'trays' || p.subcategory === 'bowls'); %>
+            <% if (objectProducts.length > 0 && (!filter || filter === 'all' || filter === 'objects')) { %>
+            <div class="d-flex justify-content-between align-items-baseline mb-3 mt-4">
+                <h3 class="section-title" style="font-size:1.3rem;">Books, objects &amp; trays</h3>
+                <a href="/decor?category=books" style="font-size:0.85rem;color:#777;text-decoration:none;">See all &rarr;</a>
+            </div>
+            <div class="prod-grid mb-5">
+                <% objectProducts.slice(0, 4).forEach(p => { %>
+                <div class="prod-card">
+                    <div class="prod-img">
+                        <% if (p.images && p.images[0]) { %>
+                            <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div class="no-img"><i class="fas fa-image fa-2x" style="color:#ddd;"></i></div>
+                        <% } %>
+                    </div>
+                    <div class="prod-info">
+                        <div class="prod-cat"><%= p.subcategory || 'Objects' %></div>
+                        <div class="prod-name"><%= p.name %></div>
+                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <div class="prod-desc"><%= p.description ? p.description.substring(0,70) + '...' : '' %></div>
+                        <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>">+ Add to cart</button>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/cart.js"></script>
+    <script>
+        document.querySelectorAll('.ftab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
