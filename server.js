@@ -37,8 +37,6 @@ const addressController = require('./controllers/addressController');
 const blogRoutes = require('./routes/blog');
 const collectionsController = require('./controllers/collectionsController');
 
-app.get('/collections', collectionsController.getCollections);
-
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
 const { globalErrorHandler } = require('./middleware/errorHandler');
