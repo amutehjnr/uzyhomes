@@ -163,7 +163,7 @@ exports.addReview = async (req, res, next) => {
   }
 };
 
-// NEW METHODS FOR CATEGORY PAGES
+// UPDATED METHODS FOR CATEGORY PAGES WITH COUNTS
 exports.getBeddingPage = async (req, res, next) => {
     try {
         const products = await Product.find({ 
@@ -171,9 +171,23 @@ exports.getBeddingPage = async (req, res, next) => {
             isActive: true 
         }).sort({ createdAt: -1 });
 
+        // Get counts for each bedding subcategory
+        const sheetsCount = await Product.countDocuments({ category: 'bedding', subcategory: 'sheets', isActive: true });
+        const duvetCount = await Product.countDocuments({ category: 'bedding', subcategory: 'duvet', isActive: true });
+        const pillowsCount = await Product.countDocuments({ category: 'bedding', subcategory: 'pillows', isActive: true });
+        const towelsCount = await Product.countDocuments({ category: 'bedding', subcategory: 'towels', isActive: true });
+        const throwsCount = await Product.countDocuments({ category: 'bedding', subcategory: 'throws', isActive: true });
+        const robesCount = await Product.countDocuments({ category: 'bedding', subcategory: 'robes', isActive: true });
+
         res.render('bedding', {
             title: 'Bedding Collection | UZYHOMES',
             products,
+            sheetsCount,
+            duvetCount,
+            pillowsCount,
+            towelsCount,
+            throwsCount,
+            robesCount,
             user: req.user || null
         });
     } catch (error) {
@@ -191,9 +205,21 @@ exports.getDecorPage = async (req, res, next) => {
             isActive: true 
         }).sort({ createdAt: -1 });
 
+        // Get counts for each decor category
+        const wallArtCount = await Product.countDocuments({ category: 'wall artwork', isActive: true });
+        const vasesCount = await Product.countDocuments({ category: 'vases', isActive: true });
+        const bowlsTraysCount = await Product.countDocuments({ category: 'bowls and trays', isActive: true });
+        const booksObjectsCount = await Product.countDocuments({ category: 'books and objects', isActive: true });
+        const accessoriesCount = await Product.countDocuments({ category: 'accessories', isActive: true });
+
         res.render('decor', {
             title: 'Decor Collection | UZYHOMES',
             products,
+            wallArtCount,
+            vasesCount,
+            bowlsTraysCount,
+            booksObjectsCount,
+            accessoriesCount,
             user: req.user || null
         });
     } catch (error) {
@@ -202,7 +228,6 @@ exports.getDecorPage = async (req, res, next) => {
     }
 };
 
-// Add this method to your productController.js
 exports.getFurniturePage = async (req, res, next) => {
     try {
         const { sort = 'featured', category = 'all', page = 1, limit = 12 } = req.query;
@@ -228,10 +253,22 @@ exports.getFurniturePage = async (req, res, next) => {
             Product.find(filter).sort(sortMap[sort] || sortMap.featured).skip(skip).limit(perPage),
             Product.countDocuments(filter)
         ]);
+
+        // Get counts for each furniture subcategory
+        const sofasCount = await Product.countDocuments({ category: 'furniture', subcategory: 'sofas', isActive: true });
+        const armchairsCount = await Product.countDocuments({ category: 'furniture', subcategory: 'armchairs', isActive: true });
+        const coffeeTablesCount = await Product.countDocuments({ category: 'furniture', subcategory: 'coffee tables', isActive: true });
+        const sideboardsCount = await Product.countDocuments({ category: 'furniture', subcategory: 'sideboards', isActive: true });
+        const bookshelvesCount = await Product.countDocuments({ category: 'furniture', subcategory: 'bookshelves', isActive: true });
         
         res.render('furniture', {
             title: 'Furniture Collection | UZYHOMES',
             products,
+            sofasCount,
+            armchairsCount,
+            coffeeTablesCount,
+            sideboardsCount,
+            bookshelvesCount,
             pagination: {
                 currentPage,
                 totalPages: Math.ceil(total / perPage),
@@ -244,6 +281,7 @@ exports.getFurniturePage = async (req, res, next) => {
             user: req.user || null
         });
     } catch (error) {
+        logger.error('Furniture page error:', error);
         next(error);
     }
 };

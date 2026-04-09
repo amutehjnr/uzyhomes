@@ -45,7 +45,6 @@
             font-size: 1rem; color: var(--grey); max-width: 440px; margin: 0 auto;
         }
 
-        /* Category Tabs - Same as collections.ejs filter-bar */
         .category-tabs {
             background: white;
             border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -82,7 +81,6 @@
             font-weight: 500;
         }
 
-        /* Category Cards - Same as collections.ejs decor-cat-grid */
         .cat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -321,7 +319,6 @@
         <p class="subtitle">Discover our curated collection of sofas, armchairs, tables, and storage</p>
     </section>
 
-    <!-- Category Tabs - Text only, matching collections.ejs filter-bar -->
     <div class="category-tabs">
         <div class="inner">
             <button class="cat-tab active" data-category="all">All Furniture</button>
@@ -334,7 +331,6 @@
     </div>
 
     <div class="container">
-        <!-- Category Cards with Icons - Same style as collections.ejs -->
         <div class="cat-grid">
             <div class="cat-card active" data-category="all">
                 <div class="cat-icon"><i class="fas fa-couch"></i></div>
@@ -344,27 +340,27 @@
             <div class="cat-card" data-category="sofas">
                 <div class="cat-icon"><i class="fas fa-couch"></i></div>
                 <div class="cat-name">Sofas</div>
-                <div class="cat-count">0</div>
+                <div class="cat-count"><%= sofasCount || 0 %> items</div>
             </div>
             <div class="cat-card" data-category="armchairs">
                 <div class="cat-icon"><i class="fas fa-chair"></i></div>
                 <div class="cat-name">Armchairs</div>
-                <div class="cat-count">0</div>
+                <div class="cat-count"><%= armchairsCount || 0 %> items</div>
             </div>
             <div class="cat-card" data-category="coffee tables">
                 <div class="cat-icon"><i class="fas fa-table"></i></div>
                 <div class="cat-name">Coffee Tables</div>
-                <div class="cat-count">0</div>
+                <div class="cat-count"><%= coffeeTablesCount || 0 %> items</div>
             </div>
             <div class="cat-card" data-category="sideboards">
                 <div class="cat-icon"><i class="fas fa-warehouse"></i></div>
                 <div class="cat-name">Sideboards</div>
-                <div class="cat-count">0</div>
+                <div class="cat-count"><%= sideboardsCount || 0 %> items</div>
             </div>
             <div class="cat-card" data-category="bookshelves">
                 <div class="cat-icon"><i class="fas fa-book"></i></div>
                 <div class="cat-name">Bookshelves</div>
-                <div class="cat-count">0</div>
+                <div class="cat-count"><%= bookshelvesCount || 0 %> items</div>
             </div>
         </div>
 
@@ -449,13 +445,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Tab filtering (text only tabs at the top)
         const tabs = document.querySelectorAll('.cat-tab');
-        // Card filtering (icon cards below)
         const catCards = document.querySelectorAll('.cat-card');
         const products = document.querySelectorAll('.prod-card');
 
-        // Tab click handler
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const category = tab.dataset.category;
@@ -463,7 +456,6 @@
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
-                // Also update active card
                 catCards.forEach(card => {
                     if (card.dataset.category === category) {
                         card.classList.add('active');
@@ -472,7 +464,6 @@
                     }
                 });
                 
-                // Update URL with category filter
                 const url = new URL(window.location.href);
                 if (category === 'all') {
                     url.searchParams.delete('category');
@@ -483,7 +474,6 @@
             });
         });
 
-        // Card click handler
         catCards.forEach(card => {
             card.addEventListener('click', () => {
                 const category = card.dataset.category;
@@ -491,7 +481,6 @@
                 catCards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 
-                // Also update active tab
                 tabs.forEach(tab => {
                     if (tab.dataset.category === category) {
                         tab.classList.add('active');
@@ -500,7 +489,6 @@
                     }
                 });
                 
-                // Update URL with category filter
                 const url = new URL(window.location.href);
                 if (category === 'all') {
                     url.searchParams.delete('category');
