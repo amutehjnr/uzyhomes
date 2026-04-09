@@ -30,7 +30,6 @@ const orderController = require('./controllers/orderController');
 const paymentController = require('./controllers/paymentController');
 const authController = require('./controllers/authController');
 const addressController = require('./controllers/addressController');
-const collectionsController = require('./controllers/collectionsController');
 const productController = require('./controllers/productController');
 
 const { authenticateToken } = require('./middleware/auth');
@@ -119,12 +118,9 @@ app.use('/api/contact', contactRoutes);
 app.use('/', blogRoutes);
 app.use('/', pageRoutes);
 
-// ── Collections (unified shopping page) ──
-app.get('/collections', collectionsController.getCollections);
-
 // Redirect old URLs so existing links don't 404
-app.get('/bedding', (req, res) => res.redirect(301, '/collections?filter=bedding'));
-app.get('/decor',   (req, res) => res.redirect(301, '/collections?filter=decor'));
+app.get('/bedding', productController.getBeddingPage);
+app.get('/decor', productController.getDecorPage);
 
 // ── User account API routes ──
 app.get('/api/addresses',        authenticateToken, addressController.getAddresses);
@@ -163,8 +159,6 @@ app.get('/transactions/:id', (req, res) => {
 });
 
 app.get('/', (req, res) => res.render('index'));
-
-app.get('/collections', collectionsController.getCollections);
 app.get('/furniture', productController.getFurniturePage);
 
 app.get('/interiors',         (req, res) => res.render('interiors'));
