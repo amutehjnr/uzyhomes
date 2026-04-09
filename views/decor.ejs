@@ -1,602 +1,305 @@
-<!-- views/decor.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="UZYHOMES Décor Collections - Thoughtfully selected pieces that elevate your home with subtle sophistication and quiet luxury.">
-    <title><%= title %></title>
-    
-    <!-- Bootstrap 5 -->
+    <meta name="description" content="Luxury Decor Collection — Wall Art, Vases, Bowls & Trays, Books & Objects, Accessories at UZYHOMES">
+    <title>Decor Collection | UZYHOMES</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/decor.css">
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <style>
-        /* Add your existing styles here */
-        .category-card {
-            display: block;
-            padding: 2rem 1rem;
-            background: white;
-            border-radius: 12px;
+        :root {
+            --ivory: #FAF9F7;
+            --stone: #F5F3F0;
+            --sand: #E8E4DD;
+            --charcoal: #2D2D2D;
+            --grey: #777777;
+            --clay: #A68A6F;
+            --linen: #D9D1C7;
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-sans: 'Inter', sans-serif;
+            --ease: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body { font-family: var(--font-sans); font-weight: 300; color: var(--charcoal); background: var(--ivory); }
+
+        .page-hero {
+            padding: 120px 0 60px;
             text-align: center;
-            text-decoration: none;
-            color: #1a1a1a;
-            transition: all 0.3s ease;
-            height: 100%;
+            background: linear-gradient(to bottom, var(--stone), var(--ivory));
         }
-        
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .page-hero .eyebrow {
+            font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--grey); margin-bottom: 14px; display: block;
         }
-        
-        .category-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
+        .page-hero h1 {
+            font-family: var(--font-serif); font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 400; max-width: 640px; margin: 0 auto 14px; line-height: 1.18;
         }
-        
-        .category-count {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.5rem;
+        .page-hero .subtitle {
+            font-size: 1rem; color: var(--grey); max-width: 440px; margin: 0 auto;
         }
-        
-        .decor-card {
+
+        .category-tabs {
             background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            height: 100%;
-            transition: transform 0.3s ease;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        
-        .decor-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .decor-image {
-            position: relative;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-        }
-        
-        .decor-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        
-        .decor-card:hover .decor-image img {
-            transform: scale(1.05);
-        }
-        
-        .decor-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #1a1a1a;
-            color: white;
-            padding: 0.25rem 1rem;
-            font-size: 0.8rem;
-            border-radius: 20px;
-            z-index: 1;
-        }
-        
-        .decor-info {
-            padding: 1.25rem;
-        }
-        
-        .decor-info h3 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .decor-description {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        
-        .decor-price {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #1a1a1a;
-        }
-        
-        .btn-add-decor {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid #1a1a1a;
-            background: transparent;
-            color: #1a1a1a;
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .category-tabs .inner {
             display: flex;
-            align-items: center;
+            padding: 0 24px;
+            gap: 0;
             justify-content: center;
-            transition: all 0.3s ease;
+        }
+        .cat-tab {
+            padding: 14px 24px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border: none;
+            background: none;
+            color: var(--grey);
             cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            transition: var(--ease);
+            font-weight: 400;
         }
-        
-        .btn-add-decor:hover {
-            background: #1a1a1a;
-            color: white;
+        .cat-tab:hover { color: var(--charcoal); }
+        .cat-tab.active { color: var(--charcoal); border-bottom-color: var(--charcoal); font-weight: 500; }
+
+        .prod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            padding: 40px 0;
         }
-        
-        .candle-card, .art-card {
+        .prod-card {
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            height: 100%;
-            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--ease);
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        
-        .candle-card:hover, .art-card:hover {
+        .prod-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            text-decoration: none;
+            color: inherit;
         }
-        
-        .candle-image, .art-image {
-            aspect-ratio: 1 / 1;
+        .prod-img {
+            aspect-ratio: 1/1;
+            background: var(--stone);
             overflow: hidden;
         }
-        
-        .candle-image img, .art-image img {
+        .prod-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s ease;
         }
-        
-        .candle-card:hover .candle-image img,
-        .art-card:hover .art-image img {
+        .prod-card:hover .prod-img img {
             transform: scale(1.05);
         }
-        
-        .candle-info, .art-info {
-            padding: 1.25rem;
+        .prod-info {
+            padding: 18px;
+        }
+        .prod-cat {
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--clay);
+            margin-bottom: 6px;
+        }
+        .prod-name {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .prod-price {
+            font-size: 0.9rem;
+            color: var(--grey);
+            margin-bottom: 8px;
+        }
+        .btn-add {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--charcoal);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--ease);
+            margin-top: 10px;
+        }
+        .btn-add:hover {
+            background: var(--charcoal);
+            color: white;
+        }
+        .empty-state {
             text-align: center;
+            padding: 80px 20px;
         }
-        
-        .candle-info h4, .art-info h3 {
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--linen);
+            margin-bottom: 20px;
         }
-        
-        .candle-scent, .art-artist {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-        }
-        
-        .art-description {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        
-        .candle-price, .art-price {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #1a1a1a;
-        }
-        
-        .tip-card {
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
-        
-        .tip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .tip-number {
-            font-size: 2rem;
-            font-weight: 300;
-            color: #dee2e6;
-            margin-bottom: 1rem;
-        }
-        
-        .tip-card h4 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .tip-card p {
-            font-size: 0.95rem;
-            color: #6c757d;
+        .breadcrumb {
+            background: transparent;
+            padding: 20px 0 0;
             margin-bottom: 0;
         }
-        
-        .section-label {
-            display: block;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
+        .breadcrumb a {
+            color: var(--grey);
+            text-decoration: none;
         }
-        
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
-        }
-        
-        .sort-dropdown {
-            margin-bottom: 2rem;
-        }
-        
-        .pagination {
-            gap: 0.25rem;
-            margin-top: 3rem;
-        }
-        
-        .page-link {
-            color: #1a1a1a;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 30px;
-        }
-        
-        .page-item.active .page-link {
-            background: #1a1a1a;
-            color: white;
+        .breadcrumb a:hover {
+            color: var(--charcoal);
         }
     </style>
 </head>
-<body class="quiet-luxury">
+<body>
     <%- include('partials/header') %>
 
-    <!-- Décor Hero -->
-    <section class="decor-hero section-py">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <h1 class="display-4 mb-4">Small details. Big difference.</h1>
-                    <p class="lead">
-                        Sleek, modern décor pieces that bring character and calmness into your space. 
-                        Each item is chosen for its quiet presence and timeless beauty.
-                    </p>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Decor</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="page-hero">
+        <span class="eyebrow">Curated Decor</span>
+        <h1>Small details. Big difference.</h1>
+        <p class="subtitle">Transform your space with thoughtfully curated pieces</p>
     </section>
 
-    <!-- Categories -->
-    <section class="section-py bg-light">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <span class="section-label">Explore Categories</span>
-                    <h2 class="section-title">Curated for Every Space</h2>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <% categories.forEach(cat => { %>
-                <div class="col-md-3 col-6">
-                    <a href="/decor?category=<%= cat.slug %>" class="category-card">
-                        <div class="category-icon">
-                            <i class="fas <%= cat.icon %>"></i>
-                        </div>
-                        <span><%= cat.name %></span>
-                        <div class="category-count"><%= cat.count %> items</div>
-                    </a>
-                </div>
-                <% }) %>
-            </div>
+    <div class="category-tabs">
+        <div class="inner">
+            <button class="cat-tab active" data-category="all">All Decor</button>
+            <button class="cat-tab" data-category="wall artwork">Wall Art</button>
+            <button class="cat-tab" data-category="vases">Vases</button>
+            <button class="cat-tab" data-category="bowls and trays">Bowls & Trays</button>
+            <button class="cat-tab" data-category="books and objects">Books & Objects</button>
+            <button class="cat-tab" data-category="accessories">Accessories</button>
         </div>
-    </section>
+    </div>
 
-    <!-- Sort Options -->
-    <section class="section-py pt-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="sort-dropdown text-end">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Sort by: 
-                                <% if (filters.sort === 'price_low') { %>Price: Low to High<% } 
-                                   else if (filters.sort === 'price_high') { %>Price: High to Low<% } 
-                                   else if (filters.sort === 'newest') { %>Newest<% } 
-                                   else if (filters.sort === 'rating') { %>Highest Rated<% } 
-                                   else { %>Featured<% } %>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item <%= filters.sort === 'featured' ? 'active' : '' %>" href="/decor?sort=featured<%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Featured</a></li>
-                                <li><a class="dropdown-item <%= filters.sort === 'price_low' ? 'active' : '' %>" href="/decor?sort=price_low<%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Price: Low to High</a></li>
-                                <li><a class="dropdown-item <%= filters.sort === 'price_high' ? 'active' : '' %>" href="/decor?sort=price_high<%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Price: High to Low</a></li>
-                                <li><a class="dropdown-item <%= filters.sort === 'newest' ? 'active' : '' %>" href="/decor?sort=newest<%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Newest</a></li>
-                                <li><a class="dropdown-item <%= filters.sort === 'rating' ? 'active' : '' %>" href="/decor?sort=rating<%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Highest Rated</a></li>
-                            </ul>
-                        </div>
+    <div class="container">
+        <div class="prod-grid" id="productsGrid">
+            <% if (products && products.length > 0) { %>
+                <% products.forEach(p => { %>
+                <a href="/product/<%= p._id %>" class="prod-card" data-category="<%= p.category %>">
+                    <div class="prod-img">
+                        <% if (p.images && p.images[0]) { %>
+                            <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
+                        <% } else { %>
+                            <div class="no-img" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                <i class="fas fa-image fa-3x" style="color:#ccc;"></i>
+                            </div>
+                        <% } %>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Products Grid -->
-    <section class="section-py pt-0">
-        <div class="container">
-            <% if (products.length === 0) { %>
-                <div class="text-center py-5">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                    <h3>No products found</h3>
-                    <p class="text-muted">Try adjusting your filters or check back later.</p>
-                    <a href="/decor" class="btn btn-outline-dark mt-3">View All Decor</a>
-                </div>
+                    <div class="prod-info">
+                        <div class="prod-cat"><%= p.category %></div>
+                        <div class="prod-name"><%= p.name %></div>
+                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>" onclick="event.stopPropagation(); addToCart(event, '<%= p._id %>')" <%= p.stock === 0 ? 'disabled' : '' %>>
+                            <%= p.stock === 0 ? 'Out of Stock' : 'Add to Cart' %>
+                        </button>
+                    </div>
+                </a>
+                <% }) %>
             <% } else { %>
-                <div class="row g-4">
-                    <% products.forEach(product => { %>
-                    <div class="col-md-4">
-                        <div class="decor-card">
-                            <div class="decor-image">
-                                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
-                                     alt="<%= product.name %>" 
-                                     class="img-fluid">
-                                <% if (product.isFeatured) { %>
-                                    <div class="decor-badge">Featured</div>
-                                <% } %>
-                            </div>
-                            <div class="decor-info">
-                                <h3><%= product.name %></h3>
-                                <p class="decor-description"><%= product.description ? product.description.substring(0, 80) + '...' : '' %></p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="decor-price">₦<%= (product.discountPrice || product.price).toLocaleString() %></span>
-                                    <button class="btn-add-decor add-to-cart-btn" data-id="<%= product._id %>">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-palette"></i>
+                    <h3>Coming Soon</h3>
+                    <p>Our decor collection is being curated. Check back soon!</p>
                 </div>
             <% } %>
-
-            <!-- Pagination -->
-            <% if (pagination.totalPages > 1) { %>
-            <div class="pagination justify-content-center">
-                <% if (pagination.currentPage > 1) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="/decor?page=<%= pagination.currentPage - 1 %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Previous</a>
-                    </li>
-                <% } %>
-                
-                <% for(let i = 1; i <= pagination.totalPages; i++) { %>
-                    <% if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)) { %>
-                        <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/decor?page=<%= i %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>"><%= i %></a>
-                        </li>
-                    <% } else if (i === pagination.currentPage - 2 || i === pagination.currentPage + 2) { %>
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    <% } %>
-                <% } %>
-                
-                <% if (pagination.currentPage < pagination.totalPages) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="/decor?page=<%= pagination.currentPage + 1 %><%= filters.sort ? '&sort=' + filters.sort : '' %><%= filters.category && filters.category !== 'all' ? '&category=' + filters.category : '' %>">Next</a>
-                    </li>
-                <% } %>
-            </div>
-            <% } %>
         </div>
-    </section>
-
-    <!-- Featured Collection - Vases -->
-    <section class="section-py" id="vases">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8">
-                    <span class="section-label">Editor's Pick</span>
-                    <h2 class="section-title">The Vessels Study </h2>
-                    <p class="lead">Bespoke forms defined by refined textures and imperfect beauty. A collection of sculptural accents that harmonize with any interior.
-            
-                    </p>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <% if (vaseProducts.length > 0) { %>
-                    <% vaseProducts.forEach(product => { %>
-                    <div class="col-md-4">
-                        <div class="decor-card">
-                            <div class="decor-image">
-                                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
-                                     alt="<%= product.name %>" 
-                                     class="img-fluid">
-                                <% if (product.isFeatured) { %>
-                                    <div class="decor-badge">Best Seller</div>
-                                <% } %>
-                            </div>
-                            <div class="decor-info">
-                                <h3><%= product.name %></h3>
-                                <p class="decor-description"><%= product.description ? product.description.substring(0, 60) + '...' : '' %></p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="decor-price">₦<%= (product.discountPrice || product.price).toLocaleString() %></span>
-                                    <button class="btn-add-decor add-to-cart-btn" data-id="<%= product._id %>">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No vase products available.</p>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!-- Candles Section -->
-    <section class="section-py bg-light" id="candles">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8">
-                    <span class="section-label">Ambiance</span>
-                    <h2 class="section-title">Scented Candles & Diffusers</h2>
-                    <p class="lead">Create atmosphere with our curated collection of calming scents and beautiful vessels.</p>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <% if (candleProducts.length > 0) { %>
-                    <% candleProducts.forEach(product => { %>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="candle-card">
-                            <div class="candle-image">
-                                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
-                                     alt="<%= product.name %>" 
-                                     class="img-fluid">
-                            </div>
-                            <div class="candle-info">
-                                <h4><%= product.name %></h4>
-                                <p class="candle-scent"><%= product.specifications?.scent || product.description.substring(0, 30) %></p>
-                                <span class="candle-price">₦<%= (product.discountPrice || product.price).toLocaleString() %></span>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No candle products available.</p>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!-- Art Section -->
-    <section class="section-py" id="art">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8">
-                    <span class="section-label">Wall Art</span>
-                    <h2 class="section-title">Curated Art Prints</h2>
-                    <p class="lead">Limited edition prints from emerging artists. Each tells a story of calm and beauty.</p>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <% if (artProducts.length > 0) { %>
-                    <% artProducts.forEach(product => { %>
-                    <div class="col-md-4">
-                        <div class="art-card">
-                            <div class="art-image">
-                                <img src="<%= product.images && product.images.length > 0 ? product.images[0].url : '/images/placeholder.jpg' %>" 
-                                     alt="<%= product.name %>" 
-                                     class="img-fluid">
-                            </div>
-                            <div class="art-info">
-                                <h3>"<%= product.name %>"</h3>
-                                <p class="art-artist">by <%= product.specifications?.artist || 'UZYHOMES' %></p>
-                                <p class="art-description"><%= product.description ? product.description.substring(0, 60) + '...' : '' %></p>
-                                <span class="art-price">₦<%= (product.discountPrice || product.price).toLocaleString() %></span>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="col-12 text-center">
-                        <p class="text-muted">No art products available.</p>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!-- Styling Tips -->
-    <section class="section-py bg-light">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-lg-8 mx-auto text-center">
-                    <span class="section-label">Inspiration</span>
-                    <h2 class="section-title">Décor Styling Tips</h2>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <% stylingTips.forEach(tip => { %>
-                <div class="col-md-4">
-                    <div class="tip-card">
-                        <div class="tip-number"><%= tip.number %></div>
-                        <h4><%= tip.title %></h4>
-                        <p><%= tip.description %></p>
-                    </div>
-                </div>
-                <% }) %>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="section-py cta-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="section-title mb-4">Ready to Elevate Your Space?</h2>
-                    <p class="lead mb-5">
-                        Discover the perfect pieces to complete your home. Each item tells a story of quiet luxury.
-                    </p>
-                    <div class="cta-buttons">
-                        <a href="#vases" class="btn btn-dark btn-lg me-3">Shop Décor</a>
-                        <a href="/contact" class="btn btn-outline-dark btn-lg">Book Styling Consultation</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
 
     <%- include('partials/footer') %>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="/js/auth.js"></script>
-    <script src="/js/cart.js"></script>
     <script>
-        // Initialize add to cart buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const productId = this.dataset.id;
-                    if (window.addToCart) {
-                        window.addToCart(productId, 1);
+        const tabs = document.querySelectorAll('.cat-tab');
+        const products = document.querySelectorAll('.prod-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.dataset.category;
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                products.forEach(product => {
+                    if (category === 'all') {
+                        product.style.display = 'block';
                     } else {
-                        console.error('addToCart function not found');
+                        const productCat = product.dataset.category?.toLowerCase();
+                        if (productCat === category.toLowerCase()) {
+                            product.style.display = 'block';
+                        } else {
+                            product.style.display = 'none';
+                        }
                     }
                 });
             });
         });
+
+        async function addToCart(event, productId) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Adding...';
+
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ productId, quantity: 1 })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    button.textContent = '✓ Added';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 1500);
+                } else {
+                    alert(data.message || 'Could not add to cart');
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error adding to cart');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>

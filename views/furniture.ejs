@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Luxury Bedding Collection — Bedsheets, Duvets, Pillows, Towels, Throw Blankets, and Robes at UZYHOMES">
-    <title>Bedding Collection | UZYHOMES</title>
+    <meta name="description" content="Luxury Furniture Collection — Sofas, Armchairs, Coffee Tables, Sideboards, Bookshelves at UZYHOMES">
+    <title><%= title %></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -77,11 +77,30 @@
         .cat-tab:hover { color: var(--charcoal); }
         .cat-tab.active { color: var(--charcoal); border-bottom-color: var(--charcoal); font-weight: 500; }
 
+        .sort-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin: 30px 0 20px;
+        }
+        .sort-btn {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            border: 1px solid var(--sand);
+            background: white;
+            cursor: pointer;
+            color: var(--charcoal);
+            transition: var(--ease);
+            border-radius: 40px;
+        }
+        .sort-btn:hover {
+            border-color: var(--charcoal);
+        }
+
         .prod-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 24px;
-            padding: 40px 0;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px 0 60px;
         }
         .prod-card {
             background: white;
@@ -129,9 +148,15 @@
             line-height: 1.3;
         }
         .prod-price {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--grey);
             margin-bottom: 8px;
+        }
+        .prod-original {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-decoration: line-through;
+            margin-left: 8px;
         }
         .btn-add {
             width: 100%;
@@ -148,22 +173,32 @@
             background: var(--charcoal);
             color: white;
         }
-        .section-title {
-            font-family: var(--font-serif);
-            font-size: 1.8rem;
-            font-weight: 400;
-            margin: 40px 0 20px;
-            text-align: center;
+        .btn-add:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
+
         .empty-state {
             text-align: center;
             padding: 80px 20px;
+            grid-column: 1/-1;
         }
         .empty-state i {
-            font-size: 3rem;
+            font-size: 4rem;
             color: var(--linen);
             margin-bottom: 20px;
         }
+        .empty-state h3 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            color: var(--grey);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
         .breadcrumb {
             background: transparent;
             padding: 20px 0 0;
@@ -176,6 +211,51 @@
         .breadcrumb a:hover {
             color: var(--charcoal);
         }
+
+        .pagination-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            margin-bottom: 60px;
+        }
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--sand);
+            background: white;
+            color: var(--grey);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--ease);
+        }
+        .page-btn:hover {
+            border-color: var(--charcoal);
+            color: var(--charcoal);
+        }
+        .page-btn.active {
+            background: var(--charcoal);
+            color: white;
+            border-color: var(--charcoal);
+        }
+        .page-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .prod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+            .cat-tab {
+                padding: 10px 16px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -185,47 +265,69 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Bedding</li>
+                <li class="breadcrumb-item active" aria-current="page">Furniture</li>
             </ol>
         </nav>
     </div>
 
     <section class="page-hero">
-        <span class="eyebrow">Luxury Bedding</span>
-        <h1>Designed for deep rest</h1>
-        <p class="subtitle">Experience the pinnacle of comfort with our premium bedding collection</p>
+        <span class="eyebrow">Luxury Furniture</span>
+        <h1>Exceptional pieces for the modern home</h1>
+        <p class="subtitle">Discover our curated collection of sofas, armchairs, tables, and storage</p>
     </section>
 
     <div class="category-tabs">
         <div class="inner">
-            <button class="cat-tab active" data-category="all">All Bedding</button>
-            <button class="cat-tab" data-category="bedsheet">Bedsheets</button>
-            <button class="cat-tab" data-category="duvet">Duvets</button>
-            <button class="cat-tab" data-category="pillows">Pillows</button>
-            <button class="cat-tab" data-category="towels">Towels</button>
-            <button class="cat-tab" data-category="throw blankets">Throw Blankets</button>
-            <button class="cat-tab" data-category="robes">Robes</button>
+            <button class="cat-tab active" data-category="all">All Furniture</button>
+            <button class="cat-tab" data-category="sofas">Sofas</button>
+            <button class="cat-tab" data-category="armchairs">Armchairs</button>
+            <button class="cat-tab" data-category="coffee tables">Coffee Tables</button>
+            <button class="cat-tab" data-category="sideboards">Sideboards</button>
+            <button class="cat-tab" data-category="bookshelves">Bookshelves</button>
         </div>
     </div>
 
     <div class="container">
+        <div class="sort-wrap">
+            <div class="dropdown">
+                <button class="sort-btn dropdown-toggle" data-bs-toggle="dropdown">
+                    Sort: 
+                    <% if (filters.sort === 'price_low') { %>Price: Low–High
+                    <% } else if (filters.sort === 'price_high') { %>Price: High–Low
+                    <% } else if (filters.sort === 'newest') { %>Newest
+                    <% } else { %>Featured<% } %>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?sort=featured&category=<%= filters.category %>">Featured</a></li>
+                    <li><a class="dropdown-item" href="?sort=newest&category=<%= filters.category %>">Newest</a></li>
+                    <li><a class="dropdown-item" href="?sort=price_low&category=<%= filters.category %>">Price: Low–High</a></li>
+                    <li><a class="dropdown-item" href="?sort=price_high&category=<%= filters.category %>">Price: High–Low</a></li>
+                </ul>
+            </div>
+        </div>
+
         <div class="prod-grid" id="productsGrid">
             <% if (products && products.length > 0) { %>
                 <% products.forEach(p => { %>
-                <a href="/product/<%= p._id %>" class="prod-card" data-subcategory="<%= p.subcategory || '' %>">
+                <a href="/product/<%= p._id %>" class="prod-card" data-category="<%= p.subcategory || p.category %>">
                     <div class="prod-img">
                         <% if (p.images && p.images[0]) { %>
                             <img src="<%= p.images[0].url %>" alt="<%= p.name %>">
                         <% } else { %>
                             <div class="no-img" style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                                <i class="fas fa-image fa-3x" style="color:#ccc;"></i>
+                                <i class="fas fa-couch fa-3x" style="color:#ccc;"></i>
                             </div>
                         <% } %>
                     </div>
                     <div class="prod-info">
                         <div class="prod-subcat"><%= p.subcategory || p.category %></div>
                         <div class="prod-name"><%= p.name %></div>
-                        <div class="prod-price">₦<%= Number(p.discountPrice || p.price).toLocaleString() %></div>
+                        <div class="prod-price">
+                            ₦<%= Number(p.discountPrice || p.price).toLocaleString() %>
+                            <% if (p.discountPrice) { %>
+                                <span class="prod-original">₦<%= Number(p.price).toLocaleString() %></span>
+                            <% } %>
+                        </div>
                         <button class="btn-add add-to-cart-btn" data-id="<%= p._id %>" onclick="event.stopPropagation(); addToCart(event, '<%= p._id %>')" <%= p.stock === 0 ? 'disabled' : '' %>>
                             <%= p.stock === 0 ? 'Out of Stock' : 'Add to Cart' %>
                         </button>
@@ -233,13 +335,43 @@
                 </a>
                 <% }) %>
             <% } else { %>
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <i class="fas fa-bed"></i>
+                <div class="empty-state">
+                    <i class="fas fa-couch"></i>
                     <h3>Coming Soon</h3>
-                    <p>Our luxury bedding collection is being curated. Check back soon!</p>
+                    <p>Our luxury furniture collection is being carefully curated. We're working with exceptional craftspeople to bring you pieces that embody quiet luxury and timeless design.</p>
+                    <p style="margin-top: 20px; font-size: 0.9rem;">Sofas | Armchairs | Coffee Tables | Sideboards | Bookshelves | and more</p>
+                    <form class="notify-form" id="notifyForm" style="max-width: 400px; margin: 30px auto 0; display: flex; gap: 12px;">
+                        <input type="email" placeholder="Enter your email" id="notifyEmail" required style="flex: 1; padding: 12px 16px; border: 1px solid var(--sand); border-radius: 40px; font-family: var(--font-sans);">
+                        <button type="submit" style="padding: 12px 28px; background: var(--charcoal); color: white; border: none; border-radius: 40px; cursor: pointer;">Notify Me</button>
+                    </form>
                 </div>
             <% } %>
         </div>
+
+        <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="pagination-wrap">
+            <% if (pagination.hasPrev) { %>
+                <a class="page-btn" href="?page=<%= pagination.prevPage %>&sort=<%= filters.sort %>&category=<%= filters.category %>">&lsaquo;</a>
+            <% } else { %>
+                <span class="page-btn disabled">&lsaquo;</span>
+            <% } %>
+            
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <% if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)) { %>
+                    <a class="page-btn <%= i === pagination.currentPage ? 'active' : '' %>" 
+                       href="?page=<%= i %>&sort=<%= filters.sort %>&category=<%= filters.category %>"><%= i %></a>
+                <% } else if (i === pagination.currentPage - 2 || i === pagination.currentPage + 2) { %>
+                    <span class="page-btn disabled">…</span>
+                <% } %>
+            <% } %>
+            
+            <% if (pagination.hasNext) { %>
+                <a class="page-btn" href="?page=<%= pagination.nextPage %>&sort=<%= filters.sort %>&category=<%= filters.category %>">&rsaquo;</a>
+            <% } else { %>
+                <span class="page-btn disabled">&rsaquo;</span>
+            <% } %>
+        </div>
+        <% } %>
     </div>
 
     <%- include('partials/footer') %>
@@ -257,21 +389,18 @@
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
-                products.forEach(product => {
-                    if (category === 'all') {
-                        product.style.display = 'block';
-                    } else {
-                        const productCat = product.dataset.subcategory?.toLowerCase();
-                        if (productCat === category.toLowerCase()) {
-                            product.style.display = 'block';
-                        } else {
-                            product.style.display = 'none';
-                        }
-                    }
-                });
+                // Update URL with category filter
+                const url = new URL(window.location.href);
+                if (category === 'all') {
+                    url.searchParams.delete('category');
+                } else {
+                    url.searchParams.set('category', category);
+                }
+                window.location.href = url.toString();
             });
         });
 
+        // Add to cart function
         async function addToCart(event, productId) {
             event.preventDefault();
             event.stopPropagation();
@@ -309,6 +438,25 @@
                 button.disabled = false;
             }
         }
+
+        // Notify form
+        document.getElementById('notifyForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('notifyEmail').value;
+            const button = e.target.querySelector('button');
+            const originalText = button.textContent;
+            
+            button.textContent = 'Sending...';
+            button.disabled = true;
+            
+            // TODO: Replace with actual API endpoint
+            setTimeout(() => {
+                alert('Thank you! We\'ll notify you when our furniture collection launches.');
+                button.textContent = originalText;
+                button.disabled = false;
+                document.getElementById('notifyEmail').value = '';
+            }, 1000);
+        });
     </script>
 </body>
 </html>

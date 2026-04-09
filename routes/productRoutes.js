@@ -6,6 +6,7 @@ const { validateProduct, handleValidationErrors } = require('../middleware/valid
 
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
+router.get('/furniture', productController.getFurniturePage);
 
 router.post('/', authenticateToken, authorize('admin', 'vendor'), validateProduct, handleValidationErrors, productController.createProduct);
 router.put('/:id', authenticateToken, authorize('admin', 'vendor'), productController.updateProduct);

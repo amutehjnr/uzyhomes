@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Review = require('../models/Review');
+const logger = require('../config/logger'); // Add this if you have logger
 
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -162,3 +163,106 @@ exports.addReview = async (req, res, next) => {
   }
 };
 
+// NEW METHODS FOR CATEGORY PAGES
+exports.getBeddingPage = async (req, res, next) => {
+    try {
+        const products = await Product.find({ 
+            category: 'bedding', 
+            isActive: true 
+        }).sort({ createdAt: -1 });
+
+        res.render('bedding', {
+            title: 'Bedding Collection | UZYHOMES',
+            products,
+            user: req.user || null
+        });
+    } catch (error) {
+        logger.error('Bedding page error:', error);
+        next(error);
+    }
+};
+
+exports.getDecorPage = async (req, res, next) => {
+    try {
+        const products = await Product.find({ 
+            category: { 
+                $in: ['decor', 'wall artwork', 'vases', 'bowls and trays', 'books and objects', 'accessories'] 
+            }, 
+            isActive: true 
+        }).sort({ createdAt: -1 });
+
+        res.render('decor', {
+            title: 'Decor Collection | UZYHOMES',
+            products,
+            user: req.user || null
+        });
+    } catch (error) {
+        logger.error('Decor page error:', error);
+        next(error);
+    }
+};
+
+// Add this method to your productController.js
+
+exports.getFurniturePage = async (req, res, next) => {
+    try {
+        const { 
+            sort = 'featured', 
+            category = 'all',
+            page = 1, 
+            limit = 12 
+        } = req.query;
+
+        const currentPage = parseInt(page);
+        const perPage = parseInt(limit);
+        const skip = (currentPage - 1) * perPage;
+
+        // Build filter for furniture products
+        let filter = { 
+            category: 'furniture', 
+            isActive: true 
+        };
+
+        // Filter by subcategory (sofas, armchairs, etc.)
+        if (category && category !== 'all') {
+            filter.subcategory = category;
+        }
+
+        // Sort options
+        const sortMap = {
+            featured: { isFeatured: -1, createdAt: -1 },
+            newest: { createdAt: -1 },
+            price_low: { price: 1 },
+            price_high: { price: -1 },
+            rating: { rating: -1 }
+        };
+        const sortQuery = sortMap[sort] || sortMap.featured;
+
+        // Fetch products
+        const [products, total] = await Promise.all([
+            Product.find(filter).sort(sortQuery).skip(skip).limit(perPage),
+            Product.countDocuments(filter)
+        ]);
+
+        const pagination = {
+            currentPage,
+            totalPages: Math.ceil(total / perPage),
+            total,
+            hasNext: currentPage < Math.ceil(total / perPage),
+            hasPrev: currentPage > 1,
+            nextPage: currentPage + 1,
+            prevPage: currentPage - 1
+        };
+
+        res.render('furniture', {
+            title: 'Furniture Collection | UZYHOMES',
+            products,
+            pagination,
+            filters: { sort, category },
+            user: req.user || null
+        });
+    } catch (error) {
+        logger.error('Furniture page error:', error);
+        next(error);
+    }
+};
