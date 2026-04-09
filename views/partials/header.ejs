@@ -93,9 +93,9 @@
                 
                 <!-- Shop as dropdown only for mobile (not a link) -->
                 <li class="nav-item dropdown">
-                    <span class="nav-link dropdown-toggle" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Shop
-                    </span>
+                    <a class="nav-link dropdown-toggle" href="#" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                      Shop
+                    </a>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
                         <li><a class="dropdown-item" href="/decor">Decor</a></li>
                         <li><a class="dropdown-item" href="/bedding">Bedding</a></li>
@@ -163,6 +163,39 @@
         top: 0;
         right: auto;
         left: 100%;
+    }
+
+    /* Mobile dropdown fix - keeps dropdown open when clicking */
+    @media (max-width: 991px) {
+        .dropdown-menu {
+            position: static !important;
+            float: none !important;
+            width: auto !important;
+            margin-top: 0 !important;
+            background-color: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            padding-left: 20px !important;
+        }
+        
+        .dropdown-menu.show {
+            display: block !important;
+        }
+        
+        .dropdown-toggle::after {
+            float: right;
+            margin-top: 8px;
+        }
+        
+        .nav-item.dropdown {
+            width: 100%;
+        }
+        
+        .nav-link.dropdown-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 </style>
 
