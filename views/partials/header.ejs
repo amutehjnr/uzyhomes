@@ -91,10 +91,10 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>                
                 <li class="nav-item"><a class="nav-link" href="/interiors">Interiors</a></li>
                 
-                <!-- Shop as dropdown only for mobile (not a link) -->
+                <!-- Shop as dropdown for mobile -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                      Shop
+                    <a class="nav-link dropdown-toggle" href="#" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Shop
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
                         <li><a class="dropdown-item" href="/decor">Decor</a></li>
@@ -164,37 +164,24 @@
         right: auto;
         left: 100%;
     }
-
-    /* Mobile dropdown fix - keeps dropdown open when clicking */
+    
+    /* Mobile specific - ensure dropdowns work properly */
     @media (max-width: 991px) {
-        .dropdown-menu {
-            position: static !important;
-            float: none !important;
-            width: auto !important;
-            margin-top: 0 !important;
-            background-color: transparent !important;
-            border: 0 !important;
-            box-shadow: none !important;
-            padding-left: 20px !important;
+        .navbar-nav .dropdown-menu {
+            position: absolute !important;
+            background-color: white !important;
+            border: 1px solid rgba(0,0,0,0.15) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+            padding: 0.5rem 0 !important;
         }
         
-        .dropdown-menu.show {
+        .navbar-nav .dropdown-menu.show {
             display: block !important;
         }
         
-        .dropdown-toggle::after {
-            float: right;
-            margin-top: 8px;
-        }
-        
-        .nav-item.dropdown {
-            width: 100%;
-        }
-        
-        .nav-link.dropdown-toggle {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
         }
     }
 </style>
@@ -211,4 +198,13 @@
         <% } %>
     };
     console.log('Header loaded - User logged in:', window.userData.isLoggedIn);
+    
+    // Ensure mobile dropdowns work properly
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all dropdowns for mobile
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        dropdownElementList.map(function(dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+    });
 </script>
