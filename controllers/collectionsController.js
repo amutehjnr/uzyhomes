@@ -24,19 +24,19 @@ exports.getCollections = async (req, res, next) => {
         // Build filter query
         let query = { isActive: true };
 
-        // Category/filter mapping - supports old /bedding and /decor URL params
+        // Updated category/filter mapping to match new Product model
         const filterMap = {
             bedding: { category: 'bedding' },
             decor: { category: 'decor' },
             interiors: { category: 'interiors' },
             accessories: { category: 'accessories' },
+            'wall artwork': { category: 'wall artwork' },
+            vases: { category: 'vases' },
+            'bowls and trays': { category: 'bowls and trays' },
+            'books and objects': { category: 'books and objects' },
             // Legacy collection slugs from /bedding
             linen: { category: 'bedding', 'specifications.material': /linen/i },
             cotton: { category: 'bedding', 'specifications.material': /cotton/i },
-            // Decor subcategories
-            vases: { category: 'decor', 'specifications.subcategory': 'vases' },
-            candles: { category: 'decor', 'specifications.subcategory': 'candles' },
-            art: { category: 'decor', 'specifications.subcategory': 'art' },
         };
 
         const activeFilter = filter !== 'all' ? filter : (category || collection || null);
@@ -73,13 +73,30 @@ exports.getCollections = async (req, res, next) => {
             .sort({ price: -1 })
             .limit(3);
 
-        // Fetch section-specific products
-        const [beddingProducts, decorProducts, vaseProducts, candleProducts, artProducts] = await Promise.all([
+        // Fetch section-specific products using the new categories
+        const [
+            beddingProducts, 
+            wallArtProducts, 
+            vaseProducts, 
+            bowlsTraysProducts, 
+            booksObjectsProducts,
+            accessoriesProducts,
+            decorProducts
+        ] = await Promise.all([
+            // Bedding products
             Product.find({ isActive: true, category: 'bedding' }).sort({ isFeatured: -1 }).limit(8),
+            // Wall Art products
+            Product.find({ isActive: true, category: 'wall artwork' }).sort({ isFeatured: -1 }).limit(8),
+            // Vases products
+            Product.find({ isActive: true, category: 'vases' }).sort({ isFeatured: -1 }).limit(8),
+            // Bowls and Trays products
+            Product.find({ isActive: true, category: 'bowls and trays' }).sort({ isFeatured: -1 }).limit(8),
+            // Books and Objects products
+            Product.find({ isActive: true, category: 'books and objects' }).sort({ isFeatured: -1 }).limit(8),
+            // Accessories products
+            Product.find({ isActive: true, category: 'accessories' }).sort({ isFeatured: -1 }).limit(8),
+            // All decor products (for count)
             Product.find({ isActive: true, category: 'decor' }).sort({ isFeatured: -1 }).limit(8),
-            Product.find({ isActive: true, 'specifications.subcategory': 'vases' }).limit(4),
-            Product.find({ isActive: true, 'specifications.subcategory': 'candles' }).limit(4),
-            Product.find({ isActive: true, 'specifications.subcategory': 'art' }).limit(4),
         ]);
 
         // Bedding collections (from old beddingRoutes)
@@ -107,12 +124,14 @@ exports.getCollections = async (req, res, next) => {
             }
         ];
 
-        // Decor categories (from old decorRoutes)
+        // Updated Decor categories to match new product categories
         const decorCategories = [
+            { name: 'Wall Art', slug: 'wall artwork', icon: 'fa-image', count: wallArtProducts.length },
             { name: 'Vases & Vessels', slug: 'vases', icon: 'fa-vial', count: vaseProducts.length },
-            { name: 'Scented Candles', slug: 'candles', icon: 'fa-fire', count: candleProducts.length },
-            { name: 'Wall Art', slug: 'art', icon: 'fa-image', count: artProducts.length },
-            { name: 'All Décor', slug: 'decor', icon: 'fa-couch', count: decorProducts.length },
+            { name: 'Bowls & Trays', slug: 'bowls and trays', icon: 'fa-bowl-food', count: bowlsTraysProducts.length },
+            { name: 'Books & Objects', slug: 'books and objects', icon: 'fa-book', count: booksObjectsProducts.length },
+            { name: 'Accessories', slug: 'accessories', icon: 'fa-couch', count: accessoriesProducts.length },
+            { name: 'All Décor', slug: 'decor', icon: 'fa-gem', count: decorProducts.length },
         ];
 
         // Decor styling tips (from old decor controller)
@@ -156,10 +175,12 @@ exports.getCollections = async (req, res, next) => {
             // Section products
             featuredProducts,
             beddingProducts,
-            decorProducts,
+            wallArtProducts,
             vaseProducts,
-            candleProducts,
-            artProducts,
+            bowlsTraysProducts,
+            booksObjectsProducts,
+            accessoriesProducts,
+            decorProducts,
 
             // Collections/categories metadata
             beddingCollections,

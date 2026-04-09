@@ -18,8 +18,44 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['bedding', 'interiors', 'decor', 'accessories'],
+    enum: [
+      'bedding',
+      'interiors',
+      'decor',
+      'accessories',
+      'wall artwork',
+      'vases',
+      'bowls and trays',
+      'books and objects'
+    ],
     required: [true, 'Please select a category']
+  },
+  subcategory: {
+    type: String,
+    enum: [
+      // Decor subcategories
+      'art',
+      'vases',
+      'candles',
+      'trays',
+      'objects',
+      'textiles',
+      'lighting',
+      'mirrors',
+      'books',
+      // Wall artwork subcategories
+      'wall frame',
+      'sculpture',
+      'print',
+      // Bedding subcategories
+      'duvet',
+      'sheets',
+      'pillows',
+      'throws',
+      // General
+      'other'
+    ],
+    default: null
   },
   price: {
     type: Number,
@@ -57,6 +93,11 @@ const productSchema = new mongoose.Schema({
     material: String,
     color: String,
     size: String,
+    subcategory: String,   // kept for backward compatibility with existing seeded data
+    artist: String,
+    scent: String,
+    burnTime: String,
+    framed: Boolean,
     dimensions: {
       length: Number,
       width: Number,
