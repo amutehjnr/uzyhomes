@@ -34,6 +34,7 @@ exports.getCollections = async (req, res, next) => {
             vases: { category: 'vases' },
             'bowls and trays': { category: 'bowls and trays' },
             'books and objects': { category: 'books and objects' },
+            furniture: { category: 'furniture' },
             // Legacy collection slugs from /bedding
             linen: { category: 'bedding', 'specifications.material': /linen/i },
             cotton: { category: 'bedding', 'specifications.material': /cotton/i },

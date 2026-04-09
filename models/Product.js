@@ -26,7 +26,8 @@ const productSchema = new mongoose.Schema({
       'wall artwork',
       'vases',
       'bowls and trays',
-      'books and objects'
+      'books and objects',
+      'furniture'  // ← ADD THIS
     ],
     required: [true, 'Please select a category']
   },
@@ -52,6 +53,19 @@ const productSchema = new mongoose.Schema({
       'sheets',
       'pillows',
       'throws',
+      'towels',      // ← ADD THIS
+      'robes',       // ← ADD THIS
+      'throw blankets', // ← ADD THIS
+      // Furniture subcategories
+      'sofas',       // ← ADD THIS
+      'armchairs',   // ← ADD THIS
+      'coffee tables', // ← ADD THIS
+      'sideboards',  // ← ADD THIS
+      'bookshelves', // ← ADD THIS
+      'beds',        // ← ADD THIS
+      'dining tables', // ← ADD THIS
+      'chairs',      // ← ADD THIS
+      'storage',     // ← ADD THIS
       // General
       'other'
     ],
@@ -105,7 +119,11 @@ const productSchema = new mongoose.Schema({
       unit: String
     },
     weight: Number,
-    care: String
+    care: String,
+    // Furniture specific
+    assembly: String,      // ← ADD THIS
+    warranty: String,      // ← ADD THIS
+    style: String          // ← ADD THIS
   },
   rating: {
     type: Number,

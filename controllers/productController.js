@@ -203,66 +203,47 @@ exports.getDecorPage = async (req, res, next) => {
 };
 
 // Add this method to your productController.js
-
 exports.getFurniturePage = async (req, res, next) => {
     try {
-        const { 
-            sort = 'featured', 
-            category = 'all',
-            page = 1, 
-            limit = 12 
-        } = req.query;
-
+        const { sort = 'featured', category = 'all', page = 1, limit = 12 } = req.query;
+        
         const currentPage = parseInt(page);
         const perPage = parseInt(limit);
         const skip = (currentPage - 1) * perPage;
-
-        // Build filter for furniture products
-        let filter = { 
-            category: 'furniture', 
-            isActive: true 
-        };
-
-        // Filter by subcategory (sofas, armchairs, etc.)
+        
+        let filter = { category: 'furniture', isActive: true };
+        
         if (category && category !== 'all') {
             filter.subcategory = category;
         }
-
-        // Sort options
+        
         const sortMap = {
             featured: { isFeatured: -1, createdAt: -1 },
             newest: { createdAt: -1 },
             price_low: { price: 1 },
-            price_high: { price: -1 },
-            rating: { rating: -1 }
+            price_high: { price: -1 }
         };
-        const sortQuery = sortMap[sort] || sortMap.featured;
-
-        // Fetch products
+        
         const [products, total] = await Promise.all([
-            Product.find(filter).sort(sortQuery).skip(skip).limit(perPage),
+            Product.find(filter).sort(sortMap[sort] || sortMap.featured).skip(skip).limit(perPage),
             Product.countDocuments(filter)
         ]);
-
-        const pagination = {
-            currentPage,
-            totalPages: Math.ceil(total / perPage),
-            total,
-            hasNext: currentPage < Math.ceil(total / perPage),
-            hasPrev: currentPage > 1,
-            nextPage: currentPage + 1,
-            prevPage: currentPage - 1
-        };
-
+        
         res.render('furniture', {
             title: 'Furniture Collection | UZYHOMES',
             products,
-            pagination,
+            pagination: {
+                currentPage,
+                totalPages: Math.ceil(total / perPage),
+                hasNext: currentPage < Math.ceil(total / perPage),
+                hasPrev: currentPage > 1,
+                nextPage: currentPage + 1,
+                prevPage: currentPage - 1
+            },
             filters: { sort, category },
             user: req.user || null
         });
     } catch (error) {
-        logger.error('Furniture page error:', error);
         next(error);
     }
 };
