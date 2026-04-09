@@ -91,11 +91,11 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>                
                 <li class="nav-item"><a class="nav-link" href="/interiors">Interiors</a></li>
                 
-                <!-- Shop as dropdown for mobile - FIXED with data-bs-auto-close="outside" -->
+                <!-- Shop as NON-LINK dropdown for mobile - using span instead of a -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <span class="nav-link dropdown-toggle" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                         Shop
-                    </a>
+                    </span>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
                         <li><a class="dropdown-item" href="/decor">Decor</a></li>
                         <li><a class="dropdown-item" href="/bedding">Bedding</a></li>
@@ -183,6 +183,23 @@
         .dropdown-item:hover {
             background-color: #f8f9fa;
         }
+        
+        /* Make span dropdown-toggle look like nav-link */
+        .navbar-nav .nav-link.dropdown-toggle,
+        .navbar-nav span.dropdown-toggle {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: rgba(0,0,0,0.55);
+            text-decoration: none;
+        }
+        
+        .navbar-nav span.dropdown-toggle {
+            cursor: pointer;
+        }
+        
+        .navbar-nav span.dropdown-toggle:hover {
+            color: rgba(0,0,0,0.7);
+        }
     }
 </style>
 
@@ -206,5 +223,14 @@
         dropdownElementList.map(function(dropdownToggleEl) {
             return new bootstrap.Dropdown(dropdownToggleEl);
         });
+        
+        // Prevent span dropdown from navigating
+        const mobileShopDropdown = document.getElementById('mobileShopDropdown');
+        if (mobileShopDropdown) {
+            mobileShopDropdown.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
     });
 </script>
