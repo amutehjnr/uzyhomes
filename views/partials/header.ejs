@@ -243,4 +243,22 @@
             return new bootstrap.Dropdown(dropdownToggleEl);
         });
     });
+
+    // Add inside the DOMContentLoaded block in header.ejs
+async function updateCartCount() {
+    try {
+        const res = await fetch('/cart/count', { credentials: 'same-origin' });
+        const data = await res.json();
+        const count = data.count || 0;
+        document.querySelectorAll('#cartCount, #mobileCartCount, .cart-count').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+    } catch (err) {
+        console.error('Cart count error:', err);
+    }
+}
+
+// Call on page load
+updateCartCount();
 </script>

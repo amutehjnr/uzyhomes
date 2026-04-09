@@ -674,5 +674,324 @@
             console.log('Cart page loaded');
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Handle quantity button clicks
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const decreaseBtn = item.querySelector('[data-action="decrease"]');
+        const increaseBtn = item.querySelector('[data-action="increase"]');
+        const input = item.querySelector('.quantity-input');
+        const itemId = item.dataset.itemId;
+        const productId = item.dataset.productId;
+        const maxStock = parseInt(input.dataset.productStock) || 999;
+
+        decreaseBtn?.addEventListener('click', async function() {
+            const current = parseInt(input.value);
+            if (current <= 1) return;
+            await updateQuantity(itemId, productId, current - 1, input, decreaseBtn, increaseBtn, maxStock);
+        });
+
+        increaseBtn?.addEventListener('click', async function() {
+            const current = parseInt(input.value);
+            if (current >= maxStock) {
+                showCartToast(`Only ${maxStock} items available`, 'error');
+                return;
+            }
+            await updateQuantity(itemId, productId, current + 1, input, decreaseBtn, increaseBtn, maxStock);
+        });
+    });
+
+    // Handle remove item buttons
+    document.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const itemId = this.dataset.itemId;
+            await removeItem(itemId, this);
+        });
+    });
+
+    // Handle remove coupon
+    document.querySelector('.remove-coupon-btn')?.addEventListener('click', async function() {
+        await removeCoupon();
+    });
+
+    // Handle apply coupon
+    document.getElementById('applyCouponBtn')?.addEventListener('click', async function() {
+        await applyCoupon();
+    });
+
+    // Handle clear cart
+    document.getElementById('clearCartBtn')?.addEventListener('click', async function() {
+        if (!confirm('Are you sure you want to clear your cart?')) return;
+        await clearCart();
+    });
+
+});
+
+// Update quantity function
+async function updateQuantity(itemId, productId, newQty, input, decreaseBtn, increaseBtn, maxStock) {
+    const originalValue = input.value;
+    input.value = newQty;
+    decreaseBtn.disabled = newQty <= 1;
+    increaseBtn.disabled = newQty >= maxStock;
+
+    try {
+        const response = await fetch(`/cart/items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ quantity: newQty })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            updateCartSummary(data.cart);
+            updateCartHeaderCount();
+            showCartToast('Cart updated');
+        } else {
+            // Revert on failure
+            input.value = originalValue;
+            decreaseBtn.disabled = parseInt(originalValue) <= 1;
+            increaseBtn.disabled = parseInt(originalValue) >= maxStock;
+            showCartToast(data.message || 'Could not update quantity', 'error');
+        }
+    } catch (err) {
+        console.error('Update error:', err);
+        input.value = originalValue;
+        showCartToast('Error updating cart', 'error');
+    }
+}
+
+// Remove item function
+async function removeItem(itemId, btn) {
+    const cartItem = btn.closest('.cart-item');
+    cartItem.style.opacity = '0.5';
+    cartItem.style.pointerEvents = 'none';
+
+    try {
+        const response = await fetch(`/cart/items/${itemId}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            cartItem.style.transition = 'all 0.3s ease';
+            cartItem.style.height = cartItem.offsetHeight + 'px';
+            cartItem.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                cartItem.style.height = '0';
+                cartItem.style.padding = '0';
+                cartItem.style.margin = '0';
+                cartItem.style.opacity = '0';
+            }, 10);
+
+            setTimeout(() => {
+                cartItem.remove();
+                updateCartHeaderCount();
+                
+                // Check if cart is now empty
+                const remaining = document.querySelectorAll('.cart-item');
+                if (remaining.length === 0) {
+                    location.reload(); // Reload to show empty cart state
+                }
+            }, 300);
+
+            showCartToast('Item removed from cart');
+        } else {
+            cartItem.style.opacity = '1';
+            cartItem.style.pointerEvents = 'auto';
+            showCartToast(data.message || 'Could not remove item', 'error');
+        }
+    } catch (err) {
+        console.error('Remove error:', err);
+        cartItem.style.opacity = '1';
+        cartItem.style.pointerEvents = 'auto';
+        showCartToast('Error removing item', 'error');
+    }
+}
+
+// Apply coupon function
+async function applyCoupon() {
+    const code = document.getElementById('couponCode').value.trim();
+    const messageEl = document.getElementById('coupon-message');
+
+    if (!code) {
+        messageEl.innerHTML = '<small class="text-danger">Please enter a coupon code</small>';
+        return;
+    }
+
+    const btn = document.getElementById('applyCouponBtn');
+    btn.textContent = 'Applying...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/cart/coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ code })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            messageEl.innerHTML = `<small class="text-success"><i class="fas fa-check-circle me-1"></i>Coupon applied! You saved ₦${Number(data.discount).toLocaleString()}</small>`;
+            updateCartSummary(data.cart);
+            showCartToast('Coupon applied successfully!');
+        } else {
+            messageEl.innerHTML = `<small class="text-danger"><i class="fas fa-times-circle me-1"></i>${data.message || 'Invalid coupon'}</small>`;
+        }
+    } catch (err) {
+        messageEl.innerHTML = '<small class="text-danger">Error applying coupon</small>';
+    } finally {
+        btn.textContent = 'Apply';
+        btn.disabled = false;
+    }
+}
+
+// Remove coupon function
+async function removeCoupon() {
+    try {
+        const response = await fetch('/cart/coupon', {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload();
+        }
+    } catch (err) {
+        console.error('Remove coupon error:', err);
+    }
+}
+
+// Clear cart function
+async function clearCart() {
+    try {
+        const response = await fetch('/cart/clear', {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload();
+        }
+    } catch (err) {
+        console.error('Clear cart error:', err);
+    }
+}
+
+// Update cart summary totals
+function updateCartSummary(cart) {
+    if (!cart) return;
+
+    const subtotal = cart.subtotal || 0;
+    const tax = cart.tax || 0;
+    const shipping = cart.shippingCost || 0;
+    const discount = cart.couponDiscount || 0;
+    const total = cart.total || 0;
+    const itemCount = (cart.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+    // Update summary sidebar
+    const summarySubtotal = document.getElementById('summary-subtotal');
+    const summaryTax = document.getElementById('summary-tax');
+    const summaryShipping = document.getElementById('summary-shipping');
+    const summaryTotal = document.getElementById('summary-total');
+    const summaryItemCount = document.getElementById('summary-item-count');
+    const cartItemsCount = document.getElementById('cart-items-count');
+
+    if (summarySubtotal) summarySubtotal.textContent = `₦${Number(subtotal).toLocaleString()}`;
+    if (summaryTax) summaryTax.textContent = `₦${Number(tax).toLocaleString()}`;
+    if (summaryShipping) summaryShipping.innerHTML = shipping === 0 
+        ? '<span class="text-success">Free</span>' 
+        : `₦${Number(shipping).toLocaleString()}`;
+    if (summaryTotal) summaryTotal.textContent = `₦${Number(total).toLocaleString()}`;
+    if (summaryItemCount) summaryItemCount.textContent = itemCount;
+    if (cartItemsCount) cartItemsCount.textContent = itemCount;
+
+    // Update discount row
+    const discountRow = document.getElementById('discount-row');
+    const summaryDiscount = document.getElementById('summary-discount');
+    if (discountRow && summaryDiscount) {
+        if (discount > 0) {
+            discountRow.style.display = 'flex';
+            summaryDiscount.textContent = `-₦${Number(discount).toLocaleString()}`;
+        } else {
+            discountRow.style.display = 'none';
+        }
+    }
+}
+
+// Update cart count in header
+async function updateCartHeaderCount() {
+    try {
+        const res = await fetch('/cart/count', { credentials: 'same-origin' });
+        const data = await res.json();
+        const count = data.count || 0;
+        document.querySelectorAll('#cartCount, #mobileCartCount, .cart-count').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+    } catch (err) {
+        console.error('Cart count error:', err);
+    }
+}
+
+// Toast notification
+function showCartToast(message, type = 'success') {
+    const existing = document.getElementById('cartToast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'cartToast';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: ${type === 'success' ? '#2D2D2D' : '#dc3545'};
+        color: white;
+        padding: 14px 24px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+    `;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        ${message}
+    `;
+
+    if (!document.getElementById('toastStyle')) {
+        const style = document.createElement('style');
+        style.id = 'toastStyle';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+</script>
 </body>
 </html>

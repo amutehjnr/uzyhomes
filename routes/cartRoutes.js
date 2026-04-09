@@ -17,6 +17,7 @@ router.delete('/coupon', cartController.removeCoupon);
 router.delete('/clear', cartController.clearCart);
 router.get('/count', cartController.getCartCount);
 router.post('/sync', cartController.syncCart);
+router.post('/add', cartController.addToCart);
 
 // Checkout routes - REQUIRE AUTHENTICATION
 router.get('/checkout', (req, res, next) => {
