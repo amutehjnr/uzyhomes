@@ -332,11 +332,20 @@ p {
     }
     
     /* Fix for the brand logo size on mobile - INCREASED SIZE */
-    .brand-logo {
-        height: 80px;  /* Increased from 200px for better mobile visibility */
-        width: auto;
-        max-width: 250px;  /* Increased from 200px */
-        display: block;
+    @media (max-width: 991.98px) {
+        .brand-logo {
+           height: 80px !important;
+           width: auto !important;
+           max-width: 250px !important;
+           display: block;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .brand-logo {
+           height: 60px !important;
+           max-width: 200px !important;
+        }
     }
     
     /* Cart count badge positioning */

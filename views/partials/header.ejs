@@ -91,9 +91,9 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>                
                 <li class="nav-item"><a class="nav-link" href="/interiors">Interiors</a></li>
                 
-                <!-- Shop as NON-LINK dropdown for mobile - using span instead of a -->
-                <li class="nav-item dropdown">
-                    <span class="nav-link dropdown-toggle" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <!-- Shop as NON-LINK dropdown for mobile - prevents navbar collapse -->
+                <li class="nav-item dropdown" id="mobileShopItem">
+                    <span class="nav-link dropdown-toggle" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="event.stopPropagation();">
                         Shop
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
@@ -216,21 +216,31 @@
     };
     console.log('Header loaded - User logged in:', window.userData.isLoggedIn);
     
-    // Ensure Bootstrap dropdowns are properly initialized
+    // Prevent navbar collapse when clicking on Shop dropdown
     document.addEventListener('DOMContentLoaded', function() {
-        // Re-initialize all dropdowns to ensure they work properly
-        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-        dropdownElementList.map(function(dropdownToggleEl) {
-            return new bootstrap.Dropdown(dropdownToggleEl);
-        });
-        
-        // Prevent span dropdown from navigating
+        // Get the mobile shop dropdown element
         const mobileShopDropdown = document.getElementById('mobileShopDropdown');
+        
         if (mobileShopDropdown) {
+            // Stop event propagation to prevent navbar collapse
             mobileShopDropdown.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
             });
         }
+        
+        // Also prevent collapse when clicking inside dropdown menu
+        const dropdownMenus = document.querySelectorAll('#mobileNav .dropdown-menu');
+        dropdownMenus.forEach(function(menu) {
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+        
+        // Re-initialize all dropdowns
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        dropdownElementList.map(function(dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
     });
 </script>
