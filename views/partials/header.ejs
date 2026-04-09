@@ -91,9 +91,9 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>                
                 <li class="nav-item"><a class="nav-link" href="/interiors">Interiors</a></li>
                 
-                <!-- Shop as dropdown for mobile -->
+                <!-- Shop as dropdown for mobile - FIXED with data-bs-auto-close="outside" -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                         Shop
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
@@ -164,24 +164,24 @@
         right: auto;
         left: 100%;
     }
-    
-    /* Mobile specific - ensure dropdowns work properly */
+
+    /* Mobile specific styles */
     @media (max-width: 991px) {
+        /* Ensure dropdowns are properly styled on mobile */
         .navbar-nav .dropdown-menu {
-            position: absolute !important;
-            background-color: white !important;
-            border: 1px solid rgba(0,0,0,0.15) !important;
-            border-radius: 0.5rem !important;
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
-            padding: 0.5rem 0 !important;
-        }
-        
-        .navbar-nav .dropdown-menu.show {
-            display: block !important;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
         }
         
         .dropdown-item {
             padding: 0.5rem 1.5rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
     }
 </style>
@@ -199,9 +199,9 @@
     };
     console.log('Header loaded - User logged in:', window.userData.isLoggedIn);
     
-    // Ensure mobile dropdowns work properly
+    // Ensure Bootstrap dropdowns are properly initialized
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize all dropdowns for mobile
+        // Re-initialize all dropdowns to ensure they work properly
         var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
         dropdownElementList.map(function(dropdownToggleEl) {
             return new bootstrap.Dropdown(dropdownToggleEl);
