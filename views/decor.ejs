@@ -45,6 +45,7 @@
             font-size: 1rem; color: var(--grey); max-width: 440px; margin: 0 auto;
         }
 
+        /* Category Tabs - Same as collections.ejs filter-bar */
         .category-tabs {
             background: white;
             border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -75,13 +76,69 @@
             font-weight: 400;
         }
         .cat-tab:hover { color: var(--charcoal); }
-        .cat-tab.active { color: var(--charcoal); border-bottom-color: var(--charcoal); font-weight: 500; }
+        .cat-tab.active { 
+            color: var(--charcoal); 
+            border-bottom-color: var(--charcoal); 
+            font-weight: 500;
+        }
+
+        /* Category Cards - Same as collections.ejs decor-cat-grid */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 50px;
+            margin-top: 30px;
+        }
+        .cat-card {
+            padding: 24px 16px;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--charcoal);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: var(--ease);
+            cursor: pointer;
+        }
+        .cat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .cat-card.active {
+            border-color: var(--charcoal);
+            background: var(--charcoal);
+            color: white;
+        }
+        .cat-card.active .cat-icon {
+            color: white;
+        }
+        .cat-card.active .cat-name {
+            color: white;
+        }
+        .cat-card.active .cat-count {
+            color: rgba(255,255,255,0.7);
+        }
+        .cat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--clay);
+        }
+        .cat-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .cat-count {
+            font-size: 0.75rem;
+            color: var(--grey);
+        }
 
         .prod-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 24px;
-            padding: 40px 0;
+            padding: 20px 0 60px;
         }
         .prod-card {
             background: white;
@@ -151,6 +208,7 @@
         .empty-state {
             text-align: center;
             padding: 80px 20px;
+            grid-column: 1/-1;
         }
         .empty-state i {
             font-size: 3rem;
@@ -168,6 +226,27 @@
         }
         .breadcrumb a:hover {
             color: var(--charcoal);
+        }
+
+        @media (max-width: 768px) {
+            .cat-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 12px;
+            }
+            .cat-card {
+                padding: 16px 12px;
+            }
+            .cat-icon {
+                font-size: 1.4rem;
+            }
+            .prod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+            .cat-tab {
+                padding: 10px 16px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -189,6 +268,7 @@
         <p class="subtitle">Transform your space with thoughtfully curated pieces</p>
     </section>
 
+    <!-- Category Tabs - Text only, matching collections.ejs filter-bar -->
     <div class="category-tabs">
         <div class="inner">
             <button class="cat-tab active" data-category="all">All Decor</button>
@@ -201,6 +281,41 @@
     </div>
 
     <div class="container">
+        <!-- Category Cards with Icons - Same style as collections.ejs -->
+        <div class="cat-grid">
+            <div class="cat-card active" data-category="all">
+                <div class="cat-icon"><i class="fas fa-palette"></i></div>
+                <div class="cat-name">All Decor</div>
+                <div class="cat-count"><%= products ? products.length : 0 %> items</div>
+            </div>
+            <div class="cat-card" data-category="wall artwork">
+                <div class="cat-icon"><i class="fas fa-image"></i></div>
+                <div class="cat-name">Wall Art</div>
+                <div class="cat-count">0</div>
+            </div>
+            <div class="cat-card" data-category="vases">
+                <div class="cat-icon"><i class="fas fa-vial"></i></div>
+                <div class="cat-name">Vases</div>
+                <div class="cat-count">0</div>
+            </div>
+            <div class="cat-card" data-category="bowls and trays">
+                <div class="cat-icon"><i class="fas fa-bowl-food"></i></div>
+                <div class="cat-name">Bowls & Trays</div>
+                <div class="cat-count">0</div>
+            </div>
+            <div class="cat-card" data-category="books and objects">
+                <div class="cat-icon"><i class="fas fa-book"></i></div>
+                <div class="cat-name">Books & Objects</div>
+                <div class="cat-count">0</div>
+            </div>
+            <div class="cat-card" data-category="accessories">
+                <div class="cat-icon"><i class="fas fa-couch"></i></div>
+                <div class="cat-name">Accessories</div>
+                <div class="cat-count">0</div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
         <div class="prod-grid" id="productsGrid">
             <% if (products && products.length > 0) { %>
                 <% products.forEach(p => { %>
@@ -225,7 +340,7 @@
                 </a>
                 <% }) %>
             <% } else { %>
-                <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state">
                     <i class="fas fa-palette"></i>
                     <h3>Coming Soon</h3>
                     <p>Our decor collection is being curated. Check back soon!</p>
@@ -238,9 +353,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Tab filtering (text only tabs at the top)
         const tabs = document.querySelectorAll('.cat-tab');
+        // Card filtering (icon cards below)
+        const catCards = document.querySelectorAll('.cat-card');
         const products = document.querySelectorAll('.prod-card');
 
+        // Tab click handler
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const category = tab.dataset.category;
@@ -248,6 +367,49 @@
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
+                // Also update active card
+                catCards.forEach(card => {
+                    if (card.dataset.category === category) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+                
+                // Filter products
+                products.forEach(product => {
+                    if (category === 'all') {
+                        product.style.display = 'block';
+                    } else {
+                        const productCat = product.dataset.category?.toLowerCase();
+                        if (productCat === category.toLowerCase()) {
+                            product.style.display = 'block';
+                        } else {
+                            product.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Card click handler
+        catCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.dataset.category;
+                
+                catCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                
+                // Also update active tab
+                tabs.forEach(tab => {
+                    if (tab.dataset.category === category) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Filter products
                 products.forEach(product => {
                     if (category === 'all') {
                         product.style.display = 'block';
