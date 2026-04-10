@@ -334,7 +334,7 @@ p {
     /* Fix for the brand logo size on mobile - INCREASED SIZE */
     @media (max-width: 991.98px) {
         .brand-logo {
-           height: 80px !important;
+           height: 190px !important;
            width: auto !important;
            max-width: 250px !important;
            display: block;
@@ -944,12 +944,11 @@ a[href="/login"]:hover .fa-user {
 
 /* ===== FOOTER ===== */
 .footer {
-    background-color: #F5F3F0; /* Light stone color - same as bg-light */
+    background-color: #F5F3F0;
     color: var(--color-grey);
     padding: 4rem 0 2rem;
 }
 
-/* Simple footer spacing */
 .footer .navbar-brand {
     display: block;
     margin-bottom: 1.5rem;
@@ -1009,7 +1008,7 @@ a[href="/login"]:hover .fa-user {
     display: flex;
     gap: 1.5rem;
     margin-top: 0.5rem;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .footer-links.inline li {
@@ -1021,11 +1020,16 @@ a[href="/login"]:hover .fa-user {
     margin: 3rem 0 2rem;
 }
 
+.footer .row:last-child {
+    align-items: center;
+}
+
 .copyright {
     color: #777;
     font-size: 0.9rem;
     line-height: 1.5;
     margin-bottom: 0;
+    text-align: center;
 }
 
 /* ===== BUTTONS ===== */
@@ -1071,12 +1075,11 @@ a[href="/login"]:hover .fa-user {
     .hero-section { height: 80vh; min-height: 600px; }
     .testimonial { font-size: 1.2rem; }
     .brand-logo { 
-        height: 100px;  /* Increased from 40px for tablet */
-        max-width: 220px;  /* Added max-width control */
+        height: 100px;
+        max-width: 220px;
     }
     .navbar { padding: 1rem 0; }
     
-    /* Footer mobile styles */
     .footer {
         padding: 3rem 0 1.5rem;
     }
@@ -1130,12 +1133,12 @@ a[href="/login"]:hover .fa-user {
         margin-left: 0.75rem;
     }
     .nav-icon { 
-        width: 22px;  /* Slightly increased icon size */
+        width: 22px;
         height: 22px;
     }
     .brand-logo { 
-        height: 150px;  /* Increased from 35px for better mobile visibility */
-        max-width: 300px;  /* Increased from 140px */
+        height: 150px;
+        max-width: 300px;
     }
     .navbar .container-fluid { 
         padding: 0 0.5rem; 
@@ -1165,7 +1168,7 @@ a[href="/login"]:hover .fa-user {
 /* Extra small devices */
 @media (max-width: 375px) {
     .brand-logo {
-        height: 50px;  /* Slightly smaller for very small screens */
+        height: 50px;
         max-width: 160px;
     }
 }
@@ -1338,18 +1341,7 @@ a[href="/login"]:hover .fa-user {
     }
 }
 
-/* FINAL FIX - ADD THIS AT THE VERY END */
-.footer .navbar-brand {
-    margin-bottom: 2rem !important;
-    display: block !important;
-}
-
-.footer-text {
-    margin-top: 1.5rem !important;
-    display: block !important;
-}
-
-/* Sidebar Styles */
+/* ===== SIDEBAR STYLES ===== */
 .sidebar {
     padding-left: 2rem;
 }
@@ -1363,12 +1355,12 @@ a[href="/login"]:hover .fa-user {
     font-size: 1.3rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--sand);
-    color: var(--dark);
+    border-bottom: 1px solid var(--color-sand);
+    color: var(--color-charcoal);
 }
 
 .sidebar-about p {
-    color: var(--grey);
+    color: var(--color-grey);
     line-height: 1.8;
 }
 
@@ -1384,18 +1376,18 @@ a[href="/login"]:hover .fa-user {
 .category-list li a {
     display: flex;
     justify-content: space-between;
-    color: var(--grey);
+    color: var(--color-grey);
     text-decoration: none;
     transition: var(--transition);
 }
 
 .category-list li a:hover {
-    color: var(--primary);
+    color: var(--color-clay);
     padding-left: 5px;
 }
 
 .category-list li a span {
-    color: var(--sand);
+    color: var(--color-sand);
 }
 
 .tag-cloud {
@@ -1407,18 +1399,18 @@ a[href="/login"]:hover .fa-user {
 .tag-cloud a {
     display: inline-block;
     padding: 0.3rem 1rem;
-    background: var(--light);
-    color: var(--grey);
+    background: var(--color-ivory);
+    color: var(--color-grey);
     text-decoration: none;
     font-size: 0.85rem;
-    border: 1px solid var(--sand);
+    border: 1px solid var(--color-sand);
     transition: var(--transition);
 }
 
 .tag-cloud a:hover {
-    background: var(--dark);
-    color: var(--white);
-    border-color: var(--dark);
+    background: var(--color-charcoal);
+    color: var(--color-ivory);
+    border-color: var(--color-charcoal);
 }
 
 @media (max-width: 992px) {
@@ -1426,4 +1418,113 @@ a[href="/login"]:hover .fa-user {
         padding-left: 0;
         margin-top: 3rem;
     }
+}
+
+/* ===== FOOTER TEXT CENTERING - DESKTOP ===== */
+@media (min-width: 768px) {
+    .footer .row:last-child .col-md-6 {
+        text-align: center !important;
+    }
+}
+
+/* FINAL FIXES */
+.footer .navbar-brand {
+    margin-bottom: 2rem !important;
+    display: block !important;
+}
+
+.footer-text {
+    margin-top: 1.5rem !important;
+    display: block !important;
+}
+
+/* Center the entire footer content */
+.footer .row {
+    text-align: center;
+    justify-content: center;
+}
+
+.footer .col-lg-4,
+.footer .col-md-2,
+.footer .col-md-3 {
+    text-align: center;
+}
+
+/* Center the brand and description */
+.footer .navbar-brand {
+    display: inline-block;
+    text-align: center;
+}
+
+.footer-text {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* Center the column headings */
+.footer h5 {
+    text-align: center;
+}
+
+/* Center the footer links */
+.footer-links {
+    text-align: center;
+    padding-left: 0;
+}
+
+.footer-links li {
+    display: inline-block;
+    margin: 0 0.5rem;
+}
+
+/* For the quick links and contact sections */
+.footer .col-md-2,
+.footer .col-md-3 {
+    text-align: center;
+}
+
+/* Footer logo sizing */
+.footer-logo {
+    height: 100px;
+    width: auto;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+/* Larger size for desktop */
+@media (min-width: 992px) {
+    .footer-logo {
+        height: 120px;
+    }
+}
+
+/* Tablet size */
+@media (max-width: 991px) and (min-width: 768px) {
+    .footer-logo {
+        height: 100px;
+    }
+}
+
+/* Mobile size */
+@media (max-width: 768px) {
+    .footer-logo {
+        height: 90px;
+    }
+}
+
+.footer .col-lg-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.footer-logo {
+    margin-bottom: 1.5rem;
+}
+
+.footer-text {
+    margin-top: 0 !important;
+    clear: both;
 }
