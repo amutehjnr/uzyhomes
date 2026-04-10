@@ -6,14 +6,120 @@
   <title>Products — UZYHOMES Admin</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    .image-upload-area {
+      border: 2px dashed var(--border, #e0dbd5);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--bg-light, #faf9f7);
+      position: relative;
+    }
+    .image-upload-area:hover {
+      border-color: var(--accent, #A68A6F);
+      background: rgba(166, 138, 111, 0.04);
+    }
+    .image-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .image-upload-area i {
+      font-size: 2rem;
+      color: var(--accent, #A68A6F);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .image-upload-area p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary, #777);
+    }
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .preview-thumb {
+      position: relative;
+      aspect-ratio: 1/1;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border, #e0dbd5);
+    }
+    .preview-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .preview-thumb .remove-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background: rgba(220,53,69,0.9);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .existing-images-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .existing-thumb {
+      position: relative;
+      aspect-ratio: 1/1;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border, #e0dbd5);
+    }
+    .existing-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .existing-thumb .remove-existing {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background: rgba(220,53,69,0.9);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-hint {
+      font-size: 0.78rem;
+      color: var(--text-secondary, #777);
+      margin-top: 4px;
+    }
+  </style>
 </head>
 <body data-page="products">
 
-<!-- FIXED: Pass both currentPage and user to sidebar -->
 <%- include('./partials/sidebar', { currentPage: 'products', user: user }) %>
 
 <div class="admin-main">
-  <!-- FIXED: Pass user to header instead of admin -->
   <%- include('./partials/header', { pageTitle: 'Products', user: user }) %>
 
   <div class="admin-content">
@@ -69,14 +175,15 @@
       </div>
       <select id="productCategory" class="form-control" data-filter-for="products">
         <option value="">All Categories</option>
-        <option value="bedroom">Bedroom</option>
-        <option value="living-room">Living Room</option>
-        <option value="dining">Dining</option>
-        <option value="kitchen">Kitchen</option>
-        <option value="bathroom">Bathroom</option>
-        <option value="office">Office</option>
-        <option value="outdoor">Outdoor</option>
+        <option value="bedding">Bedding</option>
         <option value="decor">Decor</option>
+        <option value="interiors">Interiors</option>
+        <option value="accessories">Accessories</option>
+        <option value="wall artwork">Wall Artwork</option>
+        <option value="vases">Vases</option>
+        <option value="bowls and trays">Bowls & Trays</option>
+        <option value="books and objects">Books & Objects</option>
+        <option value="furniture">Furniture</option>
       </select>
       <select id="productStatus" class="form-control" data-filter-for="products">
         <option value="">All Status</option>
@@ -112,68 +219,132 @@
 
 <!-- Product Modal -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal">
+  <div class="modal" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
     <div class="modal-header">
       <h2 class="modal-title" id="productModalTitle">Add Product</h2>
       <button class="modal-close" onclick="Modal.close('productModal')"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form id="productForm" onsubmit="event.preventDefault(); Products.save();">
+      <form id="productForm" onsubmit="event.preventDefault(); Products.save();" enctype="multipart/form-data">
+
+        <!-- Images Section -->
+        <div class="form-group">
+          <label class="form-label">Product Images</label>
+          <!-- Existing images (edit mode) -->
+          <div id="existingImagesGrid" class="existing-images-grid" style="display:none;"></div>
+          <!-- New image upload -->
+          <div class="image-upload-area" id="imageUploadArea">
+            <input type="file" id="productImages" accept="image/jpeg,image/png,image/webp" multiple>
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p><strong>Click or drag images here</strong></p>
+            <p>JPEG, PNG, WebP — Max 5MB each</p>
+          </div>
+          <div id="imagePreviewGrid" class="image-preview-grid"></div>
+          <p class="form-hint">First image will be used as the main product thumbnail.</p>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Product Name <span style="color:var(--red)">*</span></label>
-            <input type="text" name="productName" id="productName" class="form-control" placeholder="e.g. Luxe Velvet Sofa" required>
+            <input type="text" name="productName" id="productName" class="form-control" placeholder="e.g. Linen Duvet Cover" required>
           </div>
           <div class="form-group">
-            <label class="form-label">SKU</label>
-            <input type="text" name="sku" id="sku" class="form-control" placeholder="e.g. FURN-001">
+            <label class="form-label">SKU <span style="color:var(--red)">*</span></label>
+            <input type="text" name="sku" id="sku" class="form-control" placeholder="e.g. BED-LIN-001">
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Category</label>
-            <select name="category" id="category" class="form-control">
+            <label class="form-label">Category <span style="color:var(--red)">*</span></label>
+            <select name="category" id="category" class="form-control" required onchange="Products.updateSubcategories()">
               <option value="">Select category</option>
-              <option value="bedroom">Bedroom</option>
-              <option value="living-room">Living Room</option>
-              <option value="dining">Dining</option>
-              <option value="kitchen">Kitchen</option>
-              <option value="bathroom">Bathroom</option>
-              <option value="office">Office</option>
-              <option value="outdoor">Outdoor</option>
+              <option value="bedding">Bedding</option>
               <option value="decor">Decor</option>
+              <option value="interiors">Interiors</option>
+              <option value="accessories">Accessories</option>
+              <option value="wall artwork">Wall Artwork</option>
+              <option value="vases">Vases</option>
+              <option value="bowls and trays">Bowls &amp; Trays</option>
+              <option value="books and objects">Books &amp; Objects</option>
+              <option value="furniture">Furniture</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">Subcategory</label>
+            <select name="subcategory" id="subcategory" class="form-control">
+              <option value="">Select subcategory</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Price (₦) <span style="color:var(--red)">*</span></label>
             <input type="number" name="price" id="price" class="form-control" placeholder="0.00" min="0" step="0.01" required>
           </div>
+          <div class="form-group">
+            <label class="form-label">Discount Price (₦)</label>
+            <input type="number" name="discountPrice" id="discountPrice" class="form-control" placeholder="Leave blank if no discount" min="0" step="0.01">
+          </div>
         </div>
+
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Stock Quantity</label>
-            <input type="number" name="stock" id="stock" class="form-control" placeholder="0" min="0">
+            <label class="form-label">Stock Quantity <span style="color:var(--red)">*</span></label>
+            <input type="number" name="stock" id="stock" class="form-control" placeholder="0" min="0" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Discount Price</label>
-            <input type="number" name="discountPrice" id="discountPrice" class="form-control" placeholder="0.00" min="0" step="0.01">
+            <label class="form-label">Featured</label>
+            <select name="isFeatured" id="isFeatured" class="form-control">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
           </div>
         </div>
+
         <div class="form-group">
-          <label class="form-label">Description</label>
-          <textarea name="description" id="description" class="form-control" placeholder="Product description..." rows="3"></textarea>
+          <label class="form-label">Description <span style="color:var(--red)">*</span></label>
+          <textarea name="description" id="description" class="form-control" placeholder="Product description..." rows="4" required></textarea>
         </div>
+
+        <!-- Specifications -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Material</label>
+            <input type="text" name="specMaterial" id="specMaterial" class="form-control" placeholder="e.g. Egyptian Cotton">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <input type="text" name="specColor" id="specColor" class="form-control" placeholder="e.g. Ivory">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Size</label>
+            <input type="text" name="specSize" id="specSize" class="form-control" placeholder="e.g. King, 200x200cm">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Care Instructions</label>
+            <input type="text" name="specCare" id="specCare" class="form-control" placeholder="e.g. Machine wash 40°C">
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-check">
             <input type="checkbox" name="isActive" id="isActive" checked>
             <span>Product is active (visible on store)</span>
           </label>
         </div>
+
       </form>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="Modal.close('productModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="Products.save()"><i class="fas fa-save"></i> Save Product</button>
+      <button class="btn btn-primary" onclick="Products.save()" id="saveProductBtn">
+        <i class="fas fa-save"></i> Save Product
+      </button>
     </div>
   </div>
 </div>
@@ -200,5 +371,266 @@
 
 <div id="toastContainer" class="toast-container"></div>
 <script src="/js/admin.js"></script>
+
+<script>
+// ── Subcategory map matching your Product model ──────────────────────────────
+const SUBCATEGORY_MAP = {
+  bedding:            ['duvet', 'sheets', 'pillows', 'throws', 'towels', 'robes', 'throw blankets'],
+  decor:              ['art', 'vases', 'candles', 'trays', 'objects', 'textiles', 'lighting', 'mirrors', 'books'],
+  'wall artwork':     ['wall frame', 'sculpture', 'print'],
+  vases:              ['other'],
+  'bowls and trays':  ['other'],
+  'books and objects':['other'],
+  accessories:        ['other'],
+  interiors:          ['other'],
+  furniture:          ['sofas', 'armchairs', 'coffee tables', 'sideboards', 'bookshelves', 'beds', 'dining tables', 'chairs', 'storage'],
+};
+
+// ── Track new files selected and images to remove ────────────────────────────
+let _newFiles  = [];          // File objects to upload
+let _removeIds = [];          // publicIds of existing images to remove
+
+// ── Subcategory updater ───────────────────────────────────────────────────────
+Products.updateSubcategories = function(currentValue) {
+  const cat  = document.getElementById('category').value;
+  const sel  = document.getElementById('subcategory');
+  const subs = SUBCATEGORY_MAP[cat] || [];
+
+  sel.innerHTML = '<option value="">Select subcategory</option>';
+  subs.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+    if (currentValue && s === currentValue) opt.selected = true;
+    sel.appendChild(opt);
+  });
+};
+
+// ── Image preview helpers ─────────────────────────────────────────────────────
+function renderNewPreviews() {
+  const grid = document.getElementById('imagePreviewGrid');
+  grid.innerHTML = '';
+  _newFiles.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.createElement('div');
+      wrap.className = 'preview-thumb';
+      wrap.innerHTML = `
+        <img src="${e.target.result}" alt="${file.name}">
+        <button class="remove-img" title="Remove" onclick="removeNewFile(${i})">
+          <i class="fas fa-times"></i>
+        </button>`;
+      grid.appendChild(wrap);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+window.removeNewFile = function(index) {
+  _newFiles.splice(index, 1);
+  renderNewPreviews();
+};
+
+function renderExistingImages(images) {
+  const grid = document.getElementById('existingImagesGrid');
+  if (!images || !images.length) {
+    grid.style.display = 'none';
+    return;
+  }
+  grid.style.display = 'grid';
+  grid.innerHTML = '';
+  images.forEach(img => {
+    const wrap = document.createElement('div');
+    wrap.className = 'existing-thumb';
+    const pid  = img.publicId || img._id || img.url;
+    wrap.dataset.pid = pid;
+    wrap.innerHTML = `
+      <img src="${img.url}" alt="Product image">
+      <button class="remove-existing" title="Remove" onclick="removeExistingImage('${pid}', this.closest('.existing-thumb'))">
+        <i class="fas fa-times"></i>
+      </button>`;
+    grid.appendChild(wrap);
+  });
+}
+
+window.removeExistingImage = function(pid, el) {
+  _removeIds.push(pid);
+  el.remove();
+  const grid = document.getElementById('existingImagesGrid');
+  if (!grid.children.length) grid.style.display = 'none';
+};
+
+// ── File input change handler ─────────────────────────────────────────────────
+document.getElementById('productImages').addEventListener('change', function() {
+  const files = Array.from(this.files);
+  // Validate size (5 MB each)
+  const oversized = files.filter(f => f.size > 5 * 1024 * 1024);
+  if (oversized.length) {
+    Toast.error(`${oversized.length} file(s) exceed 5 MB and were skipped.`);
+  }
+  _newFiles = _newFiles.concat(files.filter(f => f.size <= 5 * 1024 * 1024));
+  renderNewPreviews();
+  this.value = ''; // reset so same file can be re-added after removal
+});
+
+// ── Override Products.openCreate ──────────────────────────────────────────────
+Products.openCreate = function() {
+  this.currentId = null;
+  _newFiles  = [];
+  _removeIds = [];
+  document.getElementById('productModalTitle').textContent = 'Add New Product';
+  document.getElementById('productForm').reset();
+  document.getElementById('imagePreviewGrid').innerHTML = '';
+  document.getElementById('existingImagesGrid').innerHTML = '';
+  document.getElementById('existingImagesGrid').style.display = 'none';
+  document.getElementById('isActive').checked = true;
+  document.getElementById('subcategory').innerHTML = '<option value="">Select subcategory</option>';
+  Modal.open('productModal');
+};
+
+// ── Override Products.edit ────────────────────────────────────────────────────
+Products.edit = async function(id) {
+  this.currentId = id;
+  _newFiles  = [];
+  _removeIds = [];
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  document.getElementById('imagePreviewGrid').innerHTML = '';
+
+  const res = await API.get(`/admin/products/${id}`);
+  if (!res.ok) { Toast.error('Failed to load product'); return; }
+
+  const p    = res.data.product;
+  const form = document.getElementById('productForm');
+
+  form.productName.value  = p.name        || '';
+  form.sku.value          = p.sku         || '';
+  form.price.value        = p.price       || '';
+  form.discountPrice.value= p.discountPrice || '';
+  form.stock.value        = p.stock       ?? 0;
+  form.description.value  = p.description || '';
+  form.isActive.checked   = p.isActive !== false;
+  form.isFeatured.value   = p.isFeatured ? 'true' : 'false';
+
+  // Specs
+  form.specMaterial.value = p.specifications?.material || '';
+  form.specColor.value    = p.specifications?.color    || '';
+  form.specSize.value     = p.specifications?.size     || '';
+  form.specCare.value     = p.specifications?.care     || '';
+
+  // Category & subcategory
+  form.category.value = p.category || '';
+  Products.updateSubcategories(p.subcategory);
+
+  // Existing images
+  renderExistingImages(p.images || []);
+
+  Modal.open('productModal');
+};
+
+// ── Override Products.save ────────────────────────────────────────────────────
+Products.save = async function() {
+  const form   = document.getElementById('productForm');
+  const saveBtn = document.getElementById('saveProductBtn');
+
+  // Basic validation
+  const name  = form.productName.value.trim();
+  const price = parseFloat(form.price.value);
+  const stock = parseInt(form.stock.value);
+  const cat   = form.category.value;
+  const sku   = form.sku.value.trim();
+  const desc  = form.description.value.trim();
+
+  if (!name || !price || !cat || !sku || !desc) {
+    Toast.warning('Name, SKU, category, price and description are required');
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  try {
+    // ── If new files, upload via FormData ──────────────────────────────────
+    if (_newFiles.length > 0) {
+      const fd = new FormData();
+      fd.append('name',         name);
+      fd.append('sku',          sku);
+      fd.append('category',     cat);
+      fd.append('subcategory',  form.subcategory.value  || '');
+      fd.append('price',        price);
+      fd.append('discountPrice',form.discountPrice.value || '');
+      fd.append('stock',        isNaN(stock) ? 0 : stock);
+      fd.append('description',  desc);
+      fd.append('isActive',     form.isActive.checked);
+      fd.append('isFeatured',   form.isFeatured.value === 'true');
+      fd.append('removeImages', JSON.stringify(_removeIds));
+      fd.append('specifications', JSON.stringify({
+        material: form.specMaterial.value.trim(),
+        color:    form.specColor.value.trim(),
+        size:     form.specSize.value.trim(),
+        care:     form.specCare.value.trim(),
+      }));
+      _newFiles.forEach(f => fd.append('images', f));
+
+      const url    = this.currentId ? `/admin/products/${this.currentId}` : '/admin/products';
+      const method = this.currentId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}` },
+        credentials: 'include',
+        body: fd,
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Save failed');
+
+      Toast.success(this.currentId ? 'Product updated successfully' : 'Product created successfully');
+      Modal.close('productModal');
+      this.loadTable();
+      return;
+    }
+
+    // ── No new files — JSON request ────────────────────────────────────────
+    const payload = {
+      name,
+      sku,
+      category:     cat,
+      subcategory:  form.subcategory.value  || undefined,
+      price,
+      discountPrice:form.discountPrice.value ? parseFloat(form.discountPrice.value) : undefined,
+      stock:        isNaN(stock) ? 0 : stock,
+      description:  desc,
+      isActive:     form.isActive.checked,
+      isFeatured:   form.isFeatured.value === 'true',
+      removeImages: _removeIds.length ? _removeIds : undefined,
+      specifications: {
+        material: form.specMaterial.value.trim() || undefined,
+        color:    form.specColor.value.trim()    || undefined,
+        size:     form.specSize.value.trim()     || undefined,
+        care:     form.specCare.value.trim()     || undefined,
+      },
+    };
+
+    const url    = this.currentId ? `/admin/products/${this.currentId}` : '/admin/products';
+    const method = this.currentId ? 'put' : 'post';
+
+    const res = await API[method](url, payload);
+
+    if (res.ok) {
+      Toast.success(this.currentId ? 'Product updated successfully' : 'Product created successfully');
+      Modal.close('productModal');
+      this.loadTable();
+    } else {
+      throw new Error(res.data?.message || 'Save failed');
+    }
+
+  } catch (err) {
+    Toast.error(err.message || 'Failed to save product');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Product';
+  }
+};
+</script>
 </body>
 </html>

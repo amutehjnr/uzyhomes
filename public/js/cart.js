@@ -5,8 +5,14 @@
  * Handles all cart operations: quantity updates, remove items, apply coupons, etc.
  */
 
+// Prevent double initialization flag
+let cartInitialized = false;
+
 // Initialize cart functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    if (cartInitialized) return;
+    cartInitialized = true;
+    
     console.log('Cart.js initialized');
     initializeQuantityControls();
     initializeCartButtons();
@@ -14,60 +20,253 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRecommendedProducts();
     updateCartCount();
     initializeLogoutButtons();
-    
-    // Add coupon message container if it doesn't exist
     addCouponMessageContainer();
 });
 
 /**
- * Initialize all cart buttons with event listeners (no inline handlers)
+ * Initialize quantity controls for cart items
+ */
+function initializeQuantityControls() {
+    const quantityControls = document.querySelectorAll('.quantity-control');
+    
+    if (quantityControls.length === 0) return;
+
+    quantityControls.forEach(control => {
+        // Prevent double initialization
+        if (control.dataset.initialized) return;
+        control.dataset.initialized = 'true';
+
+        const input = control.querySelector('.quantity-input');
+        const decreaseBtn = control.querySelector('[data-action="decrease"]');
+        const increaseBtn = control.querySelector('[data-action="increase"]');
+        const cartItem = control.closest('.cart-item');
+
+        if (!cartItem || !input) return;
+
+        const itemId = cartItem.dataset.itemId;
+        const maxStock = parseInt(input.dataset.productStock) || 999;
+
+        if (!itemId) {
+            console.error('No item ID found for cart item');
+            return;
+        }
+
+        // Clone decrease button to strip any existing listeners
+        if (decreaseBtn) {
+            const newDecreaseBtn = decreaseBtn.cloneNode(true);
+            decreaseBtn.parentNode.replaceChild(newDecreaseBtn, decreaseBtn);
+
+            newDecreaseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                if (this.disabled) return;
+
+                const current = parseInt(input.value);
+                if (current <= 1) return;
+
+                const newQty = current - 1;
+                input.value = newQty;
+
+                // Update button states immediately
+                this.disabled = newQty <= 1;
+                const inc = control.querySelector('[data-action="increase"]');
+                if (inc) inc.disabled = false;
+
+                updateQuantity(itemId, newQty, cartItem);
+            });
+        }
+
+        // Clone increase button to strip any existing listeners
+        if (increaseBtn) {
+            const newIncreaseBtn = increaseBtn.cloneNode(true);
+            increaseBtn.parentNode.replaceChild(newIncreaseBtn, increaseBtn);
+
+            newIncreaseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                if (this.disabled) return;
+
+                const current = parseInt(input.value);
+                if (current >= maxStock) {
+                    showNotification(`Only ${maxStock} items available`, 'warning');
+                    return;
+                }
+
+                const newQty = current + 1;
+                input.value = newQty;
+
+                // Update button states immediately
+                this.disabled = newQty >= maxStock;
+                const dec = control.querySelector('[data-action="decrease"]');
+                if (dec) dec.disabled = false;
+
+                updateQuantity(itemId, newQty, cartItem);
+            });
+        }
+    });
+}
+
+/**
+ * Update item quantity via API
+ */
+async function updateQuantity(itemId, quantity, cartItem) {
+    if (!itemId) {
+        console.error('updateQuantity called without itemId');
+        return;
+    }
+
+    cartItem.style.opacity = '0.7';
+
+    try {
+        const response = await fetch(`/cart/items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: parseInt(quantity) })
+        });
+
+        const data = await response.json();
+
+        cartItem.style.opacity = '1';
+
+        if (response.ok && data.success) {
+            showNotification('Cart updated', 'success');
+
+            // Update header cart count
+            if (data.cartItemCount !== undefined) {
+                updateCartCount(data.cartItemCount);
+            } else {
+                updateCartCount();
+            }
+
+            // Update totals in place if cart data returned
+            if (data.cart) {
+                updateCartTotals(data.cart);
+            } else {
+                setTimeout(() => window.location.reload(), 500);
+            }
+        } else {
+            showNotification(data.message || 'Failed to update cart', 'error');
+            setTimeout(() => window.location.reload(), 800);
+        }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+        cartItem.style.opacity = '1';
+        showNotification('Error updating cart. Please try again.', 'error');
+    }
+}
+
+/**
+ * Update cart totals in the DOM without reloading
+ */
+function updateCartTotals(cart) {
+    if (!cart) return;
+
+    const subtotal = cart.subtotal || 0;
+    const tax = cart.tax || 0;
+    const shipping = cart.shippingCost || 0;
+    const discount = cart.couponDiscount || 0;
+    const total = cart.total || 0;
+    const itemCount = (cart.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+    const el = id => document.getElementById(id);
+
+    if (el('summary-subtotal')) el('summary-subtotal').textContent = `₦${Number(subtotal).toLocaleString()}`;
+    if (el('summary-tax')) el('summary-tax').textContent = `₦${Number(tax).toLocaleString()}`;
+    if (el('summary-shipping')) {
+        el('summary-shipping').innerHTML = shipping === 0
+            ? '<span class="text-success">Free</span>'
+            : `₦${Number(shipping).toLocaleString()}`;
+    }
+    if (el('summary-total')) el('summary-total').textContent = `₦${Number(total).toLocaleString()}`;
+    if (el('summary-item-count')) el('summary-item-count').textContent = itemCount;
+    if (el('cart-items-count')) el('cart-items-count').textContent = itemCount;
+
+    const discountRow = el('discount-row');
+    const summaryDiscount = el('summary-discount');
+    if (discountRow && summaryDiscount) {
+        discountRow.style.display = discount > 0 ? 'flex' : 'none';
+        summaryDiscount.textContent = `-₦${Number(discount).toLocaleString()}`;
+    }
+}
+
+/**
+ * Initialize all cart buttons with event listeners
  */
 function initializeCartButtons() {
-    // Remove item buttons
+    // Remove item buttons — clone to strip existing listeners
     document.querySelectorAll('.remove-item-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = 'true';
+
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             const itemId = this.dataset.itemId;
-            if (itemId) {
-                removeFromCart(itemId);
-            }
+            if (itemId) removeFromCart(itemId);
         });
     });
 
     // Clear cart button
     const clearCartBtn = document.getElementById('clearCartBtn');
-    if (clearCartBtn) {
-        clearCartBtn.addEventListener('click', function(e) {
+    if (clearCartBtn && !clearCartBtn.dataset.initialized) {
+        clearCartBtn.dataset.initialized = 'true';
+
+        const newBtn = clearCartBtn.cloneNode(true);
+        clearCartBtn.parentNode.replaceChild(newBtn, clearCartBtn);
+
+        newBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             clearCart();
         });
     }
 
     // Apply coupon button
     const applyCouponBtn = document.getElementById('applyCouponBtn');
-    if (applyCouponBtn) {
-        applyCouponBtn.addEventListener('click', function(e) {
+    if (applyCouponBtn && !applyCouponBtn.dataset.initialized) {
+        applyCouponBtn.dataset.initialized = 'true';
+
+        const newBtn = applyCouponBtn.cloneNode(true);
+        applyCouponBtn.parentNode.replaceChild(newBtn, applyCouponBtn);
+
+        newBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             applyCoupon();
         });
     }
 
     // Remove coupon buttons
     document.querySelectorAll('.remove-coupon-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = 'true';
+
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             removeCoupon();
         });
     });
 
-    // Search icon (if you want to add search functionality later)
-    document.querySelectorAll('.search-icon').forEach(icon => {
-        icon.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Add search functionality here if needed
-            console.log('Search clicked');
+    // Enter key on coupon input
+    const couponInput = document.getElementById('couponCode');
+    if (couponInput && !couponInput.dataset.initialized) {
+        couponInput.dataset.initialized = 'true';
+        couponInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyCoupon();
+            }
         });
-    });
+    }
 }
 
 /**
@@ -76,15 +275,17 @@ function initializeCartButtons() {
 function initializeLogoutButtons() {
     const logoutBtn = document.getElementById('logoutBtn');
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-    
-    if (logoutBtn) {
+
+    if (logoutBtn && !logoutBtn.dataset.initialized) {
+        logoutBtn.dataset.initialized = 'true';
         logoutBtn.addEventListener('click', async function(e) {
             e.preventDefault();
             await logout();
         });
     }
-    
-    if (mobileLogoutBtn) {
+
+    if (mobileLogoutBtn && !mobileLogoutBtn.dataset.initialized) {
+        mobileLogoutBtn.dataset.initialized = 'true';
         mobileLogoutBtn.addEventListener('click', async function(e) {
             e.preventDefault();
             await logout();
@@ -99,18 +300,14 @@ async function logout() {
     try {
         const response = await fetch('/api/auth/logout', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showNotification('Logged out successfully', 'success');
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1000);
+            setTimeout(() => window.location.href = '/', 1000);
         } else {
             showNotification('Error logging out', 'error');
         }
@@ -134,131 +331,6 @@ function addCouponMessageContainer() {
 }
 
 /**
- * Initialize quantity controls for cart items
- */
-function initializeQuantityControls() {
-    const quantityControls = document.querySelectorAll('.quantity-control');
-    console.log('Found quantity controls:', quantityControls.length);
-    
-    if (quantityControls.length === 0) {
-        console.log('No quantity controls found - cart might be empty');
-        return;
-    }
-    
-    quantityControls.forEach(control => {
-        const input = control.querySelector('.quantity-input');
-        const decreaseBtn = control.querySelector('[data-action="decrease"]');
-        const increaseBtn = control.querySelector('[data-action="increase"]');
-        const cartItem = control.closest('.cart-item');
-        
-        if (!cartItem || !input) {
-            console.warn('Cart item or input not found for control');
-            return;
-        }
-        
-        // Get itemId from data-item-id attribute
-        const itemId = cartItem.dataset.itemId;
-        const maxStock = parseInt(input?.dataset?.productStock || 999);
-
-        console.log('Cart item initialized:', { itemId, maxStock, currentValue: input?.value });
-
-        if (!itemId) {
-            console.error('No item ID found for cart item');
-            return;
-        }
-
-        // Remove existing listeners by cloning and replacing buttons
-        if (decreaseBtn) {
-            const newDecreaseBtn = decreaseBtn.cloneNode(true);
-            decreaseBtn.parentNode.replaceChild(newDecreaseBtn, decreaseBtn);
-            
-            newDecreaseBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                let value = parseInt(input.value);
-                if (value > 1) {
-                    input.value = value - 1;
-                    await updateQuantity(itemId, input.value, cartItem);
-                }
-            });
-        }
-
-        if (increaseBtn) {
-            const newIncreaseBtn = increaseBtn.cloneNode(true);
-            increaseBtn.parentNode.replaceChild(newIncreaseBtn, increaseBtn);
-            
-            newIncreaseBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                let value = parseInt(input.value);
-                if (!maxStock || value < maxStock) {
-                    input.value = value + 1;
-                    await updateQuantity(itemId, input.value, cartItem);
-                } else {
-                    showNotification(`Only ${maxStock} items available`, 'warning');
-                }
-            });
-        }
-    });
-}
-
-/**
- * Update item quantity via API
- */
-async function updateQuantity(itemId, quantity, cartItem) {
-    if (!itemId) {
-        console.error('updateQuantity called without itemId');
-        showNotification('Error: Missing item ID', 'error');
-        return;
-    }
-
-    // Show loading state
-    cartItem.style.opacity = '0.5';
-    
-    try {
-        console.log(`Updating item ${itemId} to quantity ${quantity}`);
-        
-        const response = await fetch(`/cart/items/${itemId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ quantity })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            showNotification('Cart updated', 'success');
-            
-            // Update cart count if returned
-            if (data.cartItemCount !== undefined) {
-                updateCartCount(data.cartItemCount);
-            }
-            
-            // Reload the page to show updated totals
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
-        } else {
-            cartItem.style.opacity = '1';
-            showNotification(data.message || 'Failed to update cart', 'error');
-            
-            // Reset input to original value by reloading
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        }
-    } catch (error) {
-        console.error('Error updating cart:', error);
-        cartItem.style.opacity = '1';
-        showNotification('Error updating cart. Please try again.', 'error');
-    }
-}
-
-/**
  * Remove item from cart
  */
 async function removeFromCart(itemId) {
@@ -266,45 +338,66 @@ async function removeFromCart(itemId) {
         console.error('removeFromCart called without itemId');
         return;
     }
-    
+
     if (!confirm('Remove this item from your cart?')) return;
 
     const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
     if (cartItem) {
         cartItem.style.opacity = '0.5';
+        cartItem.style.pointerEvents = 'none';
     }
 
     try {
-        console.log(`Removing item ${itemId}`);
-        
         const response = await fetch(`/cart/items/${itemId}`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
             showNotification('Item removed from cart', 'success');
-            
-            // Update cart count if returned
+
             if (data.cartItemCount !== undefined) {
                 updateCartCount(data.cartItemCount);
+            } else {
+                updateCartCount();
             }
-            
-            // Reload the page
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
+
+            // Animate removal
+            if (cartItem) {
+                cartItem.style.transition = 'all 0.3s ease';
+                cartItem.style.height = cartItem.offsetHeight + 'px';
+                cartItem.style.overflow = 'hidden';
+
+                setTimeout(() => {
+                    cartItem.style.height = '0';
+                    cartItem.style.padding = '0';
+                    cartItem.style.margin = '0';
+                    cartItem.style.opacity = '0';
+                }, 10);
+
+                setTimeout(() => {
+                    cartItem.remove();
+                    const remaining = document.querySelectorAll('.cart-item');
+                    if (remaining.length === 0) {
+                        window.location.reload();
+                    }
+                }, 320);
+            }
         } else {
-            if (cartItem) cartItem.style.opacity = '1';
+            if (cartItem) {
+                cartItem.style.opacity = '1';
+                cartItem.style.pointerEvents = 'auto';
+            }
             showNotification(data.message || 'Failed to remove item', 'error');
         }
     } catch (error) {
         console.error('Error removing item:', error);
-        if (cartItem) cartItem.style.opacity = '1';
+        if (cartItem) {
+            cartItem.style.opacity = '1';
+            cartItem.style.pointerEvents = 'auto';
+        }
         showNotification('Error removing item. Please try again.', 'error');
     }
 }
@@ -324,18 +417,14 @@ async function clearCart() {
     try {
         const response = await fetch('/cart/clear', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
             showNotification('Cart cleared successfully', 'success');
-            setTimeout(() => {
-                window.location.reload();
-            }, 800);
+            setTimeout(() => window.location.reload(), 800);
         } else {
             showNotification(data.message || 'Failed to clear cart', 'error');
             if (clearBtn) {
@@ -359,29 +448,24 @@ async function clearCart() {
 async function applyCoupon() {
     const codeInput = document.getElementById('couponCode');
     const code = codeInput?.value.trim().toUpperCase();
-    
-    // Get or create message div
+
     let messageDiv = document.getElementById('coupon-message');
     if (!messageDiv) {
         messageDiv = document.createElement('div');
         messageDiv.id = 'coupon-message';
         messageDiv.className = 'mt-3';
         const promoRow = document.querySelector('.promo-code .row .col-md-8');
-        if (promoRow) {
-            promoRow.appendChild(messageDiv);
-        }
+        if (promoRow) promoRow.appendChild(messageDiv);
     }
-    
-    // Clear previous messages
+
     messageDiv.innerHTML = '';
     messageDiv.style.display = 'none';
-    
+
     if (!code) {
         showCouponMessage('Please enter a coupon code', 'warning');
         return;
     }
 
-    // Disable apply button temporarily
     const applyBtn = document.getElementById('applyCouponBtn');
     if (applyBtn) {
         applyBtn.disabled = true;
@@ -389,13 +473,9 @@ async function applyCoupon() {
     }
 
     try {
-        console.log(`Applying coupon: ${code}`);
-        
         const response = await fetch('/cart/coupon', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code })
         });
 
@@ -403,11 +483,7 @@ async function applyCoupon() {
 
         if (response.ok && data.success) {
             showCouponMessage(data.message || 'Coupon applied successfully!', 'success');
-            
-            // Reload after 1.5 seconds to show updated totals
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+            setTimeout(() => window.location.reload(), 1500);
         } else {
             showCouponMessage(data.message || 'Invalid coupon code', 'error');
         }
@@ -415,7 +491,6 @@ async function applyCoupon() {
         console.error('Error applying coupon:', error);
         showCouponMessage('Error applying coupon. Please try again.', 'error');
     } finally {
-        // Re-enable apply button
         if (applyBtn) {
             applyBtn.disabled = false;
             applyBtn.innerHTML = 'Apply';
@@ -430,19 +505,14 @@ async function removeCoupon() {
     try {
         const response = await fetch('/cart/coupon', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
             showNotification('Coupon removed successfully', 'success');
-            
-            setTimeout(() => {
-                window.location.reload();
-            }, 800);
+            setTimeout(() => window.location.reload(), 800);
         } else {
             showNotification(data.message || 'Failed to remove coupon', 'error');
         }
@@ -453,7 +523,7 @@ async function removeCoupon() {
 }
 
 /**
- * Add to cart from anywhere (product cards, recommended products)
+ * Add to cart from product cards / recommended products
  */
 async function addToCart(productId, quantity = 1) {
     if (!productId) {
@@ -461,56 +531,54 @@ async function addToCart(productId, quantity = 1) {
         return;
     }
 
-    // Find and disable the clicked button
     const button = event?.target?.closest('button');
+    let originalHtml = '';
+
     if (button) {
+        originalHtml = button.innerHTML;
         button.disabled = true;
-        const originalHtml = button.innerHTML;
         button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
     }
 
     try {
-        console.log(`Adding product ${productId} to cart`);
-        
-        const response = await fetch('/cart/items', {
+        const response = await fetch('/cart/add', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId, quantity })
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
-            // Update cart count in header
             if (data.cartItemCount !== undefined) {
                 updateCartCount(data.cartItemCount);
             } else {
                 updateCartCount();
             }
-            
-            // Show success message
-            showNotification('✓ Added to cart successfully!', 'success');
-            
-            // Animate cart icon
+
+            showNotification('✓ Item added to cart successfully!', 'success');
             animateCartIcon();
+
+            if (button) {
+                button.innerHTML = '✓ Added';
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.disabled = false;
+                }, 2000);
+            }
         } else {
             showNotification(data.message || 'Failed to add to cart', 'error');
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
         showNotification('Error adding to cart. Please try again.', 'error');
-    } finally {
-        // Re-enable button
         if (button) {
             button.disabled = false;
-            // Restore original button text
-            if (button.classList.contains('btn-add-to-cart') || button.classList.contains('btn-add-cart')) {
-                button.innerHTML = '<i class="fas fa-plus me-2"></i>Add';
-            } else {
-                button.innerHTML = '<i class="fas fa-plus me-2"></i>Add to Cart';
-            }
+            button.innerHTML = originalHtml;
         }
     }
 }
@@ -520,54 +588,51 @@ async function addToCart(productId, quantity = 1) {
  */
 async function loadRecommendedProducts() {
     const container = document.getElementById('recommended-products');
-    if (!container) {
-        console.log('Recommended products container not found');
-        return;
-    }
+    if (!container) return;
 
     try {
-        console.log('Loading recommended products');
-        
         const response = await fetch('/api/products?limit=4&sort=-rating');
         const data = await response.json();
-        
+
         let products = [];
         if (data.products && data.products.length > 0) {
             products = data.products;
         } else if (Array.isArray(data)) {
             products = data;
         }
-        
+
         if (products.length > 0) {
             container.innerHTML = '';
-            
+
             products.forEach(product => {
                 const price = product.discountPrice || product.price;
-                const image = product.images && product.images.length > 0 
-                    ? product.images[0].url 
+                const image = product.images && product.images.length > 0
+                    ? product.images[0].url
                     : '/images/placeholder.jpg';
-                
-                const productHtml = `
+
+                container.innerHTML += `
                     <div class="col-md-3 col-6 mb-4">
                         <div class="recommended-product card h-100 border-0">
                             <div class="recommended-image">
-                                <img src="${image}" alt="${product.name}" class="card-img-top img-fluid" loading="lazy">
+                                <img src="${image}" alt="${product.name}" 
+                                     class="card-img-top img-fluid" loading="lazy">
                             </div>
                             <div class="recommended-info card-body text-center p-3">
                                 <h5 class="card-title small fw-normal">${product.name}</h5>
-                                <p class="recommended-price fw-bold mb-3">₦${Number(price).toLocaleString()}</p>
-                                <button class="btn btn-outline-dark btn-sm w-100 add-to-cart-rec" data-id="${product._id}">
+                                <p class="recommended-price fw-bold mb-3">
+                                    ₦${Number(price).toLocaleString()}
+                                </p>
+                                <button class="btn btn-outline-dark btn-sm w-100 add-to-cart-rec" 
+                                        data-id="${product._id}">
                                     <i class="fas fa-plus me-2"></i>Add
                                 </button>
                             </div>
                         </div>
                     </div>
                 `;
-                
-                container.innerHTML += productHtml;
             });
-            
-            // Add event listeners to the new buttons
+
+            // Wire up the new buttons
             document.querySelectorAll('.add-to-cart-rec').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -576,11 +641,17 @@ async function loadRecommendedProducts() {
                 });
             });
         } else {
-            container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No recommendations available</p></div>';
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">No recommendations available</p>
+                </div>`;
         }
     } catch (error) {
         console.error('Error loading recommendations:', error);
-        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">Failed to load recommendations</p></div>';
+        container.innerHTML = `
+            <div class="col-12 text-center">
+                <p class="text-muted">Failed to load recommendations</p>
+            </div>`;
     }
 }
 
@@ -588,30 +659,25 @@ async function loadRecommendedProducts() {
  * Update cart count in header
  */
 async function updateCartCount(count) {
-    // Update all cart count elements (desktop and mobile)
-    const cartCountElements = document.querySelectorAll('#cartCount, #mobileCartCount, .cart-count');
-    
+    const cartCountElements = document.querySelectorAll(
+        '#cartCount, #mobileCartCount, .cart-count'
+    );
+
     if (count !== undefined) {
-        // Use provided count
         cartCountElements.forEach(el => {
-            if (el) {
-                el.textContent = count;
-                el.style.display = count > 0 ? 'inline-block' : 'none';
-            }
+            el.textContent = count;
+            el.style.display = count > 0 ? 'inline-block' : 'none';
         });
     } else {
-        // Fetch current count
         try {
             const response = await fetch('/cart/count');
             const data = await response.json();
-            
+
             if (data.success) {
                 const newCount = data.count || 0;
                 cartCountElements.forEach(el => {
-                    if (el) {
-                        el.textContent = newCount;
-                        el.style.display = newCount > 0 ? 'inline-block' : 'none';
-                    }
+                    el.textContent = newCount;
+                    el.style.display = newCount > 0 ? 'inline-block' : 'none';
                 });
             }
         } catch (error) {
@@ -621,15 +687,15 @@ async function updateCartCount(count) {
 }
 
 /**
- * Animate cart icon when item added
+ * Animate cart icon when item is added
  */
 function animateCartIcon() {
-    const cartIcons = document.querySelectorAll('.fa-shopping-bag, .fa-shopping-cart, .cart-icon');
+    const cartIcons = document.querySelectorAll(
+        '.fa-shopping-bag, .fa-shopping-cart, .cart-icon'
+    );
     cartIcons.forEach(icon => {
         icon.classList.add('cart-bounce');
-        setTimeout(() => {
-            icon.classList.remove('cart-bounce');
-        }, 500);
+        setTimeout(() => icon.classList.remove('cart-bounce'), 500);
     });
 }
 
@@ -637,103 +703,83 @@ function animateCartIcon() {
  * Show notification message
  */
 function showNotification(message, type = 'info') {
-    // Check if notification container exists, if not create it
     let notificationContainer = document.getElementById('notification-container');
-    
+
     if (!notificationContainer) {
         notificationContainer = document.createElement('div');
         notificationContainer.id = 'notification-container';
         document.body.appendChild(notificationContainer);
     }
 
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
     notification.role = 'alert';
 
-    // Add icon based on type
-    let icon = '';
-    switch(type) {
-        case 'success':
-            icon = '<i class="fas fa-check-circle me-2"></i>';
-            break;
-        case 'error':
-            icon = '<i class="fas fa-exclamation-circle me-2"></i>';
-            break;
-        case 'warning':
-            icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
-            break;
-        default:
-            icon = '<i class="fas fa-info-circle me-2"></i>';
-    }
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
 
     notification.innerHTML = `
-        ${icon}${message}
+        <i class="fas ${icons[type] || icons.info} me-2"></i>${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
 
     notificationContainer.appendChild(notification);
 
-    // Auto remove after 3 seconds
     setTimeout(() => {
         notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
 /**
- * Show coupon message
+ * Show coupon-specific message
  */
 function showCouponMessage(message, type) {
     const messageDiv = document.getElementById('coupon-message');
     if (!messageDiv) return;
 
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-times-circle',
+        warning: 'fa-exclamation-circle'
+    };
+
     messageDiv.style.display = 'block';
     messageDiv.className = `mt-3 alert alert-${type === 'error' ? 'danger' : type}`;
-    
-    let icon = '';
-    switch(type) {
-        case 'success':
-            icon = '<i class="fas fa-check-circle me-2"></i>';
-            break;
-        case 'error':
-            icon = '<i class="fas fa-times-circle me-2"></i>';
-            break;
-        case 'warning':
-            icon = '<i class="fas fa-exclamation-circle me-2"></i>';
-            break;
-    }
-    
-    messageDiv.innerHTML = icon + message;
+    messageDiv.innerHTML = `<i class="fas ${icons[type] || ''} me-2"></i>${message}`;
 }
 
 /**
- * Initialize add to cart buttons on product pages
+ * Initialize add to cart buttons on product listing pages
  */
 function initializeAddToCartButtons() {
-    document.querySelectorAll('.btn-add-cart, .btn-add-to-cart, [data-add-to-cart]').forEach(button => {
-        // Skip if already initialized
+    document.querySelectorAll(
+        '.btn-add-cart, .btn-add-to-cart, [data-add-to-cart]'
+    ).forEach(button => {
         if (button.dataset.initialized) return;
-        
         button.dataset.initialized = 'true';
-        
+
         button.addEventListener('click', async function(e) {
             e.preventDefault();
-            
-            const productId = this.dataset.id || this.dataset.productId || this.dataset.addToCart;
+            const productId = this.dataset.id
+                || this.dataset.productId
+                || this.dataset.addToCart;
+
             if (!productId) {
                 console.error('No product ID found on button');
                 return;
             }
-            
+
             await addToCart(productId, 1);
         });
     });
 }
 
-// Add CSS animations if not already present
+// Add CSS styles
 if (!document.getElementById('cart-animation-styles')) {
     const style = document.createElement('style');
     style.id = 'cart-animation-styles';
@@ -743,49 +789,43 @@ if (!document.getElementById('cart-animation-styles')) {
             top: 20px;
             right: 20px;
             z-index: 9999;
-        }
-        
-        #notification-container .alert {
             min-width: 300px;
+        }
+
+        #notification-container .alert {
             margin-bottom: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border-radius: 8px;
-            animation: slideIn 0.3s ease;
+            animation: slideInRight 0.3s ease;
         }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
         }
-        
+
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50%       { transform: scale(1.2); }
         }
-        
+
         .cart-bounce {
             animation: bounce 0.5s ease;
         }
-        
+
         .cart-item {
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, height 0.3s ease;
         }
-        
+
         .recommended-product {
             transition: transform 0.3s ease;
         }
-        
+
         .recommended-product:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        
+
         .cart-count {
             background: #1a1a1a;
             color: white;
@@ -802,7 +842,8 @@ if (!document.getElementById('cart-animation-styles')) {
     document.head.appendChild(style);
 }
 
-// Export functions for use in HTML
+// Export for use in other scripts
 window.showNotification = showNotification;
 window.updateCartCount = updateCartCount;
 window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
