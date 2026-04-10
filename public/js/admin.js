@@ -19,7 +19,7 @@ const API = {
     const options = { 
       method, 
       headers: this.headers(),
-      credentials: 'include' // Important for cookies
+      credentials: 'include'
     };
     
     console.log(`🌐 API Request: ${method} ${url}`, { token: this.token ? 'present' : 'missing' });
@@ -31,7 +31,6 @@ const API = {
       
       console.log(`📡 API Response: ${res.status} ${res.statusText} for ${url}`);
       
-      // Check if response is JSON
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await res.text();
@@ -67,15 +66,10 @@ const API = {
   },
   
   handleUnauthorized() {
-    // Clear tokens
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminRefreshToken');
     this.token = null;
-    
-    // Show message
     Toast.error('Session expired. Please login again.');
-    
-    // Redirect to login page
     setTimeout(() => {
       window.location.href = '/admin/login';
     }, 1500);
@@ -93,10 +87,7 @@ const TokenManager = {
   
   async refreshToken() {
     const refreshToken = localStorage.getItem('adminRefreshToken');
-    
-    if (!refreshToken) {
-      return false;
-    }
+    if (!refreshToken) return false;
     
     try {
       const response = await fetch('/admin/auth/refresh', {
@@ -109,9 +100,7 @@ const TokenManager = {
         credentials: 'include'
       });
       
-      if (!response.ok) {
-        throw new Error('Refresh failed');
-      }
+      if (!response.ok) throw new Error('Refresh failed');
       
       const data = await response.json();
       
@@ -133,13 +122,8 @@ const TokenManager = {
   },
   
   async handleTokenRefresh() {
-    // If already refreshing, return existing promise
-    if (this.refreshPromise) {
-      return this.refreshPromise;
-    }
-    
+    if (this.refreshPromise) return this.refreshPromise;
     this.refreshPromise = this.refreshToken();
-    
     try {
       const result = await this.refreshPromise;
       return result;
@@ -241,14 +225,12 @@ function initSidebar() {
     });
   }
   
-  // Modal overlay clicks
   document.querySelectorAll('.modal-overlay').forEach(o => {
     o.addEventListener('click', e => { 
       if (e.target === o) Modal.close(o.id); 
     });
   });
   
-  // Dropdown menus
   document.querySelectorAll('[data-dropdown]').forEach(btn => {
     btn.addEventListener('click', e => { 
       e.stopPropagation(); 
@@ -257,12 +239,10 @@ function initSidebar() {
     });
   });
   
-  // Close dropdowns when clicking outside
   document.addEventListener('click', () => 
     document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'))
   );
   
-  // Highlight active menu item
   const currentPath = window.location.pathname;
   document.querySelectorAll('.sidebar-menu a').forEach(link => {
     if (link.getAttribute('href') === currentPath) {
@@ -282,14 +262,12 @@ async function logout() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminRefreshToken');
     API.token = null;
-    
     setTimeout(() => {
       window.location.href = '/admin/login';
     }, 1000);
   }
 }
 
-// Make logout globally available
 window.logout = logout;
 
 /* ─── Dashboard Functions ────────────────────────────── */
@@ -304,33 +282,21 @@ const Dashboard = {
   async loadStats() {
     const res = await API.get('/admin/api/dashboard/stats');
     if (!res.ok) return;
-    
     this.updateStats(res.data);
   },
   
   updateStats(data) {
     const elements = {
-      totalOrders: document.getElementById('totalOrders'),
-      totalRevenue: document.getElementById('totalRevenue'),
-      totalUsers: document.getElementById('totalUsers'),
+      totalOrders:   document.getElementById('totalOrders'),
+      totalRevenue:  document.getElementById('totalRevenue'),
+      totalUsers:    document.getElementById('totalUsers'),
       totalProducts: document.getElementById('totalProducts')
     };
     
-    if (elements.totalOrders) {
-      elements.totalOrders.textContent = data.totalOrders?.toLocaleString() || '0';
-    }
-    
-    if (elements.totalRevenue) {
-      elements.totalRevenue.textContent = '₦' + (data.totalRevenue?.toLocaleString() || '0');
-    }
-    
-    if (elements.totalUsers) {
-      elements.totalUsers.textContent = data.totalUsers?.toLocaleString() || '0';
-    }
-    
-    if (elements.totalProducts) {
-      elements.totalProducts.textContent = data.totalProducts?.toLocaleString() || '0';
-    }
+    if (elements.totalOrders)   elements.totalOrders.textContent   = data.totalOrders?.toLocaleString()  || '0';
+    if (elements.totalRevenue)  elements.totalRevenue.textContent  = '₦' + (data.totalRevenue?.toLocaleString() || '0');
+    if (elements.totalUsers)    elements.totalUsers.textContent    = data.totalUsers?.toLocaleString()   || '0';
+    if (elements.totalProducts) elements.totalProducts.textContent = data.totalProducts?.toLocaleString()|| '0';
   },
   
   async loadRecentOrders() {
@@ -357,11 +323,11 @@ const Dashboard = {
     }
     
     const statusBadges = {
-      pending: 'badge-warning',
+      pending:    'badge-warning',
       processing: 'badge-info',
-      shipped: 'badge-primary',
-      delivered: 'badge-success',
-      cancelled: 'badge-danger'
+      shipped:    'badge-primary',
+      delivered:  'badge-success',
+      cancelled:  'badge-danger'
     };
     
     tbody.innerHTML = orders.map(order => `
@@ -386,26 +352,21 @@ const Dashboard = {
   
   async loadCharts() {
     if (!document.getElementById('revenueChart')) return;
-    
     const res = await API.get('/admin/api/dashboard/charts');
     if (!res.ok) return;
-    
     this.initCharts(res.data);
   },
   
   initCharts(data) {
-    // Revenue Chart
     const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
     if (revenueCtx && data.monthlyRevenue) {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const labels = data.monthlyRevenue.map(item => 
-        months[item._id.month - 1] + ' ' + item._id.year
-      );
+      const labels = data.monthlyRevenue.map(item => months[item._id.month - 1] + ' ' + item._id.year);
       
       new Chart(revenueCtx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels,
           datasets: [{
             label: 'Revenue (₦)',
             data: data.monthlyRevenue.map(item => item.revenue),
@@ -418,22 +379,17 @@ const Dashboard = {
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             y: {
               beginAtZero: true,
-              ticks: {
-                callback: value => '₦' + value.toLocaleString()
-              }
+              ticks: { callback: value => '₦' + value.toLocaleString() }
             }
           }
         }
       });
     }
     
-    // Orders Status Chart
     const ordersCtx = document.getElementById('ordersChart')?.getContext('2d');
     if (ordersCtx && data.ordersByStatus) {
       new Chart(ordersCtx, {
@@ -442,21 +398,13 @@ const Dashboard = {
           labels: data.ordersByStatus.map(item => item._id),
           datasets: [{
             data: data.ordersByStatus.map(item => item.count),
-            backgroundColor: [
-              '#4cc9f0',
-              '#f72585',
-              '#7209b7',
-              '#f8961e',
-              '#43aa8b'
-            ]
+            backgroundColor: ['#4cc9f0','#f72585','#7209b7','#f8961e','#43aa8b']
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
+          plugins: { legend: { position: 'bottom' } }
         }
       });
     }
@@ -591,6 +539,7 @@ const Products = {
     this.currentId = id;
     document.getElementById('productModalTitle').textContent = 'Edit Product';
     
+    // ✅ FIXED: use /admin/api/products/:id (not /admin/products/:id)
     const res = await API.get(`/admin/api/products/${id}`);
     if (!res.ok) { 
       Toast.error('Failed to load product'); 
@@ -600,12 +549,12 @@ const Products = {
     const p = res.data.product;
     const form = document.getElementById('productForm');
     
-    form.productName.value = p.name || '';
-    form.category.value = p.category || '';
-    form.price.value = p.price || '';
-    form.stock.value = p.stock || '';
-    form.description.value = p.description || '';
-    form.isActive.checked = p.isActive !== false;
+    form.productName.value   = p.name        || '';
+    form.category.value      = p.category    || '';
+    form.price.value         = p.price       || '';
+    form.stock.value         = p.stock       || '';
+    form.description.value   = p.description || '';
+    form.isActive.checked    = p.isActive !== false;
     
     Modal.open('productModal');
   },
@@ -614,12 +563,12 @@ const Products = {
     const form = document.getElementById('productForm');
     
     const data = {
-      name: form.productName.value.trim(),
-      category: form.category.value,
-      price: parseFloat(form.price.value),
-      stock: parseInt(form.stock.value) || 0,
+      name:        form.productName.value.trim(),
+      category:    form.category.value,
+      price:       parseFloat(form.price.value),
+      stock:       parseInt(form.stock.value) || 0,
       description: form.description.value.trim(),
-      isActive: form.isActive.checked
+      isActive:    form.isActive.checked
     };
     
     if (!data.name || !data.price) { 
@@ -627,7 +576,7 @@ const Products = {
       return; 
     }
     
-    const url = this.currentId ? `/admin/products/${this.currentId}` : '/admin/products';
+    const url    = this.currentId ? `/admin/products/${this.currentId}` : '/admin/products';
     const method = this.currentId ? 'put' : 'post';
     
     const res = await API[method](url, data);
@@ -662,12 +611,10 @@ const Products = {
   
   updatePagination(pagination) {
     if (!pagination) return;
-    
     const paginationWrap = document.getElementById('paginationWrap');
     if (!paginationWrap) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `
         <div class="pagination-info">
@@ -675,31 +622,55 @@ const Products = {
         </div>
         <div class="pagination">
       `;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Products.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('productSearch')?.value || '';
+    const search   = document.getElementById('productSearch')?.value   || '';
     const category = document.getElementById('productCategory')?.value || '';
-    const status = document.getElementById('productStatus')?.value || '';
+    const status   = document.getElementById('productStatus')?.value   || '';
     
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
+    if (search)   params.append('search',   search);
     if (category) params.append('category', category);
-    if (status) params.append('status', status);
+    if (status)   params.append('status',   status);
     
     this.loadTable(params.toString());
+  },
+
+  // Subcategory map (used by products.ejs override — kept here for reference)
+  updateSubcategories(currentValue) {
+    const SUBCATEGORY_MAP = {
+      bedding:             ['duvet','sheets','pillows','throws','towels','robes','throw blankets'],
+      decor:               ['art','vases','candles','trays','objects','textiles','lighting','mirrors','books'],
+      'wall artwork':      ['wall frame','sculpture','print'],
+      vases:               ['other'],
+      'bowls and trays':   ['other'],
+      'books and objects': ['other'],
+      accessories:         ['other'],
+      interiors:           ['other'],
+      furniture:           ['sofas','armchairs','coffee tables','sideboards','bookshelves','beds','dining tables','chairs','storage'],
+    };
+    const cat  = document.getElementById('category').value;
+    const sel  = document.getElementById('subcategory');
+    if (!sel) return;
+    const subs = SUBCATEGORY_MAP[cat] || [];
+    sel.innerHTML = '<option value="">Select subcategory</option>';
+    subs.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+      if (currentValue && s === currentValue) opt.selected = true;
+      sel.appendChild(opt);
+    });
   }
 };
 
@@ -707,11 +678,11 @@ const Products = {
 const Orders = {
   currentId: null,
   statusBadges: {
-    pending: 'badge-warning',
+    pending:    'badge-warning',
     processing: 'badge-info',
-    shipped: 'badge-primary',
-    delivered: 'badge-success',
-    cancelled: 'badge-danger'
+    shipped:    'badge-primary',
+    delivered:  'badge-success',
+    cancelled:  'badge-danger'
   },
   
   async loadTable(params = '') {
@@ -788,9 +759,9 @@ const Orders = {
   },
   
   async updateStatus() {
-    const status = document.getElementById('orderStatusSelect')?.value;
+    const status   = document.getElementById('orderStatusSelect')?.value;
     const tracking = document.getElementById('trackingNumber')?.value;
-    const note = document.getElementById('statusNote')?.value;
+    const note     = document.getElementById('statusNote')?.value;
     
     if (!status) { 
       Toast.warning('Please select a status'); 
@@ -817,7 +788,6 @@ const Orders = {
     if (!paginationWrap || !pagination) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `
         <div class="pagination-info">
@@ -825,29 +795,26 @@ const Orders = {
         </div>
         <div class="pagination">
       `;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Orders.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('orderSearch')?.value || '';
-    const status = document.getElementById('orderStatus')?.value || '';
-    const date = document.getElementById('orderDate')?.value || '';
+    const search = document.getElementById('orderSearch')?.value  || '';
+    const status = document.getElementById('orderStatus')?.value  || '';
+    const date   = document.getElementById('orderDate')?.value    || '';
     
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (status) params.append('status', status);
-    if (date) params.append('date', date);
+    if (date)   params.append('date',   date);
     
     this.loadTable(params.toString());
   }
@@ -925,7 +892,6 @@ const Users = {
   
   async toggleStatus(id, isActive) {
     const res = await API.put(`/admin/users/${id}/status`, { isActive: !isActive });
-    
     if (res.ok) { 
       Toast.success(`User ${isActive ? 'deactivated' : 'activated'} successfully`); 
       this.loadTable(); 
@@ -943,7 +909,6 @@ const Users = {
   
   async deleteConfirmed() {
     const res = await API.delete(`/admin/users/${this.currentId}`);
-    
     if (res.ok) { 
       Toast.success('User deleted successfully'); 
       Modal.close('deleteModal'); 
@@ -958,26 +923,22 @@ const Users = {
     if (!paginationWrap || !pagination) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `<div class="pagination">`;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Users.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('userSearch')?.value || '';
-    const status = document.getElementById('userStatus')?.value || '';
+    const search = document.getElementById('userSearch')?.value  || '';
+    const status = document.getElementById('userStatus')?.value  || '';
     
     const params = new URLSearchParams();
     if (search) params.append('search', search);
@@ -1069,16 +1030,16 @@ const Coupons = {
       return; 
     }
     
-    const c = res.data.coupon;
+    const c    = res.data.coupon;
     const form = document.getElementById('couponForm');
     
-    form.code.value = c.code || '';
-    form.discountType.value = c.discountType || 'percentage';
-    form.discountValue.value = c.discountValue || '';
+    form.code.value              = c.code              || '';
+    form.discountType.value      = c.discountType      || 'percentage';
+    form.discountValue.value     = c.discountValue     || '';
     form.minPurchaseAmount.value = c.minPurchaseAmount || '';
-    form.usageLimit.value = c.usageLimit || '';
-    form.validUntil.value = c.validUntil ? c.validUntil.split('T')[0] : '';
-    form.isActive.checked = c.isActive !== false;
+    form.usageLimit.value        = c.usageLimit        || '';
+    form.validUntil.value        = c.validUntil ? c.validUntil.split('T')[0] : '';
+    form.isActive.checked        = c.isActive !== false;
     
     Modal.open('couponModal');
   },
@@ -1096,13 +1057,13 @@ const Coupons = {
     const form = document.getElementById('couponForm');
     
     const data = {
-      code: form.code.value.trim().toUpperCase(),
-      discountType: form.discountType.value,
-      discountValue: parseFloat(form.discountValue.value),
-      minPurchaseAmount: parseFloat(form.minPurchaseAmount.value) || 0,
-      usageLimit: parseInt(form.usageLimit.value) || null,
-      validUntil: form.validUntil.value,
-      isActive: form.isActive.checked
+      code:               form.code.value.trim().toUpperCase(),
+      discountType:       form.discountType.value,
+      discountValue:      parseFloat(form.discountValue.value),
+      minPurchaseAmount:  parseFloat(form.minPurchaseAmount.value) || 0,
+      usageLimit:         parseInt(form.usageLimit.value) || null,
+      validUntil:         form.validUntil.value,
+      isActive:           form.isActive.checked
     };
     
     if (!data.code || !data.discountValue || !data.validUntil) { 
@@ -1110,7 +1071,7 @@ const Coupons = {
       return; 
     }
     
-    const url = this.currentId ? `/admin/coupons/${this.currentId}` : '/admin/coupons';
+    const url    = this.currentId ? `/admin/coupons/${this.currentId}` : '/admin/coupons';
     const method = this.currentId ? 'put' : 'post';
     
     const res = await API[method](url, data);
@@ -1133,7 +1094,6 @@ const Coupons = {
   
   async deleteConfirmed() {
     const res = await API.delete(`/admin/coupons/${this.currentId}`);
-    
     if (res.ok) { 
       Toast.success('Coupon deleted successfully'); 
       Modal.close('deleteModal'); 
@@ -1145,12 +1105,10 @@ const Coupons = {
   
   updatePagination(pagination) {
     if (!pagination) return;
-    
     const paginationWrap = document.getElementById('paginationWrap');
     if (!paginationWrap) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `
         <div class="pagination-info">
@@ -1158,23 +1116,20 @@ const Coupons = {
         </div>
         <div class="pagination">
       `;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Coupons.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('couponSearch')?.value || '';
-    const status = document.getElementById('couponStatus')?.value || '';
+    const search = document.getElementById('couponSearch')?.value  || '';
+    const status = document.getElementById('couponStatus')?.value  || '';
     
     const params = new URLSearchParams();
     if (search) params.append('search', search);
@@ -1187,6 +1142,7 @@ const Coupons = {
 /* ─── Blog Management ────────────────────────────── */
 const Blog = {
   currentId: null,
+  selectedPosts: [],
   
   async loadTable(params = '') {
     const tbody = document.getElementById('blogTableBody');
@@ -1222,9 +1178,9 @@ const Blog = {
     }
     
     tbody.innerHTML = posts.map(p => {
-      const statusClass = p.isPublished ? 'badge-success' : 'badge-secondary';
-      const statusText = p.isPublished ? 'Published' : 'Draft';
-      const featuredStar = p.isFeatured ? '★' : '☆';
+      const statusClass   = p.isPublished ? 'badge-success' : 'badge-secondary';
+      const statusText    = p.isPublished ? 'Published' : 'Draft';
+      const featuredStar  = p.isFeatured  ? '★' : '☆';
       
       return `
         <tr>
@@ -1281,42 +1237,27 @@ const Blog = {
   async loadStats() {
     const res = await API.get('/admin/api/blog/stats');
     if (!res.ok) return;
-    
     this.updateStats(res.data.stats);
   },
   
   updateStats(stats) {
-    // Update stats cards if they exist
-    const elements = {
-      totalPosts: document.getElementById('totalPosts'),
+    const els = {
+      totalPosts:     document.getElementById('totalPosts'),
       publishedPosts: document.getElementById('publishedPosts'),
-      draftPosts: document.getElementById('draftPosts'),
-      featuredPosts: document.getElementById('featuredPosts')
+      draftPosts:     document.getElementById('draftPosts'),
+      featuredPosts:  document.getElementById('featuredPosts')
     };
+    if (els.totalPosts)     els.totalPosts.textContent     = stats.totalPosts?.toLocaleString()     || '0';
+    if (els.publishedPosts) els.publishedPosts.textContent = stats.publishedPosts?.toLocaleString() || '0';
+    if (els.draftPosts)     els.draftPosts.textContent     = stats.draftPosts?.toLocaleString()     || '0';
+    if (els.featuredPosts)  els.featuredPosts.textContent  = stats.featuredPosts?.toLocaleString()  || '0';
     
-    if (elements.totalPosts) {
-      elements.totalPosts.textContent = stats.totalPosts?.toLocaleString() || '0';
-    }
-    if (elements.publishedPosts) {
-      elements.publishedPosts.textContent = stats.publishedPosts?.toLocaleString() || '0';
-    }
-    if (elements.draftPosts) {
-      elements.draftPosts.textContent = stats.draftPosts?.toLocaleString() || '0';
-    }
-    if (elements.featuredPosts) {
-      elements.featuredPosts.textContent = stats.featuredPosts?.toLocaleString() || '0';
-    }
-    
-    // Update sidebar badge
     const badge = document.getElementById('blogPostsCount');
-    if (badge) {
-      badge.textContent = stats.publishedPosts || 0;
-    }
+    if (badge) badge.textContent = stats.publishedPosts || 0;
   },
   
   async toggleFeatured(id) {
     const res = await API.post(`/admin/blog/${id}/feature`);
-    
     if (res.ok) {
       Toast.success(res.data.message || 'Featured status updated');
       this.loadTable();
@@ -1327,7 +1268,6 @@ const Blog = {
   
   async togglePublish(id) {
     const res = await API.post(`/admin/blog/${id}/publish`);
-    
     if (res.ok) {
       Toast.success(res.data.message || 'Publish status updated');
       this.loadTable();
@@ -1345,7 +1285,6 @@ const Blog = {
   
   async deleteConfirmed() {
     const res = await API.delete(`/admin/blog/${this.currentId}`);
-    
     if (res.ok) { 
       Toast.success('Blog post deleted successfully'); 
       Modal.close('deleteModal'); 
@@ -1358,12 +1297,10 @@ const Blog = {
   
   updatePagination(pagination) {
     if (!pagination) return;
-    
     const paginationWrap = document.getElementById('paginationWrap');
     if (!paginationWrap) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `
         <div class="pagination-info">
@@ -1371,35 +1308,29 @@ const Blog = {
         </div>
         <div class="pagination">
       `;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Blog.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('blogSearch')?.value || '';
-    const status = document.getElementById('blogStatus')?.value || 'all';
-    const category = document.getElementById('blogCategory')?.value || 'all';
+    const search   = document.getElementById('blogSearch')?.value    || '';
+    const status   = document.getElementById('blogStatus')?.value    || 'all';
+    const category = document.getElementById('blogCategory')?.value  || 'all';
     
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (status !== 'all') params.append('status', status);
+    if (search)           params.append('search',   search);
+    if (status   !== 'all') params.append('status',   status);
     if (category !== 'all') params.append('category', category);
     
     this.loadTable(params.toString());
   },
-  
-  // Bulk actions
-  selectedPosts: [],
   
   updateBulkActions() {
     this.selectedPosts = [];
@@ -1419,35 +1350,23 @@ const Blog = {
   },
   
   selectAll() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.post-checkbox');
-    
-    checkboxes.forEach(cb => {
-      cb.checked = selectAll.checked;
-    });
-    
+    const selectAll   = document.getElementById('selectAll');
+    const checkboxes  = document.querySelectorAll('.post-checkbox');
+    checkboxes.forEach(cb => { cb.checked = selectAll.checked; });
     this.updateBulkActions();
   },
   
   clearSelection() {
-    document.querySelectorAll('.post-checkbox').forEach(cb => {
-      cb.checked = false;
-    });
-    if (document.getElementById('selectAll')) {
-      document.getElementById('selectAll').checked = false;
-    }
+    document.querySelectorAll('.post-checkbox').forEach(cb => { cb.checked = false; });
+    const sa = document.getElementById('selectAll');
+    if (sa) sa.checked = false;
     this.updateBulkActions();
   },
   
   async bulkPublish() {
     if (this.selectedPosts.length === 0) return;
-    
     if (confirm(`Publish ${this.selectedPosts.length} post(s)?`)) {
-      const res = await API.post('/admin/blog/bulk/publish', { 
-        ids: this.selectedPosts, 
-        publish: true 
-      });
-      
+      const res = await API.post('/admin/blog/bulk/publish', { ids: this.selectedPosts, publish: true });
       if (res.ok) {
         Toast.success(res.data.message || `${this.selectedPosts.length} posts published`);
         this.clearSelection();
@@ -1461,13 +1380,8 @@ const Blog = {
   
   async bulkUnpublish() {
     if (this.selectedPosts.length === 0) return;
-    
     if (confirm(`Unpublish ${this.selectedPosts.length} post(s)?`)) {
-      const res = await API.post('/admin/blog/bulk/publish', { 
-        ids: this.selectedPosts, 
-        publish: false 
-      });
-      
+      const res = await API.post('/admin/blog/bulk/publish', { ids: this.selectedPosts, publish: false });
       if (res.ok) {
         Toast.success(res.data.message || `${this.selectedPosts.length} posts unpublished`);
         this.clearSelection();
@@ -1481,12 +1395,8 @@ const Blog = {
   
   async bulkDelete() {
     if (this.selectedPosts.length === 0) return;
-    
-    if (confirm(`Are you sure you want to delete ${this.selectedPosts.length} post(s)? This action cannot be undone.`)) {
-      const res = await API.post('/admin/blog/bulk/delete', { 
-        ids: this.selectedPosts 
-      });
-      
+    if (confirm(`Are you sure you want to delete ${this.selectedPosts.length} post(s)? This cannot be undone.`)) {
+      const res = await API.post('/admin/blog/bulk/delete', { ids: this.selectedPosts });
       if (res.ok) {
         Toast.success(res.data.message || `${this.selectedPosts.length} posts deleted`);
         this.clearSelection();
@@ -1503,9 +1413,9 @@ const Blog = {
 const Transactions = {
   statusBadges: {
     completed: 'badge-success',
-    failed: 'badge-danger',
-    pending: 'badge-warning',
-    refunded: 'badge-info'
+    failed:    'badge-danger',
+    pending:   'badge-warning',
+    refunded:  'badge-info'
   },
   
   async loadTable(params = '') {
@@ -1565,12 +1475,10 @@ const Transactions = {
   
   updatePagination(pagination) {
     if (!pagination) return;
-    
     const paginationWrap = document.getElementById('paginationWrap');
     if (!paginationWrap) return;
     
     let html = '';
-    
     if (pagination.pages > 1) {
       html += `
         <div class="pagination-info">
@@ -1578,29 +1486,26 @@ const Transactions = {
         </div>
         <div class="pagination">
       `;
-      
       for (let i = 1; i <= pagination.pages; i++) {
         html += `
           <button class="page-btn ${i === pagination.page ? 'active' : ''}" 
                   onclick="Transactions.loadTable('page=${i}')">${i}</button>
         `;
       }
-      
       html += '</div>';
     }
-    
     paginationWrap.innerHTML = html;
   },
   
   filter() {
-    const search = document.getElementById('txSearch')?.value || '';
-    const status = document.getElementById('txStatus')?.value || '';
-    const date = document.getElementById('txDate')?.value || '';
+    const search = document.getElementById('txSearch')?.value  || '';
+    const status = document.getElementById('txStatus')?.value  || '';
+    const date   = document.getElementById('txDate')?.value    || '';
     
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (status) params.append('status', status);
-    if (date) params.append('date', date);
+    if (date)   params.append('date',   date);
     
     this.loadTable(params.toString());
   }
@@ -1608,16 +1513,13 @@ const Transactions = {
 
 /* ─── Settings Management ────────────────────────────── */
 const Settings = {
-  async saveGeneral(formId) {
+  async save(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
-    
     const formData = new FormData(form);
     const data = {};
     formData.forEach((value, key) => { data[key] = value; });
-    
     const res = await API.put('/admin/settings/general', data);
-    
     if (res.ok) {
       Toast.success('Settings saved successfully');
     } else {
@@ -1625,16 +1527,17 @@ const Settings = {
     }
   },
   
+  async saveGeneral(formId) {
+    return this.save(formId);
+  },
+  
   async saveShipping(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
-    
     const formData = new FormData(form);
     const data = {};
     formData.forEach((value, key) => { data[key] = value; });
-    
     const res = await API.put('/admin/settings/shipping', data);
-    
     if (res.ok) {
       Toast.success('Shipping settings saved');
     } else {
@@ -1645,13 +1548,10 @@ const Settings = {
   async savePayment(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
-    
     const formData = new FormData(form);
     const data = {};
     formData.forEach((value, key) => { data[key] = value; });
-    
     const res = await API.put('/admin/settings/payment', data);
-    
     if (res.ok) {
       Toast.success('Payment settings saved');
     } else {
@@ -1661,23 +1561,12 @@ const Settings = {
   
   async changePassword() {
     const current = document.getElementById('currentPassword')?.value;
-    const newPw = document.getElementById('newPassword')?.value;
+    const newPw   = document.getElementById('newPassword')?.value;
     const confirm = document.getElementById('confirmPassword')?.value;
     
-    if (!current || !newPw || !confirm) { 
-      Toast.warning('All fields are required'); 
-      return; 
-    }
-    
-    if (newPw !== confirm) { 
-      Toast.warning('New passwords do not match'); 
-      return; 
-    }
-    
-    if (newPw.length < 8) { 
-      Toast.warning('Password must be at least 8 characters'); 
-      return; 
-    }
+    if (!current || !newPw || !confirm) { Toast.warning('All fields are required'); return; }
+    if (newPw !== confirm)              { Toast.warning('New passwords do not match'); return; }
+    if (newPw.length < 8)               { Toast.warning('Password must be at least 8 characters'); return; }
     
     const res = await API.post('/admin/auth/change-password', { 
       currentPassword: current, 
@@ -1695,13 +1584,10 @@ const Settings = {
   async updateProfile() {
     const form = document.getElementById('profileForm');
     if (!form) return;
-    
     const formData = new FormData(form);
     const data = {};
     formData.forEach((value, key) => { data[key] = value; });
-    
     const res = await API.put('/admin/auth/profile', data);
-    
     if (res.ok) {
       Toast.success('Profile updated successfully');
     } else {
@@ -1714,15 +1600,10 @@ const Settings = {
 function confirmDeleteAction() {
   const page = document.body.dataset.page;
   
-  if (page === 'products') {
-    Products.deleteConfirmed();
-  } else if (page === 'users') {
-    Users.deleteConfirmed();
-  } else if (page === 'coupons') {
-    Coupons.deleteConfirmed();
-  } else if (page === 'blog') {
-    Blog.deleteConfirmed();
-  }
+  if      (page === 'products')     Products.deleteConfirmed();
+  else if (page === 'users')        Users.deleteConfirmed();
+  else if (page === 'coupons')      Coupons.deleteConfirmed();
+  else if (page === 'blog')         Blog.deleteConfirmed();
 }
 
 /* ─── Utility Functions ──────────────────────────────── */
@@ -1736,9 +1617,7 @@ function debounce(fn, delay = 400) {
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
+    day: '2-digit', month: 'short', year: 'numeric'
   });
 }
 
@@ -1748,105 +1627,90 @@ function formatCurrency(amount) {
 
 /* ─── Initialize Everything ──────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize toast system
   Toast.init();
-  
-  // Initialize sidebar
   initSidebar();
   
-  // Get current page from body data attribute
   const page = document.body.dataset.page;
   
-  // Load page-specific data
-  if (page === 'dashboard') {
-    Dashboard.init();
-  } else if (page === 'products') {
-    Products.loadTable();
-  } else if (page === 'orders') {
-    Orders.loadTable();
-  } else if (page === 'users') {
-    Users.loadTable();
-  } else if (page === 'transactions') {
-    Transactions.loadTable();
-  } else if (page === 'coupons') {
-    Coupons.loadTable();
-  } else if (page === 'blog') {
-    Blog.loadTable();
-    Blog.loadStats();
-  }
+  if      (page === 'dashboard')    Dashboard.init();
+  else if (page === 'products')     Products.loadTable();
+  else if (page === 'orders')       Orders.loadTable();
+  else if (page === 'users')        Users.loadTable();
+  else if (page === 'transactions') Transactions.loadTable();
+  else if (page === 'coupons')      Coupons.loadTable();
+  else if (page === 'blog')         { Blog.loadTable(); Blog.loadStats(); }
   
-  // Initialize search inputs with debounce
+  // Debounced search inputs
   document.querySelectorAll('[data-search]').forEach(input => {
     const target = input.dataset.search;
     input.addEventListener('input', debounce(() => {
-      if (target === 'products') Products.filter();
-      if (target === 'orders') Orders.filter();
-      if (target === 'users') Users.filter();
-      if (target === 'transactions') Transactions.filter();
-      if (target === 'coupons') Coupons.filter();
-      if (target === 'blog') Blog.filter();
+      if      (target === 'products')     Products.filter();
+      else if (target === 'orders')       Orders.filter();
+      else if (target === 'users')        Users.filter();
+      else if (target === 'transactions') Transactions.filter();
+      else if (target === 'coupons')      Coupons.filter();
+      else if (target === 'blog')         Blog.filter();
     }));
   });
   
-  // Initialize filter selects
+  // Filter selects
   document.querySelectorAll('[data-filter]').forEach(select => {
     select.addEventListener('change', () => {
       const target = select.dataset.filter;
-      if (target === 'products') Products.filter();
-      if (target === 'orders') Orders.filter();
-      if (target === 'users') Users.filter();
-      if (target === 'transactions') Transactions.filter();
-      if (target === 'coupons') Coupons.filter();
-      if (target === 'blog') Blog.filter();
+      if      (target === 'products')     Products.filter();
+      else if (target === 'orders')       Orders.filter();
+      else if (target === 'users')        Users.filter();
+      else if (target === 'transactions') Transactions.filter();
+      else if (target === 'coupons')      Coupons.filter();
+      else if (target === 'blog')         Blog.filter();
     });
   });
   
-  // Initialize date inputs
+  // Date inputs
   document.querySelectorAll('input[type="date"]').forEach(input => {
     input.addEventListener('change', () => {
       const target = input.dataset.filter;
-      if (target === 'orders') Orders.filter();
-      if (target === 'transactions') Transactions.filter();
+      if      (target === 'orders')       Orders.filter();
+      else if (target === 'transactions') Transactions.filter();
     });
   });
   
-  // Handle enter key in search inputs
+  // Enter key on search inputs
   document.querySelectorAll('input[data-search]').forEach(input => {
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         const target = input.dataset.search;
-        if (target === 'products') Products.filter();
-        if (target === 'orders') Orders.filter();
-        if (target === 'users') Users.filter();
-        if (target === 'transactions') Transactions.filter();
-        if (target === 'coupons') Coupons.filter();
-        if (target === 'blog') Blog.filter();
+        if      (target === 'products')     Products.filter();
+        else if (target === 'orders')       Orders.filter();
+        else if (target === 'users')        Users.filter();
+        else if (target === 'transactions') Transactions.filter();
+        else if (target === 'coupons')      Coupons.filter();
+        else if (target === 'blog')         Blog.filter();
       }
     });
   });
 });
 
 /* ─── Export for global use ──────────────────────────── */
-window.Products = Products;
-window.Orders = Orders;
-window.Users = Users;
-window.Coupons = Coupons;
+window.Products     = Products;
+window.Orders       = Orders;
+window.Users        = Users;
+window.Coupons      = Coupons;
 window.Transactions = Transactions;
-window.Blog = Blog;
-window.Settings = Settings;
-window.Modal = Modal;
+window.Blog         = Blog;
+window.Settings     = Settings;
+window.Modal        = Modal;
 window.confirmDeleteAction = confirmDeleteAction;
 
 /* ─── Mobile Sidebar Toggle ───────────────────────────── */
 function initMobileSidebar() {
   const toggleBtn = document.getElementById('sidebarToggle');
-  const sidebar = document.getElementById('adminSidebar');
-  const overlay = document.getElementById('sidebarOverlay');
+  const sidebar   = document.getElementById('adminSidebar');
+  const overlay   = document.getElementById('sidebarOverlay');
   
   if (!toggleBtn || !sidebar) return;
   
-  // Create overlay if it doesn't exist
   let sidebarOverlay = overlay;
   if (!sidebarOverlay) {
     sidebarOverlay = document.createElement('div');
@@ -1855,7 +1719,6 @@ function initMobileSidebar() {
     document.body.appendChild(sidebarOverlay);
   }
   
-  // Toggle sidebar
   toggleBtn.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1864,14 +1727,12 @@ function initMobileSidebar() {
     document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
   });
   
-  // Close when clicking overlay
   sidebarOverlay.addEventListener('click', function() {
     sidebar.classList.remove('open');
     sidebarOverlay.classList.remove('open');
     document.body.style.overflow = '';
   });
   
-  // Close on escape key
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && sidebar.classList.contains('open')) {
       sidebar.classList.remove('open');
@@ -1880,7 +1741,6 @@ function initMobileSidebar() {
     }
   });
   
-  // Handle window resize
   window.addEventListener('resize', function() {
     if (window.innerWidth > 1024 && sidebar.classList.contains('open')) {
       sidebar.classList.remove('open');
@@ -1890,7 +1750,6 @@ function initMobileSidebar() {
   });
 }
 
-// Initialize on DOM load
 document.addEventListener('DOMContentLoaded', function() {
   initMobileSidebar();
 });
