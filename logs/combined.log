@@ -15358,3 +15358,42 @@
 {"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 14:50:50"}
 {"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 14:50:50"}
 {"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 14:50:53"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:44"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:44"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:44"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:44"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:47"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:50 +0000] \"GET /interiors HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:50"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:50 +0000] \"GET /images/interior-philosophy.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:50"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:50 +0000] \"GET /images/UzyHomes.png HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:50"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:51 +0000] \"GET /css/style.css HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:51"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /js/auth.js HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /cart/count HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /images/interior/magnolia.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /images/interior/aurelia.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /images/interior/dlm.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /images/interior/blush.jpg HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /js/cart.js HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /cart/count HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /images/favicon.svg HTTP/1.1\" 404 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"::1 - - [10/Apr/2026:13:53:52 +0000] \"GET /cart/count HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36\"","service":"uzyhomes-backend","timestamp":"2026-04-10 14:53:52"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:08"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:08"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:08"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:08"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:11"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:42"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:42"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:42"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:42"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 15:05:45"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 15:10:01"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 15:10:01"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 15:10:01"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 15:10:01"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 15:10:05"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 15:11:36"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 15:11:36"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 15:11:36"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 15:11:36"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 15:11:39"}

@@ -16,7 +16,7 @@ const {
   deleteProduct,
   getLowStockProducts,
   getLowStockProductsView,
-} = require('../controllers/adminController');
+} = require('../controllers/adminProductMethods');
 
 // Auth middleware
 const { generateToken, generateRefreshToken, protect, requireAdmin } = require('../middleware/adminAuth');
