@@ -591,7 +591,7 @@ const Products = {
     this.currentId = id;
     document.getElementById('productModalTitle').textContent = 'Edit Product';
     
-    const res = await API.get(`/admin/products/${id}`);
+    const res = await API.get(`/admin/api/products/${id}`);
     if (!res.ok) { 
       Toast.error('Failed to load product'); 
       return; 
