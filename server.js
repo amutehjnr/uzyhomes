@@ -31,6 +31,7 @@ const paymentController = require('./controllers/paymentController');
 const authController = require('./controllers/authController');
 const addressController = require('./controllers/addressController');
 const productController = require('./controllers/productController');
+const searchRoutes = require('./routes/searchRoutes');
 
 const { authenticateToken } = require('./middleware/auth');
 const { globalErrorHandler } = require('./middleware/errorHandler');
@@ -118,6 +119,10 @@ app.use('/products', productRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/', blogRoutes);
 app.use('/', pageRoutes);
+app.use('/api/search', searchRoutes);
+
+// Search page route
+app.get('/search', (req, res) => res.render('search', { query: req.query.q || '', total: 0, user: req.user || null }));
 
 // Redirect old URLs so existing links don't 404
 app.get('/bedding', productController.getBeddingPage);

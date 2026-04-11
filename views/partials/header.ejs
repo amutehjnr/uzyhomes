@@ -1,197 +1,203 @@
 <style>
-    /* Modern expanding search bar */
-    .search-container {
-        position: relative;
-        display: inline-block;
-    }
-    
-    .expanding-search {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        width: 0;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 10000;
-    }
-    
-    .expanding-search.active {
-        width: 90%;
-        max-width: 600px;
-        opacity: 1;
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    
-    .search-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        overflow: hidden;
-    }
-    
-    .search-header {
-        padding: 1rem 1.5rem;
-        background: var(--color-charcoal);
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .search-header h4 {
-        margin: 0;
-        font-size: 1rem;
-        color: white;
-    }
-    
-    .close-search-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        transition: all 0.2s;
-    }
-    
-    .close-search-btn:hover {
-        background: rgba(255,255,255,0.2);
-        transform: rotate(90deg);
-    }
-    
-    .search-body {
-        padding: 1.5rem;
-    }
-    
-    .search-input-group {
-        position: relative;
-        margin-bottom: 1rem;
-    }
-    
-    .search-input-group i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--color-grey);
-    }
-    
-    .search-input-group input {
-        width: 100%;
-        padding: 12px 15px 12px 45px;
-        font-size: 1rem;
-        border: 1px solid var(--color-sand);
-        border-radius: 8px;
-        outline: none;
-        transition: all 0.2s;
-        font-family: var(--font-sans);
-    }
-    
-    .search-input-group input:focus {
-        border-color: var(--color-clay);
-        box-shadow: 0 0 0 3px rgba(166,138,111,0.1);
-    }
-    
-    .search-results {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    
-    .search-result-item {
-        padding: 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .search-result-item:hover {
-        background: var(--color-stone);
-        transform: translateX(5px);
-    }
-    
-    .search-result-icon {
-        width: 40px;
-        height: 40px;
-        background: var(--color-stone);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-clay);
-    }
-    
-    .search-result-info h4 {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 500;
-    }
-    
-    .search-result-info p {
-        margin: 0;
-        font-size: 0.8rem;
-        color: var(--color-grey);
-    }
-    
-    /* Overlay background */
+    /* ── Expanding Search ─────────────────────────────────── */
     .search-overlay-bg {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
+        inset: 0;
+        background: rgba(0,0,0,0.45);
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s ease;
         z-index: 9999;
         backdrop-filter: blur(4px);
     }
-    
-    .search-overlay-bg.active {
+    .search-overlay-bg.active { opacity: 1; visibility: visible; }
+
+    .expanding-search {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.94);
+        width: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10000;
+    }
+    .expanding-search.active {
+        width: min(640px, 92vw);
         opacity: 1;
         visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
     }
-    
-    @media (max-width: 768px) {
-        .expanding-search.active {
-            width: 95%;
-        }
+
+    .search-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+        overflow: hidden;
+    }
+    .search-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f0ece6;
+    }
+    .search-card-header i { color: #A68A6F; font-size: 1rem; flex-shrink: 0; }
+    .search-card-header input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 1.05rem;
+        font-family: 'Inter', sans-serif;
+        color: #2D2D2D;
+        background: transparent;
+    }
+    .search-card-header input::placeholder { color: #b0a898; }
+    .close-search-btn {
+        width: 32px; height: 32px;
+        border: none; background: #f5f3f0; border-radius: 50%;
+        cursor: pointer; color: #777; font-size: 0.9rem;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s; flex-shrink: 0;
+    }
+    .close-search-btn:hover { background: #2D2D2D; color: white; transform: rotate(90deg); }
+
+    /* Results inside search panel */
+    .search-results-panel {
+        max-height: 420px;
+        overflow-y: auto;
+        padding: 8px 0;
+    }
+    .search-results-panel:empty { display: none; }
+
+    .search-section-label {
+        padding: 8px 20px 4px;
+        font-size: 0.68rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #A68A6F;
+        font-weight: 500;
+    }
+
+    .search-result-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background 0.15s;
+        text-decoration: none;
+        color: inherit;
+    }
+    .search-result-item:hover { background: #faf9f7; }
+    .search-result-item:last-child { border-bottom: none; }
+
+    .sri-thumb {
+        width: 46px; height: 46px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #f5f3f0;
+        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+    }
+    .sri-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .sri-thumb i { color: #A68A6F; font-size: 1.2rem; }
+
+    .sri-body { flex: 1; min-width: 0; }
+    .sri-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #2D2D2D;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 2px;
+    }
+    .sri-sub { font-size: 0.75rem; color: #999; }
+    .sri-price {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #A68A6F;
+        flex-shrink: 0;
+    }
+
+    .search-footer {
+        border-top: 1px solid #f0ece6;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .search-footer-tip { font-size: 0.78rem; color: #b0a898; }
+    .search-footer-tip kbd {
+        background: #f5f3f0;
+        border: 1px solid #e0dbd5;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 0.7rem;
+        font-family: monospace;
+    }
+    .view-all-link {
+        font-size: 0.82rem;
+        color: #2D2D2D;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+    }
+    .view-all-link:hover { color: #A68A6F; }
+
+    .search-loading { display: flex; align-items: center; gap: 10px; padding: 20px; color: #999; font-size: 0.9rem; }
+    .search-spinner { width: 18px; height: 18px; border: 2px solid #e0dbd5; border-top-color: #A68A6F; border-radius: 50%; animation: srSpin 0.6s linear infinite; }
+    @keyframes srSpin { to { transform: rotate(360deg); } }
+
+    .search-no-results {
+        text-align: center;
+        padding: 28px 20px;
+        color: #999;
+    }
+    .search-no-results i { font-size: 2rem; color: #D9D1C7; margin-bottom: 10px; display: block; }
+    .search-no-results p { margin: 0; font-size: 0.9rem; }
+
+    /* Desktop nested dropdowns */
+    .dropdown-submenu { position: relative; }
+    .dropdown-submenu .dropdown-menu { top: 0; left: 100%; margin-top: -1px; }
+    .dropdown-submenu:hover > .dropdown-menu { display: block; }
+    .dropend .dropdown-menu { top: 0; right: auto; left: 100%; }
+    .dropdown-submenu span.dropdown-item { cursor: pointer; }
+    .dropdown-submenu span.dropdown-item:hover { background-color: #f8f9fa; }
+
+    @media (max-width: 991px) {
+        .navbar-nav .dropdown-menu { background:#fff; border:1px solid rgba(0,0,0,0.15); border-radius:.5rem; padding:.5rem 0; margin-top:.5rem; }
+        .navbar-nav span.dropdown-toggle { display:block; padding:.5rem 1rem; color:rgba(0,0,0,.55); text-decoration:none; cursor:pointer; }
+        .navbar-nav span.dropdown-toggle:hover { color:rgba(0,0,0,.7); }
     }
 </style>
 
-<!-- views/partials/header.ejs -->
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid">
         <!-- Desktop Dropdown Container -->
         <div class="desktop-dropdown-container">
             <div class="desktop-dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="desktopDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn dropdown-toggle d-flex align-items-center" type="button"
+                        id="desktopDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="navbar-toggler-icon me-2"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="desktopDropdown">
-                    <li><a class="dropdown-item" href="/">Home</a></li>                    
+                    <li><a class="dropdown-item" href="/">Home</a></li>
                     <li><a class="dropdown-item" href="/interiors">Interiors</a></li>
-                    
-                    <!-- Shop as dropdown only (not a link) -->
                     <li class="dropdown-submenu dropend">
-                        <span class="dropdown-item dropdown-toggle" style="cursor: pointer;">Shop</span>
+                        <span class="dropdown-item dropdown-toggle" style="cursor:pointer">Shop</span>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/decor">Decor</a></li>
                             <li><a class="dropdown-item" href="/bedding">Bedding</a></li>
                             <li><a class="dropdown-item" href="/furniture">Furniture</a></li>
                         </ul>
                     </li>
-                    
                     <li><a class="dropdown-item" href="/blog">Blog</a></li>
                     <li><a class="dropdown-item" href="/portfolio">Portfolio</a></li>
                     <li><a class="dropdown-item" href="/about">About</a></li>
@@ -202,22 +208,17 @@
 
         <!-- Centered Logo -->
         <a class="navbar-brand mx-auto" href="/" aria-label="UZYHOMES Home">
-            <img 
-                src="/images/UzyHomes.png" 
-                alt="UZYHOMES"
-                class="brand-logo"
-                loading="eager"
-            >
+            <img src="/images/UzyHomes.png" alt="UZYHOMES" class="brand-logo" loading="eager">
         </a>
 
-        <!-- Desktop Icons Container -->
+        <!-- Desktop Icons -->
         <div class="desktop-icons">
-            <a href="#" class="nav-icon me-3 search-icon">
+            <button class="nav-icon me-3 search-trigger" style="background:none;border:none;cursor:pointer;" aria-label="Search">
                 <i class="fas fa-search"></i>
-            </a>
+            </button>
             <a href="/cart" class="nav-icon me-4 position-relative">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count" id="cartCount">0</span>
+                <span class="cart-count" id="cartCount" style="display:none">0</span>
             </a>
             <% if (!user) { %>
                 <a href="/login" class="nav-icon me-3" aria-label="Login">
@@ -225,7 +226,8 @@
                 </a>
             <% } else { %>
                 <div class="dropdown">
-                    <a href="#" class="nav-icon me-3 dropdown-toggle" data-bs-toggle="dropdown" aria-label="Account" id="userDropdown">
+                    <a href="#" class="nav-icon me-3 dropdown-toggle" data-bs-toggle="dropdown"
+                       aria-label="Account" id="userDropdown">
                         <i class="fas fa-user"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -239,31 +241,33 @@
             <a href="/contact" class="btn-book ms-2">Book Consultation</a>
         </div>
 
-        <!-- Mobile Icons Container -->
+        <!-- Mobile Icons -->
         <div class="mobile-icons">
-            <a href="#" class="nav-icon me-3 search-icon">
+            <button class="nav-icon me-3 search-trigger" style="background:none;border:none;cursor:pointer;" aria-label="Search">
                 <i class="fas fa-search"></i>
-            </a>
+            </button>
             <a href="/cart" class="nav-icon me-3 position-relative">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="cart-count" id="mobileCartCount">0</span>
+                <span class="cart-count" id="mobileCartCount" style="display:none">0</span>
             </a>
-            <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#mobileNav" aria-controls="mobileNav"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Dropdown Menu -->
+    <!-- Mobile Menu -->
     <div class="collapse navbar-collapse" id="mobileNav">
         <div class="container-fluid py-3">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>                
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/interiors">Interiors</a></li>
-                
-                <!-- Shop as NON-LINK dropdown for mobile - prevents navbar collapse -->
                 <li class="nav-item dropdown" id="mobileShopItem">
-                    <span class="nav-link dropdown-toggle" style="cursor: pointer;" id="mobileShopDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" onclick="event.stopPropagation();">
+                    <span class="nav-link dropdown-toggle" id="mobileShopDropdown" role="button"
+                          data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                          aria-expanded="false" onclick="event.stopPropagation();" style="cursor:pointer">
                         Shop
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="mobileShopDropdown">
@@ -272,25 +276,17 @@
                         <li><a class="dropdown-item" href="/furniture">Furniture</a></li>
                     </ul>
                 </li>
-                
                 <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
                 <li class="nav-item"><a class="nav-link" href="/portfolio">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="/contact">Subscribe</a></li>
             </ul>
-            
             <div class="d-flex flex-column mt-3 pt-3 border-top">
                 <% if (!user) { %>
-                    <a href="/login" class="nav-link mb-2">
-                        <i class="fas fa-user me-2"></i>Login
-                    </a>
+                    <a href="/login" class="nav-link mb-2"><i class="fas fa-user me-2"></i>Login</a>
                 <% } else { %>
-                    <a href="/account" class="nav-link mb-2">
-                        <i class="fas fa-user me-2"></i>My Account
-                    </a>
-                    <a href="#" class="nav-link mb-2" id="mobileLogoutBtn">
-                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                    </a>
+                    <a href="/account" class="nav-link mb-2"><i class="fas fa-user me-2"></i>My Account</a>
+                    <a href="#" class="nav-link mb-2" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                 <% } %>
                 <a href="/contact" class="btn-book text-center mt-2">Book Consultation</a>
             </div>
@@ -298,107 +294,36 @@
     </div>
 </nav>
 
-<!-- Search Overlay Background -->
+<!-- ── Search Overlay ───────────────────────────────────────────────────── -->
 <div class="search-overlay-bg" id="searchOverlayBg"></div>
 
-<!-- Expanding Search Modal -->
 <div class="expanding-search" id="expandingSearch">
     <div class="search-card">
-        <div class="search-header">
-            <h4>Search UZYHOMES</h4>
-            <button class="close-search-btn" id="closeSearchBtn">✕</button>
+        <!-- Input row -->
+        <div class="search-card-header">
+            <i class="fas fa-search"></i>
+            <input type="text" id="headerSearchInput"
+                   placeholder="Search products, blog posts, pages…"
+                   autocomplete="off" spellcheck="false">
+            <button class="close-search-btn" id="closeSearchBtn" aria-label="Close search">✕</button>
         </div>
-        <div class="search-body">
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search products, blog posts, or pages..." autocomplete="off">
-            </div>
-            <div class="search-results" id="searchResults">
-                <div style="text-align: center; padding: 20px; color: var(--color-grey);">
-                    Start typing to search...
-                </div>
-            </div>
+
+        <!-- Live results -->
+        <div class="search-results-panel" id="searchResultsPanel"></div>
+
+        <!-- Footer tips -->
+        <div class="search-footer">
+            <span class="search-footer-tip">
+                <kbd>↵</kbd> to search &nbsp; <kbd>ESC</kbd> to close
+            </span>
+            <a href="#" class="view-all-link" id="viewAllLink" style="display:none">
+                View all results <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     </div>
 </div>
 
-
-<style>
-    /* Desktop nested dropdown on hover */
-    .dropdown-submenu {
-        position: relative;
-    }
-    
-    .dropdown-submenu .dropdown-menu {
-        top: 0;
-        left: 100%;
-        margin-top: -1px;
-        margin-left: 0;
-    }
-    
-    .dropdown-submenu:hover > .dropdown-menu {
-        display: block;
-    }
-    
-    .dropdown-submenu > .dropdown-toggle:active {
-        pointer-events: none;
-    }
-    
-    /* Make sure Shop text doesn't look like a link */
-    .dropdown-submenu span.dropdown-item {
-        cursor: pointer;
-    }
-    
-    .dropdown-submenu span.dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
-    
-    /* Adjust for RTL if needed */
-    .dropend .dropdown-menu {
-        top: 0;
-        right: auto;
-        left: 100%;
-    }
-
-    /* Mobile specific styles */
-    @media (max-width: 991px) {
-        /* Ensure dropdowns are properly styled on mobile */
-        .navbar-nav .dropdown-menu {
-            background-color: #fff;
-            border: 1px solid rgba(0,0,0,0.15);
-            border-radius: 0.5rem;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
-        }
-        
-        .dropdown-item {
-            padding: 0.5rem 1.5rem;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-        
-        /* Make span dropdown-toggle look like nav-link */
-        .navbar-nav .nav-link.dropdown-toggle,
-        .navbar-nav span.dropdown-toggle {
-            display: block;
-            padding: 0.5rem 1rem;
-            color: rgba(0,0,0,0.55);
-            text-decoration: none;
-        }
-        
-        .navbar-nav span.dropdown-toggle {
-            cursor: pointer;
-        }
-        
-        .navbar-nav span.dropdown-toggle:hover {
-            color: rgba(0,0,0,0.7);
-        }
-    }
-</style>
-
-<!-- Pass user data to JavaScript -->
+<!-- User data for JS -->
 <script>
     window.userData = {
         isLoggedIn: <%= user ? 'true' : 'false' %>,
@@ -409,150 +334,215 @@
         lastName: '<%= user.lastName %>'
         <% } %>
     };
-    console.log('Header loaded - User logged in:', window.userData.isLoggedIn);
-    
-    // Prevent navbar collapse when clicking on Shop dropdown
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get the mobile shop dropdown element
-        const mobileShopDropdown = document.getElementById('mobileShopDropdown');
-        
-        if (mobileShopDropdown) {
-            // Stop event propagation to prevent navbar collapse
-            mobileShopDropdown.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-        
-        // Also prevent collapse when clicking inside dropdown menu
-        const dropdownMenus = document.querySelectorAll('#mobileNav .dropdown-menu');
-        dropdownMenus.forEach(function(menu) {
-            menu.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-        
-        // Re-initialize all dropdowns
-        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-        dropdownElementList.map(function(dropdownToggleEl) {
-            return new bootstrap.Dropdown(dropdownToggleEl);
-        });
-    });
-
-    // Add inside the DOMContentLoaded block in header.ejs
-async function updateCartCount() {
-    try {
-        const res = await fetch('/cart/count', { credentials: 'same-origin' });
-        const data = await res.json();
-        const count = data.count || 0;
-        document.querySelectorAll('#cartCount, #mobileCartCount, .cart-count').forEach(el => {
-            el.textContent = count;
-            el.style.display = count > 0 ? 'flex' : 'none';
-        });
-    } catch (err) {
-        console.error('Cart count error:', err);
-    }
-}
-
-// Call on page load
-updateCartCount();
 </script>
 
 <script>
-// Modern expanding search functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const searchOverlayBg = document.getElementById('searchOverlayBg');
-    const expandingSearch = document.getElementById('expandingSearch');
-    const searchInput = document.getElementById('searchInput');
-    const closeSearchBtn = document.getElementById('closeSearchBtn');
-    const searchResults = document.getElementById('searchResults');
-    const searchIcons = document.querySelectorAll('.search-icon');
-    
-    let searchTimeout;
-    
-    // Open search
-    function openSearch() {
-        searchOverlayBg.classList.add('active');
-        expandingSearch.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-            searchInput.focus();
-        }, 100);
-    }
-    
-    // Close search
-    function closeSearch() {
-        searchOverlayBg.classList.remove('active');
-        expandingSearch.classList.remove('active');
-        document.body.style.overflow = '';
-        searchInput.value = '';
-        searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Start typing to search...</div>';
-    }
-    
-    // Perform search (optional - add your search API here)
-    async function performSearch(query) {
-        if (query.length < 2) {
-            searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Type at least 2 characters to search...</div>';
-            return;
-        }
-        
-        // Example search - replace with your actual search endpoint
-        searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-        
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
-            
-            if (data.results && data.results.length > 0) {
-                searchResults.innerHTML = data.results.map(result => `
-                    <div class="search-result-item" data-url="${result.url}">
-                        <div class="search-result-icon">
-                            <i class="fas ${result.type === 'Product' ? 'fa-tag' : 'fa-newspaper'}"></i>
-                        </div>
-                        <div class="search-result-info">
-                            <h4>${result.title}</h4>
-                            <p>${result.type}</p>
-                        </div>
-                    </div>
-                `).join('');
-                
-                // Add click handlers
-                document.querySelectorAll('.search-result-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        window.location.href = item.dataset.url;
-                    });
-                });
-            } else {
-                searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">No results found</div>';
-            }
-        } catch (error) {
-            console.error('Search error:', error);
-            searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Search error. Please try again.</div>';
-        }
-    }
-    
-    // Event listeners
-    searchIcons.forEach(icon => {
-        icon.addEventListener('click', (e) => {
-            e.preventDefault();
-            openSearch();
+/* ── Cart count ────────────────────────────────────────────── */
+(async function updateCartCount() {
+    try {
+        const res  = await fetch('/cart/count', { credentials: 'same-origin' });
+        const data = await res.json();
+        const count = data.count || 0;
+        document.querySelectorAll('#cartCount, #mobileCartCount').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
         });
-    });
-    
-    closeSearchBtn.addEventListener('click', closeSearch);
-    searchOverlayBg.addEventListener('click', closeSearch);
-    
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        const query = e.target.value.trim();
-        searchTimeout = setTimeout(() => performSearch(query), 300);
-    });
-    
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && expandingSearch.classList.contains('active')) {
-            closeSearch();
-        }
+    } catch (e) { console.error('Cart count error:', e); }
+})();
+
+/* ── Logout ─────────────────────────────────────────────────── */
+['logoutBtn','mobileLogoutBtn'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', async e => {
+        e.preventDefault();
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch(e) {}
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
     });
 });
+
+/* ── Mobile Shop dropdown ────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mobileShopDropdown')?.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    document.querySelectorAll('#mobileNav .dropdown-menu').forEach(m => {
+        m.addEventListener('click', e => e.stopPropagation());
+    });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SEARCH ENGINE
+═══════════════════════════════════════════════════════════════ */
+(function() {
+    const overlay     = document.getElementById('searchOverlayBg');
+    const searchBox   = document.getElementById('expandingSearch');
+    const input       = document.getElementById('headerSearchInput');
+    const panel       = document.getElementById('searchResultsPanel');
+    const closeBtn    = document.getElementById('closeSearchBtn');
+    const viewAllLink = document.getElementById('viewAllLink');
+
+    let debounceTimer = null;
+    let currentQuery  = '';
+
+    /* Open / close */
+    function openSearch() {
+        overlay.classList.add('active');
+        searchBox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => input.focus(), 120);
+    }
+
+    function closeSearch() {
+        overlay.classList.remove('active');
+        searchBox.classList.remove('active');
+        document.body.style.overflow = '';
+        input.value = '';
+        currentQuery = '';
+        panel.innerHTML = '';
+        viewAllLink.style.display = 'none';
+    }
+
+    /* Triggers */
+    document.querySelectorAll('.search-trigger').forEach(btn => {
+        btn.addEventListener('click', e => { e.preventDefault(); openSearch(); });
+    });
+    closeBtn.addEventListener('click', closeSearch);
+    overlay.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeSearch();
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    });
+
+    /* Input handler */
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+
+        clearTimeout(debounceTimer);
+
+        if (q.length < 2) {
+            panel.innerHTML = '';
+            viewAllLink.style.display = 'none';
+            return;
+        }
+
+        // Show loader immediately
+        panel.innerHTML = `<div class="search-loading">
+            <div class="search-spinner"></div>
+            <span>Searching…</span>
+        </div>`;
+
+        debounceTimer = setTimeout(() => fetchLiveResults(q), 280);
+    });
+
+    /* Enter = go to full search page */
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            const q = input.value.trim();
+            if (q.length >= 2) {
+                window.location.href = `/search?q=${encodeURIComponent(q)}`;
+            }
+        }
+    });
+
+    /* Live search fetch */
+    async function fetchLiveResults(q) {
+        if (q === currentQuery) return;
+        currentQuery = q;
+
+        try {
+            const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=8`);
+            const data = await res.json();
+
+            if (q !== currentQuery) return; // stale
+
+            if (!data.success || !data.results || data.results.length === 0) {
+                renderNoResults(q);
+                return;
+            }
+
+            renderLiveResults(data.results, q, data.total);
+
+        } catch (err) {
+            console.error('Live search error:', err);
+            panel.innerHTML = `<div class="search-no-results"><i class="fas fa-exclamation-circle"></i><p>Search unavailable. <a href="/search?q=${encodeURIComponent(q)}">Try full search →</a></p></div>`;
+        }
+    }
+
+    /* Render helpers */
+    function renderNoResults(q) {
+        panel.innerHTML = `<div class="search-no-results">
+            <i class="fas fa-search"></i>
+            <p>No results for "<strong>${esc(q)}</strong>". <a href="/search?q=${encodeURIComponent(q)}" style="color:#A68A6F">Browse all →</a></p>
+        </div>`;
+        viewAllLink.style.display = 'none';
+    }
+
+    function renderLiveResults(results, q, total) {
+        const products = results.filter(r => r.type === 'Product');
+        const blogs    = results.filter(r => r.type === 'Blog');
+        const pages    = results.filter(r => r.type === 'Page');
+
+        let html = '';
+
+        if (products.length) {
+            html += `<div class="search-section-label">Products</div>`;
+            html += products.map(r => itemHtml(r)).join('');
+        }
+        if (blogs.length) {
+            html += `<div class="search-section-label">Blog Posts</div>`;
+            html += blogs.map(r => itemHtml(r)).join('');
+        }
+        if (pages.length) {
+            html += `<div class="search-section-label">Pages</div>`;
+            html += pages.map(r => itemHtml(r)).join('');
+        }
+
+        panel.innerHTML = html;
+
+        // View-all link
+        viewAllLink.style.display = 'flex';
+        viewAllLink.href = `/search?q=${encodeURIComponent(q)}`;
+        viewAllLink.innerHTML = `View all ${total} results <i class="fas fa-arrow-right" style="margin-left:4px"></i>`;
+    }
+
+    function itemHtml(r) {
+        const thumbHtml = r.image
+            ? `<div class="sri-thumb"><img src="${esc(r.image)}" alt="${esc(r.title)}" loading="lazy"></div>`
+            : `<div class="sri-thumb"><i class="fas ${typeIcon(r.type)}"></i></div>`;
+
+        const priceHtml = r.type === 'Product' && r.price
+            ? `<span class="sri-price">₦${Number(r.price).toLocaleString()}</span>`
+            : '';
+
+        return `<a class="search-result-item" href="${esc(r.url)}">
+            ${thumbHtml}
+            <div class="sri-body">
+                <div class="sri-title">${highlightText(esc(r.title), currentQuery)}</div>
+                <div class="sri-sub">${esc(r.subtitle || r.type)}</div>
+            </div>
+            ${priceHtml}
+        </a>`;
+    }
+
+    function typeIcon(type) {
+        return { Product: 'fa-tag', Blog: 'fa-newspaper', Page: 'fa-file' }[type] || 'fa-circle';
+    }
+
+    function highlightText(text, q) {
+        if (!q || q.length < 2) return text;
+        const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(`(${safe})`, 'gi'), '<mark style="background:#fff3cd;padding:0 2px;border-radius:2px">$1</mark>');
+    }
+
+    function esc(s) {
+        const m = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' };
+        return String(s || '').replace(/[&<>"']/g, c => m[c]);
+    }
+
+})();
 </script>
