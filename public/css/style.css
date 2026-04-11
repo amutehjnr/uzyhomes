@@ -343,7 +343,7 @@ p {
 
     @media (max-width: 576px) {
         .brand-logo {
-           height: 60px !important;
+           height: 100px !important;
            max-width: 200px !important;
         }
     }

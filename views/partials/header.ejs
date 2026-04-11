@@ -1,3 +1,173 @@
+<style>
+    /* Modern expanding search bar */
+    .search-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .expanding-search {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10000;
+    }
+    
+    .expanding-search.active {
+        width: 90%;
+        max-width: 600px;
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .search-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+    
+    .search-header {
+        padding: 1rem 1.5rem;
+        background: var(--color-charcoal);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .search-header h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: white;
+    }
+    
+    .close-search-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .close-search-btn:hover {
+        background: rgba(255,255,255,0.2);
+        transform: rotate(90deg);
+    }
+    
+    .search-body {
+        padding: 1.5rem;
+    }
+    
+    .search-input-group {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    
+    .search-input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-grey);
+    }
+    
+    .search-input-group input {
+        width: 100%;
+        padding: 12px 15px 12px 45px;
+        font-size: 1rem;
+        border: 1px solid var(--color-sand);
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.2s;
+        font-family: var(--font-sans);
+    }
+    
+    .search-input-group input:focus {
+        border-color: var(--color-clay);
+        box-shadow: 0 0 0 3px rgba(166,138,111,0.1);
+    }
+    
+    .search-results {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .search-result-item {
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .search-result-item:hover {
+        background: var(--color-stone);
+        transform: translateX(5px);
+    }
+    
+    .search-result-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--color-stone);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-clay);
+    }
+    
+    .search-result-info h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    
+    .search-result-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--color-grey);
+    }
+    
+    /* Overlay background */
+    .search-overlay-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+    }
+    
+    .search-overlay-bg.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    @media (max-width: 768px) {
+        .expanding-search.active {
+            width: 95%;
+        }
+    }
+</style>
+
 <!-- views/partials/header.ejs -->
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
@@ -127,6 +297,31 @@
         </div>
     </div>
 </nav>
+
+<!-- Search Overlay Background -->
+<div class="search-overlay-bg" id="searchOverlayBg"></div>
+
+<!-- Expanding Search Modal -->
+<div class="expanding-search" id="expandingSearch">
+    <div class="search-card">
+        <div class="search-header">
+            <h4>Search UZYHOMES</h4>
+            <button class="close-search-btn" id="closeSearchBtn">✕</button>
+        </div>
+        <div class="search-body">
+            <div class="search-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search products, blog posts, or pages..." autocomplete="off">
+            </div>
+            <div class="search-results" id="searchResults">
+                <div style="text-align: center; padding: 20px; color: var(--color-grey);">
+                    Start typing to search...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <style>
     /* Desktop nested dropdown on hover */
@@ -261,4 +456,103 @@ async function updateCartCount() {
 
 // Call on page load
 updateCartCount();
+</script>
+
+<script>
+// Modern expanding search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchOverlayBg = document.getElementById('searchOverlayBg');
+    const expandingSearch = document.getElementById('expandingSearch');
+    const searchInput = document.getElementById('searchInput');
+    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    const searchResults = document.getElementById('searchResults');
+    const searchIcons = document.querySelectorAll('.search-icon');
+    
+    let searchTimeout;
+    
+    // Open search
+    function openSearch() {
+        searchOverlayBg.classList.add('active');
+        expandingSearch.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            searchInput.focus();
+        }, 100);
+    }
+    
+    // Close search
+    function closeSearch() {
+        searchOverlayBg.classList.remove('active');
+        expandingSearch.classList.remove('active');
+        document.body.style.overflow = '';
+        searchInput.value = '';
+        searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Start typing to search...</div>';
+    }
+    
+    // Perform search (optional - add your search API here)
+    async function performSearch(query) {
+        if (query.length < 2) {
+            searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Type at least 2 characters to search...</div>';
+            return;
+        }
+        
+        // Example search - replace with your actual search endpoint
+        searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+        
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            if (data.results && data.results.length > 0) {
+                searchResults.innerHTML = data.results.map(result => `
+                    <div class="search-result-item" data-url="${result.url}">
+                        <div class="search-result-icon">
+                            <i class="fas ${result.type === 'Product' ? 'fa-tag' : 'fa-newspaper'}"></i>
+                        </div>
+                        <div class="search-result-info">
+                            <h4>${result.title}</h4>
+                            <p>${result.type}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Add click handlers
+                document.querySelectorAll('.search-result-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        window.location.href = item.dataset.url;
+                    });
+                });
+            } else {
+                searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">No results found</div>';
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            searchResults.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--color-grey);">Search error. Please try again.</div>';
+        }
+    }
+    
+    // Event listeners
+    searchIcons.forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            e.preventDefault();
+            openSearch();
+        });
+    });
+    
+    closeSearchBtn.addEventListener('click', closeSearch);
+    searchOverlayBg.addEventListener('click', closeSearch);
+    
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        searchTimeout = setTimeout(() => performSearch(query), 300);
+    });
+    
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expandingSearch.classList.contains('active')) {
+            closeSearch();
+        }
+    });
+});
 </script>

@@ -15407,3 +15407,8 @@
 {"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 15:37:24"}
 {"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 15:37:24"}
 {"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 15:37:30"}
+{"level":"info","message":"🚀 UZYHOMES Backend Server","service":"uzyhomes-backend","timestamp":"2026-04-10 21:54:38"}
+{"level":"info","message":"✅ Running on http://localhost:5000","service":"uzyhomes-backend","timestamp":"2026-04-10 21:54:38"}
+{"level":"info","message":"🌍 Environment: development","service":"uzyhomes-backend","timestamp":"2026-04-10 21:54:38"}
+{"level":"info","message":"📦 Database: MongoDB","service":"uzyhomes-backend","timestamp":"2026-04-10 21:54:38"}
+{"level":"info","message":"✅ MongoDB connected successfully","service":"uzyhomes-backend","timestamp":"2026-04-10 21:54:42"}
