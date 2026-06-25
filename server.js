@@ -58,8 +58,8 @@ app.use(
         fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://checkout.paystack.com"],
         scriptSrcAttr: ["'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https://*.paystack.com"],
-        mediaSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://*.paystack.com", "https://res.cloudinary.com"],
+        mediaSrc: ["'self'", "https://res.cloudinary.com"],
         connectSrc: ["'self'", "https://api.paystack.co", "http://localhost:5000"]
       }
     }
