@@ -1,7 +1,13 @@
-const BlogPost = require('../models/BlogPost');
-const logger = require('../config/logger');
-const fs = require('fs');
-const path = require('path');
+const BlogPost   = require('../models/BlogPost');
+const logger     = require('../config/logger');
+const cloudinary = require('../config/cloudinary');
+
+/** Delete a Cloudinary asset by public_id — never throws */
+async function deleteCloudinaryAsset(publicId) {
+  if (!publicId) return;
+  try { await cloudinary.uploader.destroy(publicId); }
+  catch (e) { logger.warn('Could not delete Cloudinary asset:', publicId, e.message); }
+}
 
 // Get all blog posts (admin view)
 exports.getBlogPosts = async (req, res) => {
@@ -122,7 +128,8 @@ exports.createBlogPost = async (req, res) => {
             content,
             category,
             category_slug: category.toLowerCase().replace(/\s+/g, '-'),
-            featured_image: req.file ? `/uploads/blog/${req.file.filename}` : null,
+            featured_image: req.file ? req.file.path : null,
+            featured_image_public_id: req.file ? req.file.filename : null,
             author: req.user._id,
             author_name: req.user.name,
             author_avatar: req.user.avatar,
@@ -143,12 +150,8 @@ exports.createBlogPost = async (req, res) => {
     } catch (error) {
         logger.error('Create blog post error:', error);
         
-        // Delete uploaded image if error
-        if (req.file) {
-            fs.unlink(path.join(__dirname, '..', 'public', req.file.path), (err) => {
-                if (err) logger.error('Error deleting file:', err);
-            });
-        }
+        // Delete Cloudinary upload if error
+        if (req.file) await deleteCloudinaryAsset(req.file.filename);
         
         req.flash('error', 'Error creating post: ' + error.message);
         res.redirect('/admin/blog/new');
@@ -231,16 +234,10 @@ exports.updateBlogPost = async (req, res) => {
         post.isFeatured = isFeatured === 'on';
         
         if (req.file) {
-            // Delete old image
-            if (post.featured_image) {
-                const oldPath = path.join(__dirname, '..', 'public', post.featured_image);
-                if (fs.existsSync(oldPath)) {
-                    fs.unlink(oldPath, (err) => {
-                        if (err) logger.error('Error deleting old image:', err);
-                    });
-                }
-            }
-            post.featured_image = `/uploads/blog/${req.file.filename}`;
+            // Delete old Cloudinary image
+            await deleteCloudinaryAsset(post.featured_image_public_id);
+            post.featured_image           = req.file.path;
+            post.featured_image_public_id = req.file.filename;
         }
         
         await post.save();
@@ -252,12 +249,7 @@ exports.updateBlogPost = async (req, res) => {
     } catch (error) {
         logger.error('Update blog post error:', error);
         
-        if (req.file) {
-            fs.unlink(path.join(__dirname, '..', 'public', req.file.path), (err) => {
-                if (err) logger.error('Error deleting file:', err);
-            });
-        }
-        
+        if (req.file) await deleteCloudinaryAsset(req.file.filename);
         req.flash('error', 'Error updating post: ' + error.message);
         res.redirect(`/admin/blog/${req.params.id}/edit`);
     }
@@ -272,15 +264,8 @@ exports.deleteBlogPost = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Post not found' });
         }
         
-        // Delete featured image
-        if (post.featured_image) {
-            const imagePath = path.join(__dirname, '..', 'public', post.featured_image);
-            if (fs.existsSync(imagePath)) {
-                fs.unlink(imagePath, (err) => {
-                    if (err) logger.error('Error deleting image:', err);
-                });
-            }
-        }
+        // Delete from Cloudinary
+        await deleteCloudinaryAsset(post.featured_image_public_id);
         
         await post.deleteOne();
         
@@ -362,19 +347,9 @@ exports.bulkDelete = async (req, res) => {
             return res.status(400).json({ success: false, message: 'No posts selected' });
         }
         
-        // Delete images
+        // Delete Cloudinary images
         const posts = await BlogPost.find({ _id: { $in: ids } });
-        
-        posts.forEach(post => {
-            if (post.featured_image) {
-                const imagePath = path.join(__dirname, '..', 'public', post.featured_image);
-                if (fs.existsSync(imagePath)) {
-                    fs.unlink(imagePath, (err) => {
-                        if (err) logger.error('Error deleting image:', err);
-                    });
-                }
-            }
-        });
+        await Promise.all(posts.map(p => deleteCloudinaryAsset(p.featured_image_public_id)));
         
         await BlogPost.deleteMany({ _id: { $in: ids } });
         

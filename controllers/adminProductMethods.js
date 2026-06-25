@@ -1,53 +1,35 @@
-// ======================================================
-// PRODUCTS METHODS  (drop-in replacement for the product
-// section inside controllers/adminController.js)
-// ======================================================
-// Replace the existing createProduct, updateProduct, and
-// deleteProduct exports with these versions.
-// ──────────────────────────────────────────────────────
-// These functions handle:
-//   • multipart/form-data (when images are uploaded)
-//   • plain JSON (when no new images are sent)
-//   • removal of old images by publicId or by URL-based
-//     filename (for disk storage)
-// ──────────────────────────────────────────────────────
-
-const fs   = require('fs');
-const path = require('path');
+const cloudinary = require('../config/cloudinary');
 
 /**
- * Helper – delete a local file from public/uploads
+ * Helper – destroy a Cloudinary asset by its public_id.
+ * Silently swallows errors so a missing asset never crashes a request.
  */
-function deleteLocalFile(urlOrPublicId) {
-  if (!urlOrPublicId) return;
+async function deleteCloudinaryAsset(publicId) {
+  if (!publicId) return;
   try {
-    // If it looks like a full URL starting with /uploads/...
-    let filePath = urlOrPublicId;
-    if (filePath.startsWith('/')) {
-      filePath = path.join(process.cwd(), 'public', filePath);
-    } else if (!path.isAbsolute(filePath)) {
-      filePath = path.join(process.cwd(), 'public/uploads/products', filePath);
-    }
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    await cloudinary.uploader.destroy(publicId);
   } catch (e) {
-    console.warn('Could not delete file:', urlOrPublicId, e.message);
+    console.warn('Could not delete Cloudinary asset:', publicId, e.message);
   }
 }
 
 /**
- * Build an images array from multer req.files
+ * Build an images array from Cloudinary-processed multer req.files.
+ * multer-storage-cloudinary attaches { path, filename } where:
+ *   path     = secure Cloudinary URL
+ *   filename = public_id
  */
 function buildImagesFromFiles(files) {
   if (!files || !files.length) return [];
   return files.map(f => ({
-    url:      `/uploads/products/${f.filename}`,
-    publicId: f.filename,          // use filename as the "public id" for disk storage
+    url:      f.path,      // full Cloudinary HTTPS URL
+    publicId: f.filename,  // Cloudinary public_id (e.g. "uzyhomes/products/product-123")
   }));
 }
 
-/**
- * Products Management - Render Page
- */
+// ──────────────────────────────────────────────────────
+// Products Management - Render Page
+// ──────────────────────────────────────────────────────
 exports.getProducts = async (req, res, next) => {
   const Product = require('../models/Product');
   const Order   = require('../models/Order');
@@ -69,9 +51,9 @@ exports.getProducts = async (req, res, next) => {
       .skip(skip)
       .limit(parseInt(limit));
 
-    const totalProducts    = await Product.countDocuments();
-    const activeProducts   = await Product.countDocuments({ isActive: true });
-    const lowStockProducts = await Product.countDocuments({ stock: { $lt: 10, $gt: 0 } });
+    const totalProducts      = await Product.countDocuments();
+    const activeProducts     = await Product.countDocuments({ isActive: true });
+    const lowStockProducts   = await Product.countDocuments({ stock: { $lt: 10, $gt: 0 } });
     const outOfStockProducts = await Product.countDocuments({ stock: 0 });
 
     res.render('admin/products', {
@@ -94,9 +76,9 @@ exports.getProducts = async (req, res, next) => {
   }
 };
 
-/**
- * Products API - Returns JSON for AJAX requests
- */
+// ──────────────────────────────────────────────────────
+// Products API - Returns JSON for AJAX requests
+// ──────────────────────────────────────────────────────
 exports.getProductsAPI = async (req, res, next) => {
   const Product = require('../models/Product');
   try {
@@ -131,9 +113,9 @@ exports.getProductsAPI = async (req, res, next) => {
   }
 };
 
-/**
- * Get Product Details (API)
- */
+// ──────────────────────────────────────────────────────
+// Get Product Details (API)
+// ──────────────────────────────────────────────────────
 exports.getProductDetails = async (req, res, next) => {
   const Product = require('../models/Product');
   try {
@@ -147,9 +129,9 @@ exports.getProductDetails = async (req, res, next) => {
   }
 };
 
-/**
- * Create Product (API) – handles both JSON and multipart
- */
+// ──────────────────────────────────────────────────────
+// Create Product (API) – handles both JSON and multipart
+// ──────────────────────────────────────────────────────
 exports.createProduct = async (req, res, next) => {
   const Product = require('../models/Product');
   const logger  = require('../config/logger');
@@ -173,19 +155,20 @@ exports.createProduct = async (req, res, next) => {
         size:     req.body.specSize     || undefined,
         care:     req.body.specCare     || undefined,
       };
-      // Remove undefined keys
       Object.keys(specifications).forEach(k => specifications[k] === undefined && delete specifications[k]);
     }
 
     // Check duplicate SKU
     const existing = await Product.findOne({ sku });
     if (existing) {
-      // Clean up any uploaded files before returning error
-      if (req.files) req.files.forEach(f => deleteLocalFile(f.path));
+      // Clean up Cloudinary uploads before returning error
+      if (req.files) {
+        await Promise.all(req.files.map(f => deleteCloudinaryAsset(f.filename)));
+      }
       return res.status(400).json({ success: false, message: 'A product with this SKU already exists' });
     }
 
-    // Build images array from uploaded files
+    // Build images array from Cloudinary-uploaded files
     const newImages = buildImagesFromFiles(req.files);
 
     // Also accept images sent as JSON array (for non-file workflows)
@@ -203,7 +186,7 @@ exports.createProduct = async (req, res, next) => {
       subcategory:   subcategory   || undefined,
       price:         parseFloat(price),
       discountPrice: discountPrice ? parseFloat(discountPrice) : undefined,
-      stock:         parseInt(stock)  || 0,
+      stock:         parseInt(stock) || 0,
       sku,
       specifications,
       images,
@@ -217,16 +200,18 @@ exports.createProduct = async (req, res, next) => {
 
     res.json({ success: true, message: 'Product created successfully', product });
   } catch (error) {
-    // Clean up uploaded files on error
-    if (req.files) req.files.forEach(f => { try { fs.unlinkSync(f.path); } catch {} });
+    // Clean up Cloudinary uploads on error
+    if (req.files) {
+      await Promise.all(req.files.map(f => deleteCloudinaryAsset(f.filename)));
+    }
     require('../config/logger').error('Create product error:', error);
     res.status(400).json({ success: false, message: error.message || 'Failed to create product' });
   }
 };
 
-/**
- * Update Product (API) – handles both JSON and multipart
- */
+// ──────────────────────────────────────────────────────
+// Update Product (API) – handles both JSON and multipart
+// ──────────────────────────────────────────────────────
 exports.updateProduct = async (req, res, next) => {
   const Product = require('../models/Product');
   const logger  = require('../config/logger');
@@ -237,7 +222,7 @@ exports.updateProduct = async (req, res, next) => {
       name, description, category, subcategory,
       price, discountPrice, stock, sku,
       specifications, isFeatured, isActive,
-      removeImages,   // JSON array of publicIds / filenames to remove
+      removeImages,   // JSON array of Cloudinary publicIds to remove
     } = req.body;
 
     // Parse JSON strings
@@ -264,27 +249,32 @@ exports.updateProduct = async (req, res, next) => {
     if (sku) {
       const dupe = await Product.findOne({ sku, _id: { $ne: id } });
       if (dupe) {
-        if (req.files) req.files.forEach(f => deleteLocalFile(f.path));
+        if (req.files) {
+          await Promise.all(req.files.map(f => deleteCloudinaryAsset(f.filename)));
+        }
         return res.status(400).json({ success: false, message: 'A product with this SKU already exists' });
       }
     }
 
-    // Fetch existing product to manipulate images
+    // Fetch existing product
     const product = await Product.findById(id);
     if (!product) {
-      if (req.files) req.files.forEach(f => deleteLocalFile(f.path));
+      if (req.files) {
+        await Promise.all(req.files.map(f => deleteCloudinaryAsset(f.filename)));
+      }
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    // Remove images that were flagged for deletion
+    // Remove images flagged for deletion – destroy from Cloudinary
     if (removeImages.length) {
+      const toDelete = product.images.filter(img => {
+        const pid = img.publicId || img.url;
+        return removeImages.includes(pid);
+      });
+      await Promise.all(toDelete.map(img => deleteCloudinaryAsset(img.publicId)));
       product.images = product.images.filter(img => {
         const pid = img.publicId || img.url;
-        if (removeImages.includes(pid)) {
-          deleteLocalFile(img.url);   // delete from disk
-          return false;               // remove from array
-        }
-        return true;
+        return !removeImages.includes(pid);
       });
     }
 
@@ -301,15 +291,15 @@ exports.updateProduct = async (req, res, next) => {
     }
 
     // Apply scalar updates
-    if (name)         product.name        = name;
-    if (sku)          product.sku         = sku;
-    if (category)     product.category    = category;
+    if (name)        product.name        = name;
+    if (sku)         product.sku         = sku;
+    if (category)    product.category    = category;
     if (subcategory !== undefined) product.subcategory = subcategory || undefined;
-    if (price)        product.price       = parseFloat(price);
+    if (price)       product.price       = parseFloat(price);
     if (discountPrice !== undefined) product.discountPrice = discountPrice ? parseFloat(discountPrice) : undefined;
     if (stock  !== undefined)        product.stock        = parseInt(stock) || 0;
-    if (description)  product.description = description;
-    if (isActive  !== undefined) product.isActive   = isActive  === 'false' ? false : Boolean(isActive);
+    if (description) product.description = description;
+    if (isActive   !== undefined) product.isActive   = isActive   === 'false' ? false : Boolean(isActive);
     if (isFeatured !== undefined) product.isFeatured = isFeatured === 'true'  || isFeatured === true;
 
     // Merge specifications
@@ -322,15 +312,17 @@ exports.updateProduct = async (req, res, next) => {
 
     res.json({ success: true, message: 'Product updated successfully', product });
   } catch (error) {
-    if (req.files) req.files.forEach(f => { try { fs.unlinkSync(f.path); } catch {} });
+    if (req.files) {
+      await Promise.all(req.files.map(f => deleteCloudinaryAsset(f.filename)));
+    }
     require('../config/logger').error('Update product error:', error);
     res.status(400).json({ success: false, message: error.message || 'Failed to update product' });
   }
 };
 
-/**
- * Delete Product (API)
- */
+// ──────────────────────────────────────────────────────
+// Delete Product (API)
+// ──────────────────────────────────────────────────────
 exports.deleteProduct = async (req, res, next) => {
   const Product = require('../models/Product');
   const Order   = require('../models/Order');
@@ -349,8 +341,8 @@ exports.deleteProduct = async (req, res, next) => {
     const product = await Product.findByIdAndDelete(id);
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
-    // Delete associated images from disk
-    (product.images || []).forEach(img => deleteLocalFile(img.url));
+    // Destroy associated images from Cloudinary
+    await Promise.all((product.images || []).map(img => deleteCloudinaryAsset(img.publicId)));
 
     logger.info(`Product deleted: ${product.name} by ${req.user.email}`);
     res.json({ success: true, message: 'Product deleted successfully' });
@@ -360,9 +352,9 @@ exports.deleteProduct = async (req, res, next) => {
   }
 };
 
-/**
- * Get Low Stock Products (API)
- */
+// ──────────────────────────────────────────────────────
+// Get Low Stock Products (API)
+// ──────────────────────────────────────────────────────
 exports.getLowStockProducts = async (req, res, next) => {
   const Product = require('../models/Product');
   try {
@@ -376,9 +368,9 @@ exports.getLowStockProducts = async (req, res, next) => {
   }
 };
 
-/**
- * Low Stock Products View - Renders page
- */
+// ──────────────────────────────────────────────────────
+// Low Stock Products View
+// ──────────────────────────────────────────────────────
 exports.getLowStockProductsView = async (req, res, next) => {
   const Product = require('../models/Product');
   try {

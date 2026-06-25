@@ -35,6 +35,10 @@ const blogPostSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Featured image is required']
     },
+    featured_image_public_id: {
+        type: String,  // Cloudinary public_id for deletion
+        default: null
+    },
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
