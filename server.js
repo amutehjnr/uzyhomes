@@ -258,7 +258,7 @@ app.use(globalErrorHandler);
 
 const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 UZYHOMES Backend Server`);
-  logger.info(`✅ Running on http://localhost:${PORT}`);
+  logger.info(`✅ Running on 0.0.0.0:${PORT}`);
   logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.info(`📦 Database: MongoDB`);
 });
