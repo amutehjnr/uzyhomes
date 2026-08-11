@@ -11,6 +11,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const flash = require('connect-flash');
+const MongoStore = require('connect-mongo');
 
 const connectDB = require('./config/database');
 
@@ -67,9 +68,15 @@ app.use(
 );
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'uzyhomes-session-secret-2024',
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
+
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    ttl: 7 * 24 * 60 * 60
+  }),
+
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7,
     httpOnly: true,
