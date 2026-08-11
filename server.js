@@ -256,7 +256,7 @@ app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date(),
 app.use((req, res) => res.status(404).render('404'));
 app.use(globalErrorHandler);
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 UZYHOMES Backend Server`);
   logger.info(`✅ Running on http://localhost:${PORT}`);
   logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
