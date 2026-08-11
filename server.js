@@ -11,7 +11,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const flash = require('connect-flash');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo')(session);
 
 const connectDB = require('./config/database');
 
@@ -72,8 +72,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
+  store: new MongoStore({
+    url: process.env.MONGODB_URI,
     ttl: 7 * 24 * 60 * 60
   }),
 
